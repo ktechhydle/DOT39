@@ -6,6 +6,7 @@ from mp_software_stylesheets.styles import blenderCSS
 class DOT39(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.setWindowIcon(QIcon('icons/logos/dot39_logo.svg'))
 
         self.createUI()
 
