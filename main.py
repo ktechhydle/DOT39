@@ -1,5 +1,6 @@
-from mp_software_stylesheets.styles import blenderCSS
 from src._imports import *
+from src.framework.scene.base_scene import BaseScene
+from mp_software_stylesheets.styles import blenderCSS
 
 
 class DOT39(QMainWindow):
@@ -9,7 +10,11 @@ class DOT39(QMainWindow):
         self.createUI()
 
     def createUI(self):
-        pass
+        self.toolbar = QToolBar(self)
+        self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.toolbar)
+
+        self.scene = BaseScene(self)
+        self.setCentralWidget(self.scene)
 
 
 if __name__ == '__main__':
