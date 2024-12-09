@@ -15,8 +15,9 @@ class BaseScene(QOpenGLWidget):
         self.undo_stack.setUndoLimit(200)
 
         self.ctx = None
-        self.axis_program = None
-        self.axis_vbo = None
+
+        self.is_panning = False
+        self.is_orbiting = False
 
         self._items = []
         self._selected_items = []
@@ -38,13 +39,19 @@ class BaseScene(QOpenGLWidget):
         self.drawTestItem()
 
     def mousePressEvent(self, event):
-        pass
+        if event.button() == Qt.MouseButton.MiddleButton:
+            if event.modifiers() == Qt.Modifier.SHIFT:
+                self.is_orbiting = True
+
+            else:
+                self.is_panning = True
 
     def mouseMoveEvent(self, event):
         pass
 
     def mouseReleaseEvent(self, event):
-        pass
+        self.is_panning = False
+        self.is_orbiting = False
 
     def drawTestItem(self):
         item = PointItem(self, [10.0, 10.0])
