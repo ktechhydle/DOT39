@@ -1,5 +1,7 @@
 import moderngl
 from src._imports import *
+from src.framework.items.base_item import BaseItem
+from src.framework.items.point_item import PointItem
 from src.framework.scene.functions import hexToRGB
 from src.framework.scene.unit_manager import UnitManager
 
@@ -26,10 +28,14 @@ class BaseScene(QOpenGLWidget):
         self.ctx.clear(r, g, b)
 
     def resizeGL(self, w, h):
-        self.ctx.viewport = (0, 0, w, h)
+        width = max(2, w)
+        height = max(2, h)
+        self.ctx.viewport = (0, 0, width, height)
+
+        self.update()
 
     def paintGL(self):
-        self.drawGrid()
+        self.drawTestItem()
 
     def mousePressEvent(self, event):
         pass
@@ -40,17 +46,30 @@ class BaseScene(QOpenGLWidget):
     def mouseReleaseEvent(self, event):
         pass
 
-    def drawGrid(self):
-        pass
+    def drawTestItem(self):
+        item = PointItem(self, [10.0, 10.0])
 
-    def addItem(self):
-        pass
+        self.addItem(item)
+
+    def addItem(self, item: BaseItem):
+        self._items.append(item)
+
+        if not item.isVisible():
+            item.setVisible(True)
+
+        item.render()
+
+    def removeItem(self, item: BaseItem):
+        if item in self.items():
+            item.setVisible(False)
+
+            self.items().remove(item)
 
     def items(self):
-        pass
+        return self._items
 
     def selectedItems(self):
-        pass
+        return self._selected_items
 
     def itemAt(self, pos):
         pass

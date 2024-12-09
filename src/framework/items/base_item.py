@@ -51,7 +51,7 @@ class BaseItem(object):
     def isSelectable(self):
         return self._is_selectable
 
-    def setPos(self, pos: list[float, float]):
+    def setPos(self, pos: list[float]):
         self._pos = pos
 
     def pos(self):
@@ -61,4 +61,5 @@ class BaseItem(object):
         return self._scene
 
     def render(self):
-        pass
+        if not self.isVisible():
+            return
