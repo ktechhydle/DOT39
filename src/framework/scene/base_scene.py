@@ -44,6 +44,9 @@ class BaseScene(QOpenGLWidget):
     def paintGL(self):
         self.drawTestItem()
 
+        for item in self.items():
+            item.render()
+
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.MiddleButton:
             if event.modifiers() == Qt.Modifier.SHIFT:
@@ -65,7 +68,8 @@ class BaseScene(QOpenGLWidget):
         self.addItem(item)
 
     def addItem(self, item: BaseItem):
-        self._items.append(item)
+        if item not in self._items:
+            self._items.append(item)
 
         if not item.isVisible():
             item.setVisible(True)

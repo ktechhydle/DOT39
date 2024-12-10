@@ -22,10 +22,10 @@ class PointItem(BaseItem):
     def createShader(self):
         vertex_shader = '''
                 #version 330
-                in vec2 in_vert;
+                in vec3 in_vert;
                 uniform mat4 model;
                 void main() {
-                    gl_Position = model * vec4(in_vert, 0.0, 1.0);
+                    gl_Position = model * vec4(in_vert, 1.0);
                 }
                 '''
 
@@ -33,6 +33,7 @@ class PointItem(BaseItem):
                 #version 330
                 out vec4 fragColor;
                 uniform vec3 color;
+                
                 void main() {
                     fragColor = vec4(color, 1.0);
                 }
@@ -47,11 +48,11 @@ class PointItem(BaseItem):
         # Create a VBO that defines the vertices for the `+` shape
         vertices = np.array([
             # Horizontal line
-            -0.1, 0.0,
-            0.1, 0.0,
+            -0.1, 0.0, 0.0,
+            0.1, 0.0, 0.0,
             # Vertical line
-            0.0, -0.1,
-            0.0, 0.1,
+            0.0, -0.1, 0.0,
+            0.0, 0.1, 0.0,
         ], dtype='f4')
 
         vbo = self.ctx.buffer(vertices)
@@ -59,7 +60,7 @@ class PointItem(BaseItem):
 
     def render(self):
         super().render()
-        
+
         # Use the shader program and draw
         self.shader['model'].write(np.eye(4, dtype='f4').tobytes())
         self.shader['color'].value = self.color()
