@@ -63,7 +63,7 @@ class BaseScene(QOpenGLWidget):
         self.is_orbiting = False
 
     def drawTestItem(self):
-        item = PointItem(self, [10.0, 10.0])
+        item = PointItem(self, self.program, [10.0, 10.0])
 
         self.addItem(item)
 

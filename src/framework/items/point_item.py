@@ -4,13 +4,13 @@ from src.framework.scene.functions import hexToRGB
 
 
 class PointItem(BaseItem):
-    def __init__(self, scene, pos: list[float]):
+    def __init__(self, scene, program, pos: list[float]):
         super().__init__(scene)
         self.setPos(pos)
         self._color = hexToRGB('#ff0000')
 
+        self.program = program
         self.ctx = scene.ctx
-        self.shader = self.createShader()
         self.vbo = self.createVbo()
 
     def color(self):
@@ -18,31 +18,6 @@ class PointItem(BaseItem):
 
     def setColor(self, color: str):
         self._color = color
-
-    def createShader(self):
-        vertex_shader = '''
-                #version 330
-                in vec3 in_vert;
-                uniform mat4 model;
-                void main() {
-                    gl_Position = model * vec4(in_vert, 1.0);
-                }
-                '''
-
-        fragment_shader = '''
-                #version 330
-                out vec4 fragColor;
-                uniform vec3 color;
-                
-                void main() {
-                    fragColor = vec4(color, 1.0);
-                }
-                '''
-
-        return self.ctx.program(
-            vertex_shader=vertex_shader,
-            fragment_shader=fragment_shader
-        )
 
     def createVbo(self):
         # Create a VBO that defines the vertices for the `+` shape
@@ -62,9 +37,10 @@ class PointItem(BaseItem):
         super().render()
 
         # Use the shader program and draw
-        self.shader['model'].write(np.eye(4, dtype='f4').tobytes())
-        self.shader['color'].value = self.color()
+        self.program['model'].write(np.eye(4, dtype='f4').tobytes())
+        self.program['color'].value = self.color()
+        self.program['alphaValue'].value = 1.0
 
-        vao = self.ctx.simple_vertex_array(self.shader, self.vbo, 'in_vert')
+        vao = self.ctx.simple_vertex_array(self.program, self.vbo, 'in_vert')
         vao.render(LINES)
 
