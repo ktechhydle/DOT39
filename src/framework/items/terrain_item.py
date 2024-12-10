@@ -3,11 +3,11 @@ from src.framework.items.base_item import *
 from src.framework.scene.functions import hexToRGB
 
 
-class PointItem(BaseItem):
-    def __init__(self, scene, program, pos: list[float]):
+class TerrainItem(BaseItem):
+    def __init__(self, scene, program, points: list[tuple[float, float, float]]):
         super().__init__(scene)
-        self.setPos(pos)
-        self._color = hexToRGB('#ff0000')
+        self._color = hexToRGB('#00ff00')
+        self._points = points
 
         self.program = program
         self.ctx = scene.ctx
@@ -19,16 +19,19 @@ class PointItem(BaseItem):
     def setColor(self, color: str):
         self._color = color
 
+    def points(self):
+        return self._points
+
+    def setPoints(self, points: list[tuple[float, float, float]]):
+        self._points = points
+
     def createVbo(self):
-        # Create a VBO that defines the vertices for the `+` shape
-        vertices = np.array([
-            # Horizontal line
-            -0.01, 0.0, 0.0,
-            0.01, 0.0, 0.0,
-            # Vertical line
-            0.0, -0.01, 0.0,
-            0.0, 0.01, 0.0,
-        ], dtype='f4')
+        array = []
+
+        for point in self.points():
+            array.extend([point[0] / 100, point[1] / 100, point[2] / 100])
+
+        vertices = np.array(array, dtype='f4')
 
         vbo = self.ctx.buffer(vertices)
         return vbo
@@ -40,8 +43,7 @@ class PointItem(BaseItem):
         self.program['model'].write(np.eye(4, dtype='f4').tobytes())
         self.program['color'].value = self.color()
         self.program['alphaValue'].value = 1.0
-        self.program['position'].value = self.pos()
 
         vao = self.ctx.simple_vertex_array(self.program, self.vbo, 'in_vert')
-        vao.render(LINES)
+        vao.render(POINTS)
 

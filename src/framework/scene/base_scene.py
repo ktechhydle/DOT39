@@ -4,6 +4,7 @@ import moderngl
 from src._imports import *
 from src.framework.items.base_item import BaseItem
 from src.framework.items.point_item import PointItem
+from src.framework.items.terrain_item import TerrainItem
 from src.framework.scene.functions import hexToRGB, vertex_shad, fragment_shad
 from src.framework.scene.unit_manager import UnitManager
 
@@ -21,6 +22,7 @@ class BaseScene(QOpenGLWidget):
 
         self.ctx = None
         self.program = None
+        self.wireframe = True
 
         self._items = []
         self._selected_items = []
@@ -30,6 +32,7 @@ class BaseScene(QOpenGLWidget):
 
         self.ctx = moderngl.create_context()
         self.ctx.clear(r, g, b)
+        self.ctx.wireframe = self.wireframe
 
         self.program = self.ctx.program(
             vertex_shader=vertex_shad,
@@ -46,7 +49,16 @@ class BaseScene(QOpenGLWidget):
         self.update()
 
     def paintGL(self):
-        item = PointItem(self, self.program, [10, 10])
+        item = TerrainItem(self, self.program, [(0.0, 0.0, 0.0),
+                                                (10.0, 10.0, 0.0),
+                                                (-10.0, -10.0, 0.0),
+                                                (-10.0, 10.0, 0.0),
+                                                (10.0, -10.0, 0.0),
+                                                ])
+
+        self.addItem(item)
+
+        item = PointItem(self, self.program, [0, 0])
 
         self.addItem(item)
 
