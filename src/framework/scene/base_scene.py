@@ -1,3 +1,5 @@
+import random
+
 import moderngl
 from src._imports import *
 from src.framework.items.base_item import BaseItem
@@ -9,6 +11,9 @@ from src.framework.scene.unit_manager import UnitManager
 class BaseScene(QOpenGLWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.setMouseTracking(True)
+        self.setCursor(Qt.CursorShape.CrossCursor)
+
         self.unit_manager = UnitManager()
 
         self.undo_stack = QUndoStack(self)
@@ -16,9 +21,6 @@ class BaseScene(QOpenGLWidget):
 
         self.ctx = None
         self.program = None
-
-        self.is_panning = False
-        self.is_orbiting = False
 
         self._items = []
         self._selected_items = []
@@ -44,30 +46,12 @@ class BaseScene(QOpenGLWidget):
         self.update()
 
     def paintGL(self):
-        self.drawTestItem()
+        item = PointItem(self, self.program, [10, 10])
+
+        self.addItem(item)
 
         for item in self.items():
             item.render()
-
-    def mousePressEvent(self, event):
-        if event.button() == Qt.MouseButton.MiddleButton:
-            if event.modifiers() == Qt.Modifier.SHIFT:
-                self.is_orbiting = True
-
-            else:
-                self.is_panning = True
-
-    def mouseMoveEvent(self, event):
-        pass
-
-    def mouseReleaseEvent(self, event):
-        self.is_panning = False
-        self.is_orbiting = False
-
-    def drawTestItem(self):
-        item = PointItem(self, self.program, [10.0, 10.0])
-
-        self.addItem(item)
 
     def addItem(self, item: BaseItem):
         if item not in self._items:
@@ -75,8 +59,6 @@ class BaseScene(QOpenGLWidget):
 
         if not item.isVisible():
             item.setVisible(True)
-
-        item.render()
 
     def removeItem(self, item: BaseItem):
         if item in self.items():

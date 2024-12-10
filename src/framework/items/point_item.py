@@ -40,6 +40,7 @@ class PointItem(BaseItem):
         self.program['model'].write(np.eye(4, dtype='f4').tobytes())
         self.program['color'].value = self.color()
         self.program['alphaValue'].value = 1.0
+        self.program['position'].value = self.pos()
 
         vao = self.ctx.simple_vertex_array(self.program, self.vbo, 'in_vert')
         vao.render(LINES)

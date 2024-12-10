@@ -55,7 +55,7 @@ class BaseItem(object):
         self._pos = pos
 
     def pos(self):
-        return self._pos
+        return [self._pos[0] / 100, self._pos[1] / 100]
 
     def scene(self):
         return self._scene
