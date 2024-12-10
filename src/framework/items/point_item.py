@@ -7,7 +7,7 @@ class PointItem(BaseItem):
     def __init__(self, scene, pos: list[float]):
         super().__init__(scene)
         self.setPos(pos)
-        self._color = hexToRGB('#00ff00')
+        self._color = hexToRGB('#ff0000')
 
         self.ctx = scene.ctx
         self.shader = self.createShader()

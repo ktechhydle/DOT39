@@ -2,7 +2,7 @@ import moderngl
 from src._imports import *
 from src.framework.items.base_item import BaseItem
 from src.framework.items.point_item import PointItem
-from src.framework.scene.functions import hexToRGB
+from src.framework.scene.functions import hexToRGB, vertex_shad, fragment_shad
 from src.framework.scene.unit_manager import UnitManager
 
 
@@ -15,6 +15,7 @@ class BaseScene(QOpenGLWidget):
         self.undo_stack.setUndoLimit(200)
 
         self.ctx = None
+        self.program = None
 
         self.is_panning = False
         self.is_orbiting = False
@@ -27,6 +28,11 @@ class BaseScene(QOpenGLWidget):
 
         self.ctx = moderngl.create_context()
         self.ctx.clear(r, g, b)
+
+        self.program = self.ctx.program(
+            vertex_shader=vertex_shad,
+            fragment_shader=fragment_shad
+        )
 
     def resizeGL(self, w, h):
         width = max(2, w)
