@@ -39,6 +39,8 @@ class BaseScene(QOpenGLWidget):
         height = max(2, h)
         self.ctx.viewport = (0, 0, width, height)
 
+        self.program['aspectRatio'].value = self.width() / max(1.0, self.height())
+
         self.update()
 
     def paintGL(self):

@@ -2,7 +2,11 @@
 
 in vec3 in_vert;
 uniform mat4 model;
+uniform float aspectRatio;
 
 void main() {
-    gl_Position = model * vec4(in_vert, 1.0);
+    vec4 transformed = model * vec4(in_vert, 1.0);
+    // Apply the aspect ratio correction
+    transformed.x /= aspectRatio;
+    gl_Position = transformed;
 }
