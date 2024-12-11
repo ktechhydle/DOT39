@@ -36,7 +36,9 @@ class BaseScene(QOpenGLWidget):
             fragment_shader=fragment_shad
         )
 
-        self.ctx.finish()
+        # Console Info
+        print('DOT39 Is Now Compiled')
+        print('OpenGL Attributes Initialized')
 
     def resizeGL(self, w, h):
         width = max(2, w)
@@ -44,6 +46,9 @@ class BaseScene(QOpenGLWidget):
         self.ctx.viewport = (0, 0, width, height)
 
         self.program['aspectRatio'].value = width / max(1.0, height)
+
+        # Console Info
+        print(f'OpenGL Viewport Resized To: {width, height}')
 
     def paintGL(self):
         self.ctx.clear(*self.bg_color)
@@ -59,7 +64,7 @@ class BaseScene(QOpenGLWidget):
             item.render()
 
         # Console Info
-        print('Repainting OpenGL Attributes')
+        print('\nRepainting OpenGL Viewport')
         print('Current Color: ', self.program['color'].value)
         print('Current Alpha Value: ', self.program['alphaValue'].value)
         print('Current Zoom Amount: ', self.program['cameraZoom'].value)
