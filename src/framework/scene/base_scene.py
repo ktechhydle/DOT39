@@ -37,6 +37,7 @@ class BaseScene(QOpenGLWidget):
 
         # Console Info
         print('---- DOT39 Compiled Successfully ----\n---- OpenGL Attributes Initialized ----')
+        print('OpenGL Version: ', self.ctx.version_code)
 
     def resizeGL(self, w, h):
         width = max(2, w)
