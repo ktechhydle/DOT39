@@ -64,10 +64,12 @@ class BaseScene(QOpenGLWidget):
             item.render()
 
         # Console Info
-        print('\nRepainting OpenGL Viewport')
+        print('\n')
+        print('Repainting OpenGL Viewport')
         print('Current Color: ', self.program['color'].value)
         print('Current Alpha Value: ', self.program['alphaValue'].value)
         print('Current Zoom Amount: ', self.program['cameraZoom'].value)
+        print('\n')
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.MiddleButton:
