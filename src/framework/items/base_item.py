@@ -63,3 +63,6 @@ class BaseItem(object):
     def render(self):
         if not self.isVisible():
             return
+
+    def destroy(self):
+        pass

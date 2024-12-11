@@ -17,7 +17,8 @@ class ToolBarContainer(QWidget):
         hlayout2 = QHBoxLayout()
 
         label = QLabel(self.name())
-        hlayout1.addWidget(label, Qt.AlignmentFlag.AlignCenter)
+        label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        hlayout1.addWidget(label)
 
         for w in self.widgets():
             hlayout2.addWidget(w)
@@ -30,6 +31,3 @@ class ToolBarContainer(QWidget):
 
     def widgets(self):
         return self._widgets
-
-    def layout(self) -> QHBoxLayout:
-        super().layout()
