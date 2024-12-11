@@ -9,7 +9,6 @@ class DOT39(QMainWindow):
         super().__init__()
         self.setWindowTitle('DOT39')
         self.setWindowIcon(QIcon('icons/logos/dot39_logo.svg'))
-        self.resize(800, 800)
 
         self.createUI()
 

@@ -28,6 +28,7 @@ class BaseScene(QOpenGLWidget):
     def initializeGL(self):
         self.ctx = moderngl.create_context()
         self.ctx.clear(self.bg_color[0], self.bg_color[1], self.bg_color[2])
+        self.ctx.enable(DEPTH_TEST)
         self.ctx.wireframe = self.wireframe
 
         self.program = self.ctx.program(
@@ -50,21 +51,15 @@ class BaseScene(QOpenGLWidget):
         self.ctx.clear(self.bg_color[0], self.bg_color[1], self.bg_color[2])
         self.ctx.enable(DEPTH_TEST)
 
-        item = TerrainItem(self, self.program, [(0.0, 0.0, 0.0),
-                                                    (10.0, 10.0, 0.0),
-                                                    (-10.0, -10.0, 0.0),
-                                                    (-10.0, 10.0, 0.0),
-                                                    (10.0, -10.0, 0.0),
-                                                    ])
-
-        if not hasattr(self, 'undo_cmd'):
-            self.undo_cmd = AddItemCommand(item, self)
-            self.addUndoCommand(self.undo_cmd)
+        if not hasattr(self, 'item'):
+            self.item = PointItem(self, self.program, [5.0, 5.0, 5.0])
+            self.addItem(self.item)
 
         for item in self.items():
             item.render()
 
         # Console Info
+        print('Repainting OpenGL Attributes')
         print('Current Color: ', self.program['color'].value)
         print('Current Alpha Value: ', self.program['alphaValue'].value)
 
