@@ -69,9 +69,7 @@ class BaseScene(QOpenGLWidget):
         self.update()
 
     def removeItem(self, item: BaseItem):
-        if item in self.items():
-            item.destroy()
-            self._items.remove(item)
+        self._items.remove(item)
 
         print('Item Removed')
 
