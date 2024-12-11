@@ -71,7 +71,6 @@ class TerrainItem(BaseItem):
         super().render()
 
         # Render points
-        self.program['model'].write(np.eye(4, dtype='f4').tobytes())
         self.program['color'].value = self.color()
         self.program['alphaValue'].value = 1.0
 

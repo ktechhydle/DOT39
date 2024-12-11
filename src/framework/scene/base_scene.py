@@ -48,7 +48,7 @@ class BaseScene(QOpenGLWidget):
         self.update()
 
     def paintGL(self):
-        self.ctx.clear(self.bg_color[0], self.bg_color[1], self.bg_color[2])
+        #self.ctx.clear(self.bg_color[0], self.bg_color[1], self.bg_color[2])
         self.ctx.enable(DEPTH_TEST)
 
         if not hasattr(self, 'item'):
@@ -62,6 +62,7 @@ class BaseScene(QOpenGLWidget):
         print('Repainting OpenGL Attributes')
         print('Current Color: ', self.program['color'].value)
         print('Current Alpha Value: ', self.program['alphaValue'].value)
+        print('Current Zoom Amount: ', self.program['cameraZoom'].value)
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.MiddleButton:
@@ -80,8 +81,12 @@ class BaseScene(QOpenGLWidget):
         pass
 
     def wheelEvent(self, event):
-        # Zooming logic
-        pass
+        if event.angleDelta().y() > 0:
+            self.program['cameraZoom'].value = min(100.0, self.program['cameraZoom'].value + 0.1)  # Clamp max zoom
+        else:
+            self.program['cameraZoom'].value = max(0.1, self.program['cameraZoom'].value - 0.1)  # Clamp min zoom
+
+        self.update()
 
     def addItem(self, item: BaseItem):
         if item not in self._items:

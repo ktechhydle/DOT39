@@ -37,7 +37,6 @@ class PointItem(BaseItem):
         super().render()
 
         # Use the shader program and draw
-        self.program['model'].write(np.eye(4, dtype='f4').tobytes())
         self.program['color'].value = self.color()
         self.program['alphaValue'].value = 1.0
         self.program['position'].value = self.pos()
