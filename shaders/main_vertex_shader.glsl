@@ -8,13 +8,10 @@ uniform vec3 cameraPosition;
 uniform float cameraZoom;
 
 void main() {
-    vec4 transformed = vec4(in_vert * cameraZoom, 1.0);
+    vec4 transformed = vec4((in_vert + position) * cameraZoom, 1.0);
 
     // Apply the aspect ratio correction
     transformed.x /= aspectRatio;
-
-    // Add item position offset
-    transformed.xyz += position;
 
     gl_Position = transformed;
 }

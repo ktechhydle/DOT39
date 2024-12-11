@@ -27,7 +27,7 @@ class BaseScene(QOpenGLWidget):
 
     def initializeGL(self):
         self.ctx = moderngl.create_context()
-        self.ctx.clear(self.bg_color[0], self.bg_color[1], self.bg_color[2])
+        self.ctx.clear(*self.bg_color)
         self.ctx.enable(DEPTH_TEST)
         self.ctx.wireframe = self.wireframe
 
@@ -43,13 +43,13 @@ class BaseScene(QOpenGLWidget):
         height = max(2, h)
         self.ctx.viewport = (0, 0, width, height)
 
-        self.program['aspectRatio'].value = self.width() / max(1.0, self.height())
-
-        self.update()
+        self.program['aspectRatio'].value = width / max(1.0, height)
 
     def paintGL(self):
-        #self.ctx.clear(self.bg_color[0], self.bg_color[1], self.bg_color[2])
-        self.ctx.enable(DEPTH_TEST)
+        self.ctx.clear(*self.bg_color)
+        self.ctx.enable(BLEND)
+        self.ctx.enable(DEPTH_TEST | CULL_FACE)
+        self.ctx.wireframe = self.wireframe
 
         if not hasattr(self, 'item'):
             self.item = PointItem(self, self.program, [5.0, 5.0, 5.0])
@@ -119,3 +119,18 @@ class BaseScene(QOpenGLWidget):
         self.undo_stack.push(command)
 
         print(f'Undo Command: {command}')
+
+        self.update()
+
+    def setBackgroundColor(self, color: str):
+        self.bg_color = hexToRGB(color)
+
+        self.update()
+
+    def isWireframe(self):
+        return self.wireframe
+
+    def setWireframe(self, enabled: bool):
+        self.wireframe = enabled
+
+        self.update()
