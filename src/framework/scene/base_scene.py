@@ -37,8 +37,7 @@ class BaseScene(QOpenGLWidget):
         )
 
         # Console Info
-        print('DOT39 Is Now Compiled')
-        print('OpenGL Attributes Initialized')
+        print('---- DOT39 Compiled Successfully ----\n---- OpenGL Attributes Initialized ----')
 
     def resizeGL(self, w, h):
         width = max(2, w)
@@ -64,12 +63,10 @@ class BaseScene(QOpenGLWidget):
             item.render()
 
         # Console Info
-        print('\n')
-        print('Repainting OpenGL Viewport')
+        print('---- Repainting OpenGL Viewport ----')
         print('Current Color: ', self.program['color'].value)
         print('Current Alpha Value: ', self.program['alphaValue'].value)
         print('Current Zoom Amount: ', self.program['cameraZoom'].value)
-        print('\n')
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.MiddleButton:
