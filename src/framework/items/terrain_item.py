@@ -72,14 +72,13 @@ class TerrainItem(BaseItem):
 
         # Render points
         self.program['color'].value = self.color()
-        self.program['alphaValue'].value = 1.0
 
         vao = self.ctx.simple_vertex_array(self.program, self.vbo, 'in_vert')
-        vao.render(POINTS)
+        vao.render(GL.POINTS)
 
         # Render outline
         if self.outline_vbo:
             self.program['color'].value = self.outlineColor()  # Outline color
             outline_vao = self.ctx.simple_vertex_array(self.program, self.outline_vbo, 'in_vert')
-            outline_vao.render(LINES)
+            outline_vao.render(GL.LINES)
 

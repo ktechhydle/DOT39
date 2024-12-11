@@ -1,4 +1,3 @@
-import moderngl
 from src._imports import *
 from src.framework.items.base_item import BaseItem
 from src.framework.items.point_item import PointItem
@@ -26,9 +25,9 @@ class BaseScene(QOpenGLWidget):
         self._selected_items = []
 
     def initializeGL(self):
-        self.ctx = moderngl.create_context()
+        self.ctx = GL.create_context()
         self.ctx.clear(*self.bg_color)
-        self.ctx.enable(DEPTH_TEST)
+        self.ctx.enable(GL.DEPTH_TEST)
         self.ctx.wireframe = self.wireframe
 
         self.program = self.ctx.program(
@@ -51,16 +50,22 @@ class BaseScene(QOpenGLWidget):
 
     def paintGL(self):
         self.ctx.clear(*self.bg_color)
-        self.ctx.enable(BLEND)
-        self.ctx.enable(DEPTH_TEST | CULL_FACE)
-        self.ctx.wireframe = self.wireframe
 
-        if not hasattr(self, 'item'):
-            self.item = PointItem(self, self.program, [5.0, 5.0, 5.0])
-            self.addItem(self.item)
+        self.program['color'].value = hexToRGB('#ff0000')
 
-        for item in self.items():
-            item.render()
+        vertices = np.array([
+            # Horizontal line
+            -0.01, 0.0, 0.0,
+            0.01, 0.0, 0.0,
+            # Vertical line
+            0.0, -0.01, 0.0,
+            0.0, 0.01, 0.0,
+        ], dtype='f4')
+
+        vbo = self.ctx.buffer(vertices)
+
+        vao = self.ctx.simple_vertex_array(self.program, vbo, 'in_vert')
+        vao.render()
 
         # Console Info
         print('---- Repainting OpenGL Viewport ----')
