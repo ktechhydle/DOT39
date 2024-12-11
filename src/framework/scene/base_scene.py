@@ -44,7 +44,6 @@ class BaseScene(QOpenGLWidget):
         self.program['aspectRatio'].value = self.width() / max(1.0, self.height())
 
     def paintGL(self):
-        self.ctx.clear(0, 0, 0)
         self.ctx.enable(DEPTH_TEST)
 
         item = TerrainItem(self, self.program, [(0.0, 0.0, 0.0),
