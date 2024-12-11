@@ -60,6 +60,26 @@ class BaseScene(QOpenGLWidget):
         for item in self.items():
             item.render()
 
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.MiddleButton:
+            if event.modifiers() & Qt.Modifier.SHIFT:
+                # Orbiting logic
+                pass
+
+            else:
+                # Panning logic
+                pass
+
+    def mouseMoveEvent(self, event):
+        pass
+
+    def mouseReleaseEvent(self, event):
+        pass
+
+    def wheelEvent(self, event):
+        # Zooming logic
+        pass
+
     def addItem(self, item: BaseItem):
         if item not in self._items:
             self._items.append(item)
