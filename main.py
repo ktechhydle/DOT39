@@ -1,3 +1,4 @@
+import random
 from src._imports import *
 from src.framework.items.point_item import PointItem
 from src.gui.widgets import *
@@ -48,11 +49,10 @@ class DOT39(QMainWindow):
         self.addAction(redo_action)
 
     def createTestObjects(self):
-        item1 = PointItem(self.scene, self.scene.shaderProgram(), [0.0, 0.0, 0.0])
-        item2 = PointItem(self.scene, self.scene.shaderProgram(), [10.0, 10.0, 10.0])
+        for i in range(100):
+            item = PointItem(self.scene, self.scene.shaderProgram(), [random.randint(-i, 100), random.randint(-i, 100), 0.0])
 
-        self.scene.addItem(item1)
-        self.scene.addItem(item2)
+            self.scene.addItem(item)
 
 
 if __name__ == '__main__':
