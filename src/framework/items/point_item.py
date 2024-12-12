@@ -12,6 +12,7 @@ class PointItem(BaseItem):
         self.program = program
         self.ctx = scene.ctx
         self.vbo = self.createVbo()
+        self.ibo = self.createIbo()
 
     def color(self):
         return self._color
@@ -33,6 +34,16 @@ class PointItem(BaseItem):
         vbo = self.ctx.buffer(vertices)
         return vbo
 
+    def createIbo(self):
+        # Create a IBO that defines the indices for the `+` shape
+        indices = np.array([
+            0, 1,  # Horizontal line
+            2, 3  # Vertical line
+        ], dtype='i4')
+
+        ibo = self.ctx.buffer(indices)
+        return ibo
+
     def render(self):
         super().render()
 
@@ -40,6 +51,6 @@ class PointItem(BaseItem):
         self.program['color'].value = self.color()
         self.program['position'].value = self.pos()
 
-        vao = self.ctx.simple_vertex_array(self.program, self.vbo, 'in_vert')
+        vao = self.ctx.simple_vertex_array(self.program, self.vbo, 'in_vert', index_buffer=self.ibo)
         vao.render(GL.LINES)
 
