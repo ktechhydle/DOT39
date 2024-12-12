@@ -65,7 +65,7 @@ class BaseScene(QOpenGLWidget):
         print(f'OpenGL Viewport Resized To: {width, height}')
 
     def paintGL(self):
-        #self.ctx.clear(*self.bg_color)
+        self.ctx.clear(*self.bg_color)
         self.ctx.enable_only(GL.DEPTH_TEST | GL.BLEND | GL.CULL_FACE)
         self.program['matrix'].value = self.view_matrix.data()
 
@@ -93,11 +93,11 @@ class BaseScene(QOpenGLWidget):
         vbo = self.ctx.buffer(vertices)
 
         vao = self.ctx.vertex_array(self.program, vbo, 'in_vert')
-        vao.render(GL.POINTS)
+        vao.render(GL.LINES)
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.MiddleButton:
-            if event.modifiers() & Qt.Modifier.SHIFT:
+            if event.modifiers() & Qt.KeyboardModifier.ShiftModifier:
                 # Orbiting logic
                 pass
 
