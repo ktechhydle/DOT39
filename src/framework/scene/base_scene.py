@@ -101,7 +101,7 @@ class BaseScene(QOpenGLWidget):
         pass
 
     def mouseReleaseEvent(self, event):
-        self.setCursor(Qt.CursorShape.CrossCursor)
+        self.unsetCursor()
 
     def wheelEvent(self, event):
         self.camera_zoom += -event.angleDelta().y() * 0.001
@@ -110,6 +110,9 @@ class BaseScene(QOpenGLWidget):
             self.camera_zoom = -0.1
 
         self.update()
+
+    def unsetCursor(self):
+        self.setCursor(Qt.CursorShape.CrossCursor)
 
     def addItem(self, item: BaseItem):
         if item not in self._items:
