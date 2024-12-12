@@ -35,6 +35,14 @@ class BaseScene(QOpenGLWidget):
             fragment_shader=fragment_shad
         )
 
+        self.view_matrix = QMatrix4x4()
+        self.view_matrix.perspective(
+            0,  # Angle
+            self.width() / self.height(),  # Aspect Ratio
+            0.1,   # Near clipping plane
+            100.0  # Far clipping plane
+        )
+
         # Console Info
         print('---- DOT39 Compiled Successfully ----\n---- OpenGL Attributes Initialized ----')
         print('OpenGL Version: ', self.ctx.version_code)
@@ -46,13 +54,31 @@ class BaseScene(QOpenGLWidget):
 
         self.program['aspectRatio'].value = width / max(1.0, height)
 
+        self.view_matrix.perspective(
+            0,  # Angle
+            width / max(1.0, height),  # Aspect Ratio
+            0.1,  # Near clipping plane
+            100.0  # Far clipping plane
+        )
+
         # Console Info
         print(f'OpenGL Viewport Resized To: {width, height}')
 
     def paintGL(self):
-        self.ctx.clear(*self.bg_color)
-        self.ctx.enable_only(GL.DEPTH_TEST | GL.BLEND)
+        #self.ctx.clear(*self.bg_color)
+        self.ctx.enable_only(GL.DEPTH_TEST | GL.BLEND | GL.CULL_FACE)
+        self.program['matrix'].value = self.view_matrix.data()
 
+        self.drawTestObject()
+
+        # Console Info
+        print('---- Repainting OpenGL Viewport ----')
+        print('Current Color: ', self.program['color'].value)
+        print('Current Alpha Value: ', self.program['alphaValue'].value)
+        print('Current Zoom Amount: ', self.program['cameraZoom'].value)
+        print('Current Matrix: ', self.program['matrix'].value)
+
+    def drawTestObject(self):
         self.program['color'].value = hexToRGB('#ff0000')
 
         vertices = np.array([
@@ -67,13 +93,7 @@ class BaseScene(QOpenGLWidget):
         vbo = self.ctx.buffer(vertices)
 
         vao = self.ctx.vertex_array(self.program, vbo, 'in_vert')
-        vao.render()
-
-        # Console Info
-        print('---- Repainting OpenGL Viewport ----')
-        print('Current Color: ', self.program['color'].value)
-        print('Current Alpha Value: ', self.program['alphaValue'].value)
-        print('Current Zoom Amount: ', self.program['cameraZoom'].value)
+        vao.render(GL.POINTS)
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.MiddleButton:
