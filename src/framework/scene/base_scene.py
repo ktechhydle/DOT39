@@ -82,6 +82,7 @@ class BaseScene(QOpenGLWidget):
 
         # Console Info
         print('---- Repainting OpenGL Viewport ----')
+        print(f'Rendering {len(self.items())} Items')
         print('Current Color: ', self.program['color'].value)
         print('Current Alpha Value: ', self.program['alphaValue'].value)
         print('Current Zoom Amount: ', self.camera_zoom)
