@@ -65,11 +65,12 @@ class BaseScene(QOpenGLWidget):
         print(f'OpenGL Viewport Resized To: {width, height}')
 
     def paintGL(self):
-        self.ctx.clear(*self.bg_color)
+        #self.ctx.clear(*self.bg_color)
         self.ctx.enable_only(GL.DEPTH_TEST | GL.BLEND | GL.CULL_FACE)
         self.program['matrix'].value = self.view_matrix.data()
 
-        self.drawTestObject()
+        for item in self.items():
+            item.render()
 
         # Console Info
         print('---- Repainting OpenGL Viewport ----')
@@ -77,23 +78,6 @@ class BaseScene(QOpenGLWidget):
         print('Current Alpha Value: ', self.program['alphaValue'].value)
         print('Current Zoom Amount: ', self.program['cameraZoom'].value)
         print('Current Matrix: ', self.program['matrix'].value)
-
-    def drawTestObject(self):
-        self.program['color'].value = hexToRGB('#ff0000')
-
-        vertices = np.array([
-            # Horizontal line
-            -0.01, 0.0, 0.0,
-            0.01, 0.0, 0.0,
-            # Vertical line
-            0.0, -0.01, 0.0,
-            0.0, 0.01, 0.0,
-        ], dtype='f4').tobytes()
-
-        vbo = self.ctx.buffer(vertices)
-
-        vao = self.ctx.vertex_array(self.program, vbo, 'in_vert')
-        vao.render(GL.LINES)
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.MiddleButton:
@@ -134,7 +118,7 @@ class BaseScene(QOpenGLWidget):
 
         self.update()
 
-    def items(self):
+    def items(self) -> list[BaseItem]:
         return self._items
 
     def selectedItems(self):
@@ -165,3 +149,9 @@ class BaseScene(QOpenGLWidget):
         self.wireframe = enabled
 
         self.update()
+
+    def context(self) -> GL.Context:
+        return self.ctx
+
+    def shaderProgram(self) -> GL.Program:
+        return self.program

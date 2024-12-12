@@ -1,4 +1,5 @@
 from src._imports import *
+from src.framework.items.point_item import PointItem
 from src.gui.widgets import *
 from src.framework.scene.base_scene import BaseScene
 from mp_software_stylesheets.styles import blenderCSS
@@ -11,6 +12,8 @@ class DOT39(QMainWindow):
         self.setWindowIcon(QIcon('icons/logos/dot39_logo.svg'))
 
         self.createUI()
+
+        QTimer.singleShot(1000, self.createTestObjects)
 
     def createUI(self):
         self.toolbar = QToolBar(self)
@@ -43,6 +46,13 @@ class DOT39(QMainWindow):
 
         self.addAction(undo_action)
         self.addAction(redo_action)
+
+    def createTestObjects(self):
+        item1 = PointItem(self.scene, self.scene.shaderProgram(), [0.0, 0.0, 0.0])
+        item2 = PointItem(self.scene, self.scene.shaderProgram(), [10.0, 10.0, 10.0])
+
+        self.scene.addItem(item1)
+        self.scene.addItem(item2)
 
 
 if __name__ == '__main__':
