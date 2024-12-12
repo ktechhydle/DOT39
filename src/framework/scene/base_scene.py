@@ -99,17 +99,17 @@ class BaseScene(QOpenGLWidget):
         if event.button() == Qt.MouseButton.MiddleButton:
             if event.modifiers() & Qt.KeyboardModifier.ShiftModifier:
                 # Orbiting logic
-                pass
+                self.setCursor(Qt.CursorShape.SizeAllCursor)
 
             else:
                 # Panning logic
-                pass
+                self.setCursor(Qt.CursorShape.ClosedHandCursor)
 
     def mouseMoveEvent(self, event):
         pass
 
     def mouseReleaseEvent(self, event):
-        pass
+        self.setCursor(Qt.CursorShape.CrossCursor)
 
     def wheelEvent(self, event):
         if event.angleDelta().y() > 0:
