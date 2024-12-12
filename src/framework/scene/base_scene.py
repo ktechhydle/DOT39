@@ -51,6 +51,7 @@ class BaseScene(QOpenGLWidget):
 
     def paintGL(self):
         self.ctx.clear(*self.bg_color)
+        self.ctx.enable_only(GL.DEPTH_TEST | GL.BLEND)
 
         self.program['color'].value = hexToRGB('#ff0000')
 
@@ -61,11 +62,11 @@ class BaseScene(QOpenGLWidget):
             # Vertical line
             0.0, -0.01, 0.0,
             0.0, 0.01, 0.0,
-        ], dtype='f4')
+        ], dtype='f4').tobytes()
 
         vbo = self.ctx.buffer(vertices)
 
-        vao = self.ctx.simple_vertex_array(self.program, vbo, 'in_vert')
+        vao = self.ctx.vertex_array(self.program, vbo, 'in_vert')
         vao.render()
 
         # Console Info
@@ -92,9 +93,9 @@ class BaseScene(QOpenGLWidget):
 
     def wheelEvent(self, event):
         if event.angleDelta().y() > 0:
-            self.program['cameraZoom'].value = min(100.0, self.program['cameraZoom'].value + 0.1)  # Clamp max zoom
+            self.program['cameraZoom'].value = min(100.0, self.program['cameraZoom'].value + 0.5)  # Clamp max zoom
         else:
-            self.program['cameraZoom'].value = max(0.1, self.program['cameraZoom'].value - 0.1)  # Clamp min zoom
+            self.program['cameraZoom'].value = max(0.1, self.program['cameraZoom'].value - 0.5)  # Clamp min zoom
 
         self.update()
 
