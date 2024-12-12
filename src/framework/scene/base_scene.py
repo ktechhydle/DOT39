@@ -6,6 +6,8 @@ from src.framework.scene.functions import hexToRGB, vertex_shad, fragment_shad
 from src.framework.scene.unit_manager import UnitManager
 from src.framework.scene.undo_commands import *
 
+from pyrr import Matrix44
+
 
 class BaseScene(QOpenGLWidget):
     def __init__(self, parent=None):
@@ -20,6 +22,8 @@ class BaseScene(QOpenGLWidget):
         self.program = None
         self.wireframe = True
         self.bg_color = hexToRGB('#000000')
+        self.aspect_ratio = 1.0
+        self.camera_zoom = 2.0
 
         self._items = []
         self._selected_items = []
@@ -35,13 +39,7 @@ class BaseScene(QOpenGLWidget):
             fragment_shader=fragment_shad
         )
 
-        self.view_matrix = QMatrix4x4()
-        self.view_matrix.perspective(
-            0,  # Angle
-            self.width() / self.height(),  # Aspect Ratio
-            0.1,   # Near clipping plane
-            100.0  # Far clipping plane
-        )
+        self.view_matrix = self.program['matrix']
 
         # Console Info
         print('---- DOT39 Compiled Successfully ----\n---- OpenGL Attributes Initialized ----')
@@ -52,14 +50,15 @@ class BaseScene(QOpenGLWidget):
         height = max(2, h)
         self.ctx.viewport = (0, 0, width, height)
 
-        self.program['aspectRatio'].value = width / max(1.0, height)
+        self.aspect_ratio = width / max(1.0, height)
 
-        self.view_matrix.perspective(
-            0,  # Angle
-            width / max(1.0, height),  # Aspect Ratio
-            0.1,  # Near clipping plane
-            100.0  # Far clipping plane
+        perspective = Matrix44.perspective_projection(1, self.aspect_ratio, 0.1, 1000.0)
+        lookat = Matrix44.look_at(
+            (0.0, 0.0, self.camera_zoom),
+            (0.0, 0.0, 0.0),
+            (0.0, 1.0, 0.0)
         )
+        self.view_matrix.write((perspective * lookat).astype('f4'))
 
         # Console Info
         print(f'OpenGL Viewport Resized To: {width, height}')
@@ -67,7 +66,16 @@ class BaseScene(QOpenGLWidget):
     def paintGL(self):
         #self.ctx.clear(*self.bg_color)
         self.ctx.enable_only(GL.DEPTH_TEST | GL.BLEND | GL.CULL_FACE)
-        self.program['matrix'].value = self.view_matrix.data()
+
+        self.aspect_ratio = self.width() / max(1.0, self.height())
+
+        perspective = Matrix44.perspective_projection(60.0, self.aspect_ratio, 0.1, 1000.0)
+        lookat = Matrix44.look_at(
+            (0.0, 0.0, self.camera_zoom),
+            (0.0, 0.0, 0.0),
+            (0.0, 1.0, 0.0)
+        )
+        self.view_matrix.write((perspective * lookat).astype('f4'))
 
         for item in self.items():
             item.render()
@@ -76,7 +84,7 @@ class BaseScene(QOpenGLWidget):
         print('---- Repainting OpenGL Viewport ----')
         print('Current Color: ', self.program['color'].value)
         print('Current Alpha Value: ', self.program['alphaValue'].value)
-        print('Current Zoom Amount: ', self.program['cameraZoom'].value)
+        print('Current Zoom Amount: ', self.camera_zoom)
         print('Current Matrix: ', self.program['matrix'].value)
 
     def mousePressEvent(self, event):
@@ -96,10 +104,10 @@ class BaseScene(QOpenGLWidget):
         self.setCursor(Qt.CursorShape.CrossCursor)
 
     def wheelEvent(self, event):
-        if event.angleDelta().y() > 0:
-            self.program['cameraZoom'].value = min(100.0, self.program['cameraZoom'].value + 0.5)  # Clamp max zoom
-        else:
-            self.program['cameraZoom'].value = max(0.1, self.program['cameraZoom'].value - 0.5)  # Clamp min zoom
+        self.camera_zoom += -event.angleDelta().y() * 0.001
+
+        if self.camera_zoom < -0.1:
+            self.camera_zoom = -0.1
 
         self.update()
 
