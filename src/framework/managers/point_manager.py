@@ -4,6 +4,13 @@ from src.framework.items.point_item import PointItem
 from src.framework.scene.undo_commands import AddItemCommand
 
 
+def isConvertibleToFloat(value):
+    try:
+        return float(value)
+    except ValueError:
+        return None
+
+
 class PointManager:
     def __init__(self, parent):
         self._parent = parent
@@ -15,8 +22,7 @@ class PointManager:
         file, _ = QFileDialog.getOpenFileName(self.parent(),
                                               'Import Point Data',
                                               '',
-                                              '*.csv files;;'
-                                              '*.txt files;;')
+                                              'Supported types (*.csv *.txt)')
 
         if file:
             points = []
@@ -38,24 +44,22 @@ class PointManager:
 
             elif file.endswith('.txt'):
                 with open(file, 'r') as f:
-                    for line in f:
-                        line = line.strip()  # Remove leading/trailing whitespace
+                    for line in f.readlines():
+                        line = line.strip()
 
                         if not line:  # Skip empty lines
                             continue
 
-                        row = line.split()  # Split line into parts (default delimiter: whitespace)
+                        row = line.split(sep=',')  # Split line into parts (default delimiter: whitespace)
 
-                        if len(row) < 4:
-                            continue
-
-                        points.append({
-                            'Point Number': row[0],  # First value
-                            'Northing': float(row[1]),  # Second value
-                            'Easting': float(row[2]),  # Third value
-                            'Elevation': float(row[3]),  # Fourth value
-                            'Description': row[4] if len(row) > 4 else ''  # Optional fifth value
-                        })
+                        if isConvertibleToFloat(row[1]):
+                            points.append({
+                                'Point Number': row[0],  # First value
+                                'Northing': float(row[1]),  # Second value
+                                'Easting': float(row[2]),  # Third value
+                                'Elevation': float(row[3]),  # Fourth value
+                                'Description': row[4] if len(row) > 4 else ''  # Optional fifth value
+                            })
 
             print(points, sep='\n')
 
