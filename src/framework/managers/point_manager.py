@@ -1,6 +1,7 @@
 from src._imports import *
 from src.framework.items.point_group import PointGroupItem
 from src.framework.items.point_item import PointItem
+from src.framework.scene.undo_commands import AddItemCommand
 
 
 class PointManager:
@@ -84,8 +85,7 @@ class PointManager:
                 point_items.append(item)
 
             point_group = PointGroupItem(self.parent().scene, point_items)
-            self.parent().glScene().addItem(point_group)
-            self.parent().glScene().update()
+            self.parent().glScene().addUndoCommand(AddItemCommand(point_group, self.parent().glScene()))
 
     def parent(self):
         return self._parent
