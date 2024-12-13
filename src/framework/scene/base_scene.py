@@ -96,6 +96,9 @@ class BaseScene(QGLWidget):
     def mouseMoveEvent(self, event):
         if (event.buttons() & Qt.MouseButton.MiddleButton) and (event.modifiers() & Qt.KeyboardModifier.ShiftModifier):
             self.arc_ball.onDrag(event.x(), event.y())
+
+            self.update()
+
         elif event.buttons() & Qt.MouseButton.MiddleButton:
             x_movement = event.x() - self.prev_x
             y_movement = event.y() - self.prev_y
@@ -104,7 +107,7 @@ class BaseScene(QGLWidget):
             self.prev_x = event.x()
             self.prev_y = event.y()
 
-        self.update()
+            self.update()
 
     def mouseReleaseEvent(self, event):
         if (event.buttons() & Qt.MouseButton.MiddleButton) and (event.modifiers() & Qt.KeyboardModifier.ShiftModifier):
