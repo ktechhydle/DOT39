@@ -78,8 +78,9 @@ class PointManager:
 
                 item = PointItem(self.parent().glScene(),
                                  self.parent().glScene().shaderProgram(),
+                                 point_number,
                                  [northing / 10, easting / 10, elevation / 10],
-                                 name=description)
+                                 name=f'#{point_number}: {description}')
                 point_items.append(item)
 
             point_group = PointGroupItem(self.parent().scene, point_items)

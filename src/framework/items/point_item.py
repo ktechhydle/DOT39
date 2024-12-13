@@ -4,10 +4,11 @@ from src.framework.scene.functions import hexToRGB
 
 
 class PointItem(BaseItem):
-    def __init__(self, scene, program: GL.Program, pos: list[float], name=''):
+    def __init__(self, scene, program: GL.Program, number, pos: list[float] = [0.0, 0.0, 0.0], name=''):
         super().__init__(scene, name)
         self.setPos(pos)
         self._color = hexToRGB('#ff0000')
+        self._point_num = number
 
         self.program = program
         self.ctx = scene.ctx
@@ -16,6 +17,9 @@ class PointItem(BaseItem):
 
     def color(self):
         return self._color
+
+    def pointNumber(self):
+        return self._point_num
 
     def setColor(self, color: str):
         self._color = color
