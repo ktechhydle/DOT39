@@ -4,8 +4,8 @@ from src.framework.scene.functions import hexToRGB
 
 
 class PointItem(BaseItem):
-    def __init__(self, scene, program: GL.Program, pos: list[float]):
-        super().__init__(scene)
+    def __init__(self, scene, program: GL.Program, pos: list[float], name=''):
+        super().__init__(scene, name)
         self.setPos(pos)
         self._color = hexToRGB('#ff0000')
 

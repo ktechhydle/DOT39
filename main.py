@@ -1,9 +1,8 @@
-import random
 from src._imports import *
-from src.framework.items.point_item import PointItem
 from src.gui.widgets import *
+from src.framework.items.point_item import PointItem
+from src.framework.managers.point_manager import PointManager
 from src.framework.scene.base_scene import BaseScene
-from mp_software_stylesheets.styles import blenderCSS
 
 
 class DOT39(QMainWindow):
@@ -12,9 +11,9 @@ class DOT39(QMainWindow):
         self.setWindowTitle('DOT39')
         self.setWindowIcon(QIcon('icons/logos/dot39_logo.svg'))
 
-        self.createUI()
+        self.pointManager = PointManager()
 
-        QTimer.singleShot(1000, self.createTestObjects)
+        self.createUI()
 
     def createUI(self):
         self.toolbar = QToolBar(self)
@@ -32,7 +31,11 @@ class DOT39(QMainWindow):
         import_surface_btn = QPushButton('TIN Import')
         widgets.append(import_surface_btn)
 
-        surface_panel = ToolBarContainer('Surface & Terrain', widgets)
+        import_points_btn = QPushButton('Import Points')
+        import_points_btn.clicked.connect(self.pointManager.importPoints)
+        widgets.append(import_points_btn)
+
+        surface_panel = ToolBarContainer('Surface & Points', widgets)
 
         self.toolbar.addWidget(surface_panel)
 
@@ -48,14 +51,10 @@ class DOT39(QMainWindow):
         self.addAction(undo_action)
         self.addAction(redo_action)
 
-    def createTestObjects(self):
-        for i in range(100):
-            item = PointItem(self.scene, self.scene.shaderProgram(), [random.randint(-i, 100), random.randint(-i, 100), 0.0])
-
-            self.scene.addItem(item)
-
 
 if __name__ == '__main__':
+    from mp_software_stylesheets.styles import blenderCSS
+
     app = QApplication([])
     app.setStyleSheet(blenderCSS)
 

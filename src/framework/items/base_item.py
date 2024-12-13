@@ -2,12 +2,19 @@ from src._imports import *
 
 
 class BaseItem(object):
-    def __init__(self, scene):
+    def __init__(self, scene, name: str = ''):
         self._scene = scene
+        self._name = name
         self._pos = [0.0, 0.0, 0.0]
         self._visible = True
         self._is_selectable = True
         self._selected = False
+
+    def name(self):
+        return self._name
+
+    def setName(self, name: str):
+        self._name = name
 
     def setSelected(self, s: bool):
         self._selected = s

@@ -1,5 +1,6 @@
 from src._imports import *
-from src.framework.items.base_item import *
+from src.framework.items.base_item import BaseItem
+from src.framework.items.point_item import PointItem
 from src.framework.scene.functions import hexToRGB
 from scipy.spatial import ConvexHull
 
@@ -30,6 +31,14 @@ class TerrainItem(BaseItem):
 
     def points(self):
         return self._points
+
+    def fromPointItems(self, point_items: list[PointItem]):
+        points = []
+
+        for item in point_items:
+            points.append(tuple(*item.pos()))
+
+        self.setPoints(points)
 
     def setPoints(self, points: list[tuple[float, float, float]]):
         self._points = points
