@@ -9,9 +9,9 @@ from src.framework.scene.undo_commands import *
 from pyrr import Matrix44
 
 
-class BaseScene(QOpenGLWidget):
+class BaseScene(QGLWidget):
     def __init__(self, parent=None):
-        super().__init__(parent)
+        super(BaseScene, self).__init__(parent)
         self.setMouseTracking(True)
         self.setCursor(Qt.CursorShape.CrossCursor)
 
@@ -64,7 +64,7 @@ class BaseScene(QOpenGLWidget):
         print(f'OpenGL Viewport Resized To: {width, height}')
 
     def paintGL(self):
-        #self.ctx.clear(*self.bg_color)
+        self.ctx.clear(*self.bg_color)
         self.ctx.enable_only(GL.DEPTH_TEST | GL.BLEND | GL.CULL_FACE)
 
         self.aspect_ratio = self.width() / max(1.0, self.height())
