@@ -4,6 +4,7 @@ from src.framework.items.point_item import PointItem
 from src.framework.items.terrain_item import TerrainItem
 from src.framework.scene.functions import hexToRGB, vertex_shad, fragment_shad
 from src.framework.scene.unit_manager import UnitManager
+from src.framework.scene.arcball import ArcBallUtil
 from src.framework.scene.undo_commands import *
 
 from pyrr import Matrix44
@@ -41,6 +42,10 @@ class BaseScene(QGLWidget):
 
         self.view_matrix = self.program['matrix']
 
+        self.arc_ball = ArcBallUtil(self.width(), self.height())
+        self.center = np.zeros(3)
+        self.scale = 1.0
+
         # Console Info
         print('---- DOT39 Compiled Successfully ----\n---- OpenGL Attributes Initialized ----')
         print('OpenGL Version: ', self.ctx.version_code)
@@ -49,16 +54,7 @@ class BaseScene(QGLWidget):
         width = max(2, w)
         height = max(2, h)
         self.ctx.viewport = (0, 0, width, height)
-
-        self.aspect_ratio = width / max(1.0, height)
-
-        perspective = Matrix44.perspective_projection(1, self.aspect_ratio, 0.1, 1000.0)
-        lookat = Matrix44.look_at(
-            (0.0, 0.0, self.camera_zoom),
-            (0.0, 0.0, 0.0),
-            (0.0, 1.0, 0.0)
-        )
-        self.view_matrix.write((perspective * lookat).astype('f4'))
+        self.arc_ball.setBounds(width, height)
 
         # Console Info
         print(f'OpenGL Viewport Resized To: {width, height}')
@@ -75,7 +71,8 @@ class BaseScene(QGLWidget):
             (0.0, 0.0, 0.0),
             (0.0, 1.0, 0.0)
         )
-        self.view_matrix.write((perspective * lookat).astype('f4'))
+        self.arc_ball.Transform[3, :3] = -self.arc_ball.Transform[:3, :3].T @ self.center
+        self.view_matrix.write((perspective * lookat * self.arc_ball.Transform).astype('f4'))
 
         for item in self.items():
             item.render()
@@ -89,19 +86,30 @@ class BaseScene(QGLWidget):
         print('Current Matrix: ', self.program['matrix'].value)
 
     def mousePressEvent(self, event):
-        if event.button() == Qt.MouseButton.MiddleButton:
-            if event.modifiers() & Qt.KeyboardModifier.ShiftModifier:
-                # Orbiting logic
-                self.setCursor(Qt.CursorShape.SizeAllCursor)
-
-            else:
-                # Panning logic
-                self.setCursor(Qt.CursorShape.ClosedHandCursor)
+        if (event.buttons() & Qt.MouseButton.MiddleButton) and (event.modifiers() & Qt.KeyboardModifier.ShiftModifier):
+            self.arc_ball.onClickLeftDown(event.x(), event.y())
+        elif event.buttons() & Qt.MouseButton.MiddleButton:
+            self.setCursor(Qt.CursorShape.ClosedHandCursor)
+            self.prev_x = event.x()
+            self.prev_y = event.y()
 
     def mouseMoveEvent(self, event):
-        pass
+        if (event.buttons() & Qt.MouseButton.MiddleButton) and (event.modifiers() & Qt.KeyboardModifier.ShiftModifier):
+            self.arc_ball.onDrag(event.x(), event.y())
+        elif event.buttons() & Qt.MouseButton.MiddleButton:
+            x_movement = event.x() - self.prev_x
+            y_movement = event.y() - self.prev_y
+            self.center[0] -= x_movement * (self.camera_zoom / 750)
+            self.center[1] += y_movement * (self.camera_zoom / 750)
+            self.prev_x = event.x()
+            self.prev_y = event.y()
+
+        self.update()
 
     def mouseReleaseEvent(self, event):
+        if (event.buttons() & Qt.MouseButton.MiddleButton) and (event.modifiers() & Qt.KeyboardModifier.ShiftModifier):
+            self.arc_ball.onClickLeftUp()
+
         self.unsetCursor()
 
     def wheelEvent(self, event):
