@@ -2,6 +2,7 @@ from src._imports import *
 from src.framework.items.point_group import PointGroupItem
 from src.framework.items.point_item import PointItem
 from src.framework.scene.undo_commands import AddItemCommand
+from src.gui.dialogs import GetPointGroupDialog
 
 
 def isConvertibleToFloat(value):
@@ -88,8 +89,16 @@ class PointManager:
                                  name=f'#{point_number}: {description}')
                 point_items.append(item)
 
-            point_group = PointGroupItem(self.parent().scene, point_items)
+            point_group = PointGroupItem(self.parent().scene, point_items,
+                                         name=f'Point Item Group {self.point_group_count}')
             self.parent().glScene().addUndoCommand(AddItemCommand(point_group, self.parent().glScene()))
+
+    def convertGroupToSurface(self):
+        dialog = GetPointGroupDialog(self.parent().glScene(), self.parent())
+        result = dialog.result()
+
+        if result:
+            pass
 
     def parent(self):
         return self._parent
