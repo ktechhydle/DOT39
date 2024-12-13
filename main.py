@@ -48,6 +48,9 @@ class DOT39(QMainWindow):
         self.addAction(undo_action)
         self.addAction(redo_action)
 
+    def glScene(self):
+        return self.scene
+
 
 if __name__ == '__main__':
     from mp_software_stylesheets.styles import blenderCSS

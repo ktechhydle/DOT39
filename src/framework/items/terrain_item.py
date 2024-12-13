@@ -49,7 +49,7 @@ class TerrainItem(BaseItem):
         array = []
 
         for point in self.points():
-            array.extend([point[0] / 100, point[1] / 100, point[2] / 100])
+            array.extend([point[0] / self.standardDiv(), point[1] / self.standardDiv(), point[2] / self.standardDiv()])
 
         vertices = np.array(array, dtype='f4')
         vbo = self.ctx.buffer(vertices)
@@ -70,7 +70,7 @@ class TerrainItem(BaseItem):
         # Flatten and scale
         edges_flat = []
         for edge in edges:
-            edges_flat.extend([edge[0] / 100, edge[1] / 100, 0.0])  # Assume z=0 for outline
+            edges_flat.extend([edge[0] / self.standardDiv(), edge[1] / self.standardDiv(), 0.0])
 
         vertices = np.array(edges_flat, dtype='f4')
         vbo = self.ctx.buffer(vertices)
