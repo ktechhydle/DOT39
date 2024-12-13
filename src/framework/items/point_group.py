@@ -25,3 +25,7 @@ class PointGroupItem(BaseItem):
     def setPoints(self, points: list[PointItem]):
         self._points = points
 
+    def render(self):
+        for item in self.points():
+            item.render()
+

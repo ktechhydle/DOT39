@@ -11,7 +11,7 @@ class DOT39(QMainWindow):
         self.setWindowTitle('DOT39')
         self.setWindowIcon(QIcon('icons/logos/dot39_logo.svg'))
 
-        self.pointManager = PointManager()
+        self.pointManager = PointManager(self)
 
         self.createUI()
 
@@ -27,9 +27,6 @@ class DOT39(QMainWindow):
 
     def createToolBarActions(self):
         widgets = []
-
-        import_surface_btn = QPushButton('TIN Import')
-        widgets.append(import_surface_btn)
 
         import_points_btn = QPushButton('Import Points')
         import_points_btn.clicked.connect(self.pointManager.importPoints)
