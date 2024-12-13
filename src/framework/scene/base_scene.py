@@ -65,7 +65,7 @@ class BaseScene(QGLWidget):
 
         self.aspect_ratio = self.width() / max(1.0, self.height())
 
-        perspective = Matrix44.perspective_projection(60.0, self.aspect_ratio, 0.1, 1000.0)
+        perspective = Matrix44.perspective_projection(60.0, self.aspect_ratio, 0.0001, 10000.0)
         lookat = Matrix44.look_at(
             (0.0, 0.0, self.camera_zoom),
             (0.0, 0.0, 0.0),
