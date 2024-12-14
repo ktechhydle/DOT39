@@ -101,7 +101,6 @@ class PointManager:
 
             surface_item = TerrainItem(self.parent().glScene(),
                                        self.parent().glScene().shaderProgram(),
-                                       [],
                                        name=f'Terrain Item #{self.parent().terrain_item_count}')
             surface_item.fromPointItems(result.points())
 
