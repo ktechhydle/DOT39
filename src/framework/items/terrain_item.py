@@ -71,7 +71,14 @@ class TerrainItem(BaseItem):
 
         if self.outline_vbo:
             # Render points
-            self.program['color'].value = self.outlineColor()  # Outline color
+            current_color = self.outlineColor()
+            if self.isSelected():
+                # Invert the color
+                inverted_color = tuple(1.0 - c for c in current_color)
+                self.program['color'].value = inverted_color
+            else:
+                self.program['color'].value = current_color
+
             outline_vao = self.ctx.simple_vertex_array(self.program, self.outline_vbo, 'in_vert')
             outline_vao.render(GL.TRIANGLES)
 
