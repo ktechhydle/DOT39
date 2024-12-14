@@ -14,8 +14,6 @@ class GetPointGroupDialog(QDialog):
         self.createPotentialList()
         self.createUI()
 
-        self.show()
-
     def createPotentialList(self):
         self.potential_list = {}
 
@@ -41,8 +39,9 @@ class GetPointGroupDialog(QDialog):
         self.layout().addWidget(self.button_group)
 
     def accept(self):
-        self._result = self.point_group_combo.currentData()
+        self._result = self.point_group_combo.itemData(self.point_group_combo.currentIndex())
+
         self.close()
 
-    def result(self):
+    def activeResult(self) -> PointGroupItem:
         return self._result

@@ -13,6 +13,10 @@ class DOT39(QMainWindow):
 
         self.pointManager = PointManager(self)
 
+        self.point_group_count = 0
+        self.point_item_count = 0
+        self.terrain_item_count = 0
+
         self.createUI()
 
     def createUI(self):

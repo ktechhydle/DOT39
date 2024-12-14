@@ -6,8 +6,8 @@ from scipy.spatial import ConvexHull
 
 
 class TerrainItem(BaseItem):
-    def __init__(self, scene, program, points: list[tuple[float, float, float]]):
-        super().__init__(scene)
+    def __init__(self, scene, program, points: list[tuple[float, float, float]], name=''):
+        super().__init__(scene, name)
         self._color = hexToRGB('#00ff00')
         self._outline_color = hexToRGB('#00ff00')
         self._points = points
@@ -36,7 +36,7 @@ class TerrainItem(BaseItem):
         points = []
 
         for item in point_items:
-            points.append(tuple(*item.pos()))
+            points.append((item.pos()[0], item.pos()[1], item.pos()[2]))
 
         self.setPoints(points)
 

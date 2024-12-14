@@ -1,6 +1,7 @@
 from src._imports import *
 from src.framework.items.point_group import PointGroupItem
 from src.framework.items.point_item import PointItem
+from src.framework.items.terrain_item import TerrainItem
 from src.framework.scene.undo_commands import AddItemCommand
 from src.gui.dialogs import GetPointGroupDialog
 
@@ -15,9 +16,6 @@ def isConvertibleToFloat(value):
 class PointManager:
     def __init__(self, parent):
         self._parent = parent
-
-        self.point_group_count = 0
-        self.point_item_count = 0
 
     def importPoints(self):
         file, _ = QFileDialog.getOpenFileName(self.parent(),
@@ -64,7 +62,7 @@ class PointManager:
 
             print(points, sep='\n')
 
-            self.point_group_count += 1
+            self.parent().point_group_count += 1
             self.processPoints(points)
 
     def processPoints(self, points: list[dict]):
@@ -90,15 +88,24 @@ class PointManager:
                 point_items.append(item)
 
             point_group = PointGroupItem(self.parent().scene, point_items,
-                                         name=f'Point Item Group {self.point_group_count}')
+                                         name=f'Point Item Group {self.parent().point_group_count}')
             self.parent().glScene().addUndoCommand(AddItemCommand(point_group, self.parent().glScene()))
 
     def convertGroupToSurface(self):
         dialog = GetPointGroupDialog(self.parent().glScene(), self.parent())
-        result = dialog.result()
+        dialog.exec()
 
-        if result:
-            pass
+        if dialog.activeResult():
+            result = dialog.activeResult()
+            self.parent().terrain_item_count += 1
+
+            surface_item = TerrainItem(self.parent().glScene(),
+                                       self.parent().glScene().shaderProgram(),
+                                       [],
+                                       name=f'Terrain Item #{self.parent().terrain_item_count}')
+            surface_item.fromPointItems(result.points())
+
+            self.parent().glScene().addItem(surface_item)
 
     def parent(self):
         return self._parent
