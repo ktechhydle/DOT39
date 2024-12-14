@@ -52,7 +52,13 @@ class PointItem(BaseItem):
         super().render()
 
         # Use the shader program and draw
-        self.program['color'].value = self.color()
+        current_color = self.color()
+        if self.isSelected():
+            # Invert the color
+            inverted_color = tuple(1.0 - c for c in current_color)
+            self.program['color'].value = inverted_color
+        else:
+            self.program['color'].value = current_color
 
         vao = self.ctx.simple_vertex_array(self.program, self.vbo, 'in_vert', index_buffer=self.ibo)
         vao.render(GL.LINES)

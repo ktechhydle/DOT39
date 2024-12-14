@@ -25,6 +25,7 @@ class GetPointGroupDialog(QDialog):
         self.setLayout(QVBoxLayout())
 
         self.point_group_combo = QComboBox(self)
+        self.point_group_combo.currentIndexChanged.connect(self.valChanged)
 
         for k, v in self.potential_list.items():
             self.point_group_combo.addItem(k, v)
@@ -38,6 +39,12 @@ class GetPointGroupDialog(QDialog):
         self.layout().addWidget(self.point_group_combo)
         self.layout().addWidget(self.button_group)
 
+    def valChanged(self):
+        self.scene.clearSelection()
+
+        item = self.point_group_combo.itemData(self.point_group_combo.currentIndex())
+        item.setSelected(True)
+
     def accept(self):
         self._result = self.point_group_combo.itemData(self.point_group_combo.currentIndex())
 
@@ -45,3 +52,8 @@ class GetPointGroupDialog(QDialog):
 
     def activeResult(self) -> PointGroupItem:
         return self._result
+
+    def close(self):
+        self.scene.clearSelection()
+
+        super().close()

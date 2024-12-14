@@ -36,7 +36,7 @@ class DOT39(QMainWindow):
         import_points_btn.clicked.connect(self.pointManager.importPoints)
         widgets.append(import_points_btn)
 
-        create_points_from_group = QPushButton('Create Points From Group')
+        create_points_from_group = QPushButton('Create Surface From Group')
         create_points_from_group.clicked.connect(self.pointManager.convertGroupToSurface)
         widgets.append(create_points_from_group)
 

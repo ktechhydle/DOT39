@@ -25,6 +25,12 @@ class PointGroupItem(BaseItem):
     def setPoints(self, points: list[PointItem]):
         self._points = points
 
+    def setSelected(self, s: bool):
+        super().setSelected(s)
+
+        for item in self.points():
+            item.setSelected(s)
+
     def render(self):
         for item in self.points():
             item.render()

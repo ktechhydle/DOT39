@@ -145,7 +145,13 @@ class BaseScene(QGLWidget):
         return self._items
 
     def selectedItems(self):
-        return self._selected_items
+        return [item for item in self.items() if item.isSelected()]
+
+    def clearSelection(self):
+        for item in self.items():
+            item.setSelected(False)
+
+        self.update()
 
     def itemAt(self, pos):
         pass
