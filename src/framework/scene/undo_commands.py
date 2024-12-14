@@ -13,3 +13,22 @@ class AddItemCommand(QUndoCommand):
 
     def undo(self):
         self.scene.removeItem(self.item)
+
+
+class PointsToSurfaceCommand(QUndoCommand):
+    def __init__(self, point_group_item, surface_item, scene):
+        super().__init__()
+
+        self.point_group_item = point_group_item
+        self.surface_item = surface_item
+        self.scene = scene
+
+    def redo(self):
+        self.scene.removeItem(self.point_group_item)
+        self.scene.addItem(self.surface_item)
+
+    def undo(self):
+        self.scene.addItem(self.point_group_item)
+        self.scene.removeItem(self.surface_item)
+
+

@@ -1,9 +1,9 @@
 from src._imports import *
+from src.gui.dialogs import GetPointGroupDialog
 from src.framework.items.point_group import PointGroupItem
 from src.framework.items.point_item import PointItem
 from src.framework.items.terrain_item import TerrainItem
-from src.framework.scene.undo_commands import AddItemCommand
-from src.gui.dialogs import GetPointGroupDialog
+from src.framework.scene.undo_commands import *
 
 
 def isConvertibleToFloat(value):
@@ -96,15 +96,17 @@ class PointManager:
         dialog.exec()
 
         if dialog.activeResult():
-            result = dialog.activeResult()
+            point_group = dialog.activeResult()
             self.parent().terrain_item_count += 1
 
             surface_item = TerrainItem(self.parent().glScene(),
                                        self.parent().glScene().shaderProgram(),
                                        name=f'Terrain Item #{self.parent().terrain_item_count}')
-            surface_item.fromPointItems(result.points())
+            surface_item.fromPointItems(point_group.points())
 
-            self.parent().glScene().addItem(surface_item)
+            self.parent().glScene().addUndoCommand(PointsToSurfaceCommand(point_group,
+                                                                          surface_item,
+                                                                          self.parent().glScene()))
 
     def parent(self):
         return self._parent
