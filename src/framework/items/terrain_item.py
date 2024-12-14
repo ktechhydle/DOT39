@@ -14,8 +14,7 @@ class TerrainItem(BaseItem):
 
         self.program = program
         self.ctx = scene.ctx
-        self.vbo = self.createVbo()
-        self.outline_vbo = self.createOutlineVbo()  # Add outline VBO
+        self.outline_vbo = self.createOutlineVbo()
 
     def color(self):
         return self._color
@@ -42,35 +41,29 @@ class TerrainItem(BaseItem):
 
     def setPoints(self, points: list[tuple[float, float, float]]):
         self._points = points
-        self.vbo = self.createVbo()
-        self.outline_vbo = self.createOutlineVbo()  # Update outline VBO
-
-    def createVbo(self):
-        array = []
-
-        for point in self.points():
-            array.extend([point[0] / self.standardDiv(), point[1] / self.standardDiv(), point[2] / self.standardDiv()])
-
-        vertices = np.array(array, dtype='f4')
-        vbo = self.ctx.buffer(vertices)
-        return vbo
+        self.outline_vbo = self.createOutlineVbo()
 
     def createOutlineVbo(self):
         if len(self.points()) < 3:
             return None  # Not enough points for an outline
 
-        points_2d = np.array([(p[0], p[1]) for p in self.points()])
-        hull = ConvexHull(points_2d)
+        points_3d = np.array([(p[0], p[1], p[2]) for p in self.points()])
+        hull = ConvexHull(points_3d)
         edges = []
 
         # Add edges of the convex hull
         for simplex in hull.simplices:
-            edges.extend([points_2d[simplex[0]], points_2d[simplex[1]]])
+            edges.append(points_3d[simplex[0]])  # First point
+            edges.append(points_3d[simplex[1]])  # Second point
+            edges.append(points_3d[simplex[1]])  # Second point
+            edges.append(points_3d[simplex[2]])  # Third point
+            edges.append(points_3d[simplex[2]])  # Third point
+            edges.append(points_3d[simplex[0]])  # First point
 
         # Flatten and scale
         edges_flat = []
         for edge in edges:
-            edges_flat.extend([edge[0] / self.standardDiv(), edge[1] / self.standardDiv(), 0.0])
+            edges_flat.extend([edge[0], edge[1], edge[2]])
 
         vertices = np.array(edges_flat, dtype='f4')
         vbo = self.ctx.buffer(vertices)
@@ -79,14 +72,8 @@ class TerrainItem(BaseItem):
     def render(self):
         super().render()
 
-        # Render points
-        self.program['color'].value = self.color()
-
-        vao = self.ctx.simple_vertex_array(self.program, self.vbo, 'in_vert')
-        vao.render(GL.POINTS)
-
-        # Render outline
         if self.outline_vbo:
+            # Render points
             self.program['color'].value = self.outlineColor()  # Outline color
             outline_vao = self.ctx.simple_vertex_array(self.program, self.outline_vbo, 'in_vert')
             outline_vao.render(GL.LINES)

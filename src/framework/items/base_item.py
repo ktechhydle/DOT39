@@ -47,6 +47,15 @@ class BaseItem(object):
     def pos(self):
         return [self._pos[0] / self.standardDiv(), self._pos[1] / self.standardDiv(), self._pos[2] / self.standardDiv()]
 
+    def x(self):
+        return self.pos()[0]
+
+    def y(self):
+        return self.pos()[1]
+
+    def z(self):
+        return self.pos()[2]
+
     def scene(self):
         return self._scene
 
