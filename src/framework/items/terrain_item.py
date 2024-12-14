@@ -2,7 +2,7 @@ from src._imports import *
 from src.framework.items.base_item import BaseItem
 from src.framework.items.point_item import PointItem
 from src.framework.scene.functions import hexToRGB
-from scipy.spatial import ConvexHull
+from scipy.spatial import Delaunay
 
 
 class TerrainItem(BaseItem):
@@ -45,28 +45,25 @@ class TerrainItem(BaseItem):
 
     def createOutlineVbo(self):
         if len(self.points()) < 3:
-            return None  # Not enough points for an outline
+            return None  # Not enough points for triangulated mesh
 
-        points_3d = np.array([(p[0], p[1], p[2]) for p in self.points()])
-        hull = ConvexHull(points_3d)
-        edges = []
+            # Convert points to a numpy array
+        points = np.array(self.points(), dtype='f4')
 
-        # Add edges of the convex hull
-        for simplex in hull.simplices:
-            edges.append(points_3d[simplex[0]])  # First point
-            edges.append(points_3d[simplex[1]])  # Second point
-            edges.append(points_3d[simplex[1]])  # Second point
-            edges.append(points_3d[simplex[2]])  # Third point
-            edges.append(points_3d[simplex[2]])  # Third point
-            edges.append(points_3d[simplex[0]])  # First point
+        # Use only the x, y coordinates for triangulation
+        points_2d = points[:, :2]  # Assuming points have (x, y, z) format
 
-        # Flatten and scale
-        edges_flat = []
-        for edge in edges:
-            edges_flat.extend([edge[0], edge[1], edge[2]])
+        # Perform Delaunay triangulation
+        tri = Delaunay(points_2d)
 
-        vertices = np.array(edges_flat, dtype='f4')
-        vbo = self.ctx.buffer(vertices)
+        # Extract triangle vertices
+        triangles = points[tri.simplices]
+
+        # Flatten the array for the VBO
+        vertices = triangles.reshape(-1, 3).astype('f4')
+
+        # Create the VBO
+        vbo = self.ctx.buffer(vertices.tobytes())
         return vbo
 
     def render(self):
@@ -76,5 +73,5 @@ class TerrainItem(BaseItem):
             # Render points
             self.program['color'].value = self.outlineColor()  # Outline color
             outline_vao = self.ctx.simple_vertex_array(self.program, self.outline_vbo, 'in_vert')
-            outline_vao.render(GL.LINES)
+            outline_vao.render(GL.TRIANGLES)
 
