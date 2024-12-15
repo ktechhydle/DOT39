@@ -60,7 +60,7 @@ class BaseScene(QGLWidget):
 
     def paintGL(self):
         self.ctx.clear(*self.bg_color)
-        self.ctx.enable_only(GL.DEPTH_TEST | GL.BLEND | GL.CULL_FACE)
+        self.ctx.enable_only(GL.DEPTH_TEST | GL.BLEND)
 
         self.aspect_ratio = self.width() / max(1.0, self.height())
 
