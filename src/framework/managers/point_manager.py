@@ -90,6 +90,7 @@ class PointManager:
             point_group = PointGroupItem(self.parent().scene, point_items,
                                          name=f'Point Item Group {self.parent().point_group_count}')
             self.parent().glScene().addUndoCommand(AddItemCommand(point_group, self.parent().glScene()))
+            self.parent().glScene().updateArcBall()
 
     def convertGroupToSurface(self):
         dialog = GetPointGroupDialog(self.parent().glScene(), self.parent())

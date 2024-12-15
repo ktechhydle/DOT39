@@ -1,5 +1,6 @@
 from src._imports import *
 from src.framework.items.base_item import BaseItem
+from src.framework.items.point_group import PointGroupItem
 from src.framework.items.point_item import PointItem
 from src.framework.items.terrain_item import TerrainItem
 from src.framework.scene.functions import hexToRGB, vertex_shad, fragment_shad
@@ -125,6 +126,33 @@ class BaseScene(QGLWidget):
 
     def unsetCursor(self):
         self.setCursor(Qt.CursorShape.CrossCursor)
+
+    def updateArcBall(self):
+        if self.items():
+            # Create ArcBall
+            self.arc_ball = ArcBallUtil(self.width(), self.height())
+
+            mesh_points = []
+
+            for item in self.items():
+                if isinstance(item, PointGroupItem):
+                    for p in item.points():
+                        mesh_points.append(p.pos())
+                elif isinstance(item, TerrainItem):
+                    for p in item.points():
+                        mesh_points.append([*p])
+                else:
+                    mesh_points.append(item.pos())
+
+            print(mesh_points)
+
+            bounding_box_min = np.min(mesh_points, axis=0)
+            bounding_box_max = np.max(mesh_points, axis=0)
+
+            self.center = 0.5 * (bounding_box_max + bounding_box_min)
+            self.scale = np.linalg.norm(bounding_box_max - self.center)
+            self.arc_ball.Transform[:3, :3] /= self.scale
+            self.arc_ball.Transform[3, :3] = -self.center / self.scale
 
     def addItem(self, item: BaseItem):
         if item not in self._items:
