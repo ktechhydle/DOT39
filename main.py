@@ -9,7 +9,7 @@ class DOT39(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle('DOT39')
-        self.setWindowIcon(QIcon('icons/logos/dot39_logo.svg'))
+        self.setWindowIcon(QIcon('resources/icons/logos/dot39_logo.svg'))
 
         self.pointManager = PointManager(self)
 
