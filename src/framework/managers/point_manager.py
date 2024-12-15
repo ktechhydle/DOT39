@@ -1,5 +1,5 @@
 from src._imports import *
-from src.gui.dialogs import GetPointGroupDialog
+from src.gui.dialogs import GetPointGroupDialog, EditPointGroupDialog
 from src.framework.items.point_group import PointGroupItem
 from src.framework.items.point_item import PointItem
 from src.framework.items.terrain_item import TerrainItem
@@ -114,7 +114,8 @@ class PointManager:
         dialog.exec()
 
         if dialog.activeResult():
-            print(dialog.activeResult())
+            editor = EditPointGroupDialog(self.parent().glScene(), dialog.activeResult(), self.parent())
+            editor.exec()
 
     def parent(self):
         return self._parent

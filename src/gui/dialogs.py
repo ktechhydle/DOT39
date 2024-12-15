@@ -57,3 +57,36 @@ class GetPointGroupDialog(QDialog):
         self.scene.clearSelection()
 
         super().close()
+
+
+class EditPointGroupDialog(QDialog):
+    def __init__(self, scene, point_group, parent):
+        super().__init__(parent)
+        self.setWindowTitle('Point Editor')
+        self.setWindowFlag(Qt.WindowType.Tool)
+
+        self.scene = scene
+        self.point_group = point_group
+
+        self.createUI()
+
+    def createUI(self):
+        self.setLayout(QVBoxLayout())
+
+        self.editor = QTableWidget(self)
+        self.editor.setColumnCount(5)
+
+        self.button_group = QDialogButtonBox(self)
+        self.button_group.addButton('Ok', QDialogButtonBox.AcceptRole)
+        self.button_group.addButton('Cancel', QDialogButtonBox.RejectRole)
+        self.button_group.accepted.connect(self.accept)
+        self.button_group.rejected.connect(self.cancel)
+
+        self.layout().addWidget(self.editor)
+        self.layout().addWidget(self.button_group)
+
+    def accept(self):
+        self.close()
+
+    def cancel(self):
+        self.close()
