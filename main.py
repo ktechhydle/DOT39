@@ -30,18 +30,21 @@ class DOT39(QMainWindow):
         self.createShortcuts()
 
     def createToolBarActions(self):
-        widgets = []
+        points_panel_widgets = []
+        surface_panel_widgets = []
 
-        import_points_btn = QPushButton('Import Points')
+        import_points_btn = QPushButton('Import Point Data')
         import_points_btn.clicked.connect(self.pointManager.importPoints)
-        widgets.append(import_points_btn)
+        points_panel_widgets.append(import_points_btn)
 
-        create_points_from_group = QPushButton('Create Surface From Group')
+        create_points_from_group = QPushButton('Create Surface From Points')
         create_points_from_group.clicked.connect(self.pointManager.convertGroupToSurface)
-        widgets.append(create_points_from_group)
+        surface_panel_widgets.append(create_points_from_group)
 
-        surface_panel = ToolBarContainer('Surface & Points', widgets)
+        points_panel = ToolBarContainer('Points', points_panel_widgets)
+        surface_panel = ToolBarContainer('Surface', surface_panel_widgets)
 
+        self.toolbar.addWidget(points_panel)
         self.toolbar.addWidget(surface_panel)
 
     def createShortcuts(self):
