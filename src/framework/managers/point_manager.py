@@ -109,5 +109,12 @@ class PointManager:
                                                                           surface_item,
                                                                           self.parent().glScene()))
 
+    def editPoints(self):
+        dialog = GetPointGroupDialog(self.parent().glScene(), self.parent())
+        dialog.exec()
+
+        if dialog.activeResult():
+            print(dialog.activeResult())
+
     def parent(self):
         return self._parent
