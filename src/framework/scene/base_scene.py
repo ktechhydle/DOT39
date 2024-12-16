@@ -4,7 +4,6 @@ from src.framework.items.point_group import PointGroupItem
 from src.framework.items.point_item import PointItem
 from src.framework.items.terrain_item import TerrainItem
 from src.framework.scene.functions import hexToRGB, vertex_shad, fragment_shad
-from src.framework.scene.unit_manager import UnitManager
 from src.framework.scene.arcball import ArcBallUtil
 from src.framework.scene.undo_commands import *
 

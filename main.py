@@ -1,4 +1,5 @@
 from src._imports import *
+from src.framework.scene.unit_manager import UnitManager
 from src.gui.widgets import *
 from src.framework.items.point_item import PointItem
 from src.framework.managers.point_manager import PointManager
@@ -12,6 +13,7 @@ class DOT39(QMainWindow):
         self.setWindowIcon(QIcon('resources/icons/logos/dot39_logo.svg'))
 
         self.pointManager = PointManager(self)
+        self.unit_manager = UnitManager()
 
         self.point_group_count = 0
         self.point_item_count = 0
@@ -65,6 +67,9 @@ class DOT39(QMainWindow):
 
     def glScene(self):
         return self.scene
+
+    def unitManager(self):
+        return self.unit_manager
 
 
 if __name__ == '__main__':
