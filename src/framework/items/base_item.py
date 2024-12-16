@@ -9,7 +9,7 @@ class BaseItem(object):
         self._visible = True
         self._is_selectable = True
         self._selected = False
-        self._standard_div = 10.0
+        self._standard_div = 100.0
 
     def name(self):
         return self._name

@@ -32,3 +32,18 @@ class PointsToSurfaceCommand(QUndoCommand):
         self.scene.removeItem(self.surface_item)
 
 
+class EditPointsCommand(QUndoCommand):
+    def __init__(self, point_items: list, old_attr, new_attr):
+        super().__init__()
+
+        self.point_items = point_items
+        self.old_attr = old_attr
+        self.new_attr = new_attr
+
+    def redo(self):
+        pass
+
+    def undo(self):
+        pass
+
+

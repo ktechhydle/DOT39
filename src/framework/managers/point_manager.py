@@ -83,7 +83,7 @@ class PointManager:
                 item = PointItem(self.parent().glScene(),
                                  self.parent().glScene().shaderProgram(),
                                  point_number,
-                                 [northing / 10, easting / 10, elevation / 10],
+                                 [easting, northing, elevation],
                                  name=f'{description}')
                 point_items.append(item)
 

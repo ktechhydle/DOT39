@@ -69,6 +69,10 @@ class EditPointGroupDialog(QDialog):
         self.scene = scene
         self.point_group = point_group
 
+        # Undo storage
+        self.og_point_attr = []
+        self.new_point_attr = []
+
         self.createUI()
         self.createTable()
 
@@ -100,20 +104,20 @@ class EditPointGroupDialog(QDialog):
         self.editor.setRowCount(len(self.point_group.points()))
 
         for point in self.point_group.points():
+            point_attr = {
+                'num': point.pointNumber(),
+                'north': point.y(),
+                'east': point.x(),
+                'elev': point.z(),
+                'name': point.name()
+            }
+            self.og_point_attr.append(point_attr)
+
             point_num_item = QTableWidgetItem(f'{point.pointNumber()}')
-            point_num_item.setData(Qt.ItemDataRole.UserRole, point)
-
-            point_northing_item = QTableWidgetItem(f'{round(point.x() * point.standardDiv(), 4)}')
-            point_northing_item.setData(Qt.ItemDataRole.UserRole, point)
-
-            point_easting_item = QTableWidgetItem(f'{round(point.y() * point.standardDiv(), 4)}')
-            point_easting_item.setData(Qt.ItemDataRole.UserRole, point)
-
+            point_northing_item = QTableWidgetItem(f'{round(point.y() * point.standardDiv(), 4)}')
+            point_easting_item = QTableWidgetItem(f'{round(point.x() * point.standardDiv(), 4)}')
             point_elevation_item = QTableWidgetItem(f'{round(point.z() * point.standardDiv(), 4)}')
-            point_elevation_item.setData(Qt.ItemDataRole.UserRole, point)
-
             point_description_item = QTableWidgetItem(point.name())
-            point_description_item.setData(Qt.ItemDataRole.UserRole, point)
 
             self.editor.setItem(row_count, 0, point_num_item)
             self.editor.setItem(row_count, 1, point_northing_item)
