@@ -60,7 +60,7 @@ class GetPointGroupDialog(QDialog):
 
 
 class EditPointGroupDialog(QDialog):
-    def __init__(self, scene, point_group, parent):
+    def __init__(self, scene, point_group: PointGroupItem, parent):
         super().__init__(parent)
         self.setWindowTitle('Point Editor')
         self.setWindowFlag(Qt.WindowType.Tool)
@@ -69,12 +69,16 @@ class EditPointGroupDialog(QDialog):
         self.point_group = point_group
 
         self.createUI()
+        self.createTable()
 
     def createUI(self):
         self.setLayout(QVBoxLayout())
 
         self.editor = QTableWidget(self)
         self.editor.setColumnCount(5)
+        self.editor.setHorizontalHeaderLabels(['Point Number', 'Northing', 'Easting', 'Elevation', 'Description'])
+        self.editor.horizontalHeader().setSectionResizeMode(
+            QHeaderView.Stretch)
 
         self.button_group = QDialogButtonBox(self)
         self.button_group.addButton('Ok', QDialogButtonBox.AcceptRole)
@@ -84,6 +88,26 @@ class EditPointGroupDialog(QDialog):
 
         self.layout().addWidget(self.editor)
         self.layout().addWidget(self.button_group)
+
+    def createTable(self):
+        row_count = 0
+
+        self.editor.setRowCount(len(self.point_group.points()))
+
+        for point in self.point_group.points():
+            point_num_item = QTableWidgetItem(f'{point.pointNumber()}')
+            point_northing_item = QTableWidgetItem(f'{point.x() * point.standardDiv()}')
+            point_easting_item = QTableWidgetItem(f'{point.y() * point.standardDiv()}')
+            point_elevation_item = QTableWidgetItem(f'{point.z() * point.standardDiv()}')
+            point_description_item = QTableWidgetItem(point.name())
+
+            self.editor.setItem(row_count, 0, point_num_item)
+            self.editor.setItem(row_count, 1, point_northing_item)
+            self.editor.setItem(row_count, 2, point_easting_item)
+            self.editor.setItem(row_count, 3, point_elevation_item)
+            self.editor.setItem(row_count, 4, point_description_item)
+
+            row_count += 1
 
     def accept(self):
         self.close()

@@ -84,11 +84,11 @@ class PointManager:
                                  self.parent().glScene().shaderProgram(),
                                  point_number,
                                  [northing / 10, easting / 10, elevation / 10],
-                                 name=f'#{point_number}: {description}')
+                                 name=f'{description}')
                 point_items.append(item)
 
             point_group = PointGroupItem(self.parent().scene, point_items,
-                                         name=f'Point Item Group {self.parent().point_group_count}')
+                                         name=f'Point Item Group #{self.parent().point_group_count}')
             self.parent().glScene().addUndoCommand(AddItemCommand(point_group, self.parent().glScene()))
             self.parent().glScene().updateArcBall()
 
@@ -115,7 +115,7 @@ class PointManager:
 
         if dialog.activeResult():
             editor = EditPointGroupDialog(self.parent().glScene(), dialog.activeResult(), self.parent())
-            editor.exec()
+            editor.show()
 
     def parent(self):
         return self._parent
