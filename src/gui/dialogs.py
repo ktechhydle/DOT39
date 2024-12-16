@@ -64,6 +64,7 @@ class EditPointGroupDialog(QDialog):
         super().__init__(parent)
         self.setWindowTitle('Point Editor')
         self.setWindowFlag(Qt.WindowType.Tool)
+        self.resize(800, 300)
 
         self.scene = scene
         self.point_group = point_group
@@ -96,9 +97,9 @@ class EditPointGroupDialog(QDialog):
 
         for point in self.point_group.points():
             point_num_item = QTableWidgetItem(f'{point.pointNumber()}')
-            point_northing_item = QTableWidgetItem(f'{point.x() * point.standardDiv()}')
-            point_easting_item = QTableWidgetItem(f'{point.y() * point.standardDiv()}')
-            point_elevation_item = QTableWidgetItem(f'{point.z() * point.standardDiv()}')
+            point_northing_item = QTableWidgetItem(f'{round(point.x() * point.standardDiv(), 4)}')
+            point_easting_item = QTableWidgetItem(f'{round(point.y() * point.standardDiv(), 4)}')
+            point_elevation_item = QTableWidgetItem(f'{round(point.z() * point.standardDiv(), 4)}')
             point_description_item = QTableWidgetItem(point.name())
 
             self.editor.setItem(row_count, 0, point_num_item)
