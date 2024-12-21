@@ -1,5 +1,6 @@
 from src._imports import *
 from src.framework.items.point_group import PointGroupItem
+from src.framework.scene.undo_commands import *
 
 
 class GetPointGroupDialog(QDialog):
@@ -109,11 +110,12 @@ class EditPointGroupDialog(QDialog):
                 'north': point.y(),
                 'east': point.x(),
                 'elev': point.z(),
-                'name': point.name()
+                'desc': point.name()
             }
             self.og_point_attr.append(point_attr)
 
             point_num_item = QTableWidgetItem(f'{point.pointNumber()}')
+            point_num_item.setData(Qt.ItemDataRole.UserRole, point)
             point_northing_item = QTableWidgetItem(f'{round(point.y() * point.standardDiv(), 4)}')
             point_easting_item = QTableWidgetItem(f'{round(point.x() * point.standardDiv(), 4)}')
             point_elevation_item = QTableWidgetItem(f'{round(point.z() * point.standardDiv(), 4)}')
@@ -128,6 +130,29 @@ class EditPointGroupDialog(QDialog):
             row_count += 1
 
     def accept(self):
+        # Iterate through each row of the table
+        for row in range(self.editor.rowCount()):
+            point = self.editor.item(row, 0).itemData()
+
+            # Extract values from the table items for the current row
+            num = int(self.editor.item(row, 0).text())
+            north = float(self.editor.item(row, 1).text()) / point.standardDiv()
+            east = float(self.editor.item(row, 2).text()) / point.standardDiv()
+            elev = float(self.editor.item(row, 3).text()) / point.standardDiv()
+            desc = self.editor.item(row, 4).text()
+
+            # Create a dictionary similar to point_attr
+            point_attr = {
+                'num': num,
+                'north': north,
+                'east': east,
+                'elev': elev,
+                'desc': desc
+            }
+            self.new_point_attr.append(point_attr)
+
+        self.scene.addUndoCommand(EditPointsCommand(self.point_group.points(), self.og_point_attr, self.new_point_attr))
+
         self.close()
 
     def cancel(self):

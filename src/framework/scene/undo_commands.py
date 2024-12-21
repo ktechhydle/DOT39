@@ -33,7 +33,7 @@ class PointsToSurfaceCommand(QUndoCommand):
 
 
 class EditPointsCommand(QUndoCommand):
-    def __init__(self, point_items: list, old_attr, new_attr):
+    def __init__(self, point_items: list, old_attr: list[dict], new_attr: list[dict]):
         super().__init__()
 
         self.point_items = point_items
@@ -41,9 +41,15 @@ class EditPointsCommand(QUndoCommand):
         self.new_attr = new_attr
 
     def redo(self):
-        pass
+        for point, new_attributes in zip(self.point_items, self.new_attr):
+            point.setPointNumber(new_attributes['num'])
+            point.setPos([new_attributes['east'], new_attributes['north'], new_attributes['elev']])
+            point.setName(new_attributes['desc'])
 
     def undo(self):
-        pass
+        for point, old_attributes in zip(self.point_items, self.old_attr):
+            point.setPointNumber(old_attributes['num'])
+            point.setPos([old_attributes['east'], old_attributes['north'], old_attributes['elev']])
+            point.setName(old_attributes['desc'])
 
 

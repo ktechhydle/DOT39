@@ -21,6 +21,9 @@ class PointItem(BaseItem):
     def pointNumber(self):
         return self._point_num
 
+    def setPointNumber(self, value):
+        self._point_num = value
+
     def setColor(self, color: str):
         self._color = color
 
