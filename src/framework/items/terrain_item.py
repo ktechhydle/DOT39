@@ -35,7 +35,7 @@ class TerrainItem(BaseItem):
         points = []
 
         for item in point_items:
-            points.append((item.pos()[0], item.pos()[1], item.pos()[2]))
+            points.append((item.x(), item.y(), item.z()))
 
         self.setPoints(points)
 
@@ -51,7 +51,7 @@ class TerrainItem(BaseItem):
         points = np.array(self.points(), dtype='f4')
 
         # Use only the x, y coordinates for triangulation
-        points_2d = points[:, :2]  # Assuming points have (x, y, z) format
+        points_2d = points[:, :2]
 
         # Perform Delaunay triangulation
         tri = Delaunay(points_2d)

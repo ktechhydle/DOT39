@@ -74,6 +74,9 @@ class BaseScene(QGLWidget):
         self.arc_ball.Transform[3, :3] = -self.arc_ball.Transform[:3, :3].T @ self.center
         self.view_matrix.write((perspective * lookat * self.arc_ball.Transform).astype('f4'))
 
+        # The coordinate system still needs work before applying
+        # self.applyCS()
+
         for item in self.items():
             item.render()
 
@@ -132,9 +135,20 @@ class BaseScene(QGLWidget):
         self.setCursor(Qt.CursorShape.CrossCursor)
 
     def applyCS(self):
-        self.program['cs_offset'].value = self.unit_manager.transformedXY()
+        x, y = self.unit_manager.transformedXY()
 
-        print(self.unit_manager.transformedXY())
+        for item in self.items():
+            if not hasattr(item, '_translated'):
+                item._translated = True
+
+                if isinstance(item, PointGroupItem):
+                    for point in item.points():
+                        point.setPos([point.x() + x, point.y() + y, point.z()])
+
+                elif isinstance(item, PointItem):
+                    item.setPos([item.x() + x, item.y() + y, item.z()])
+
+        print(f'Coordinate System Offset: {x, y}')
 
     def itemMeshPoints(self):
         # Calculate the bounding box of all items
