@@ -9,10 +9,12 @@ from src.framework.scene.undo_commands import *
 
 
 class BaseScene(QGLWidget):
-    def __init__(self, parent=None):
+    def __init__(self, unit_mgr, parent=None):
         super(BaseScene, self).__init__(parent)
         self.setMouseTracking(True)
         self.setCursor(Qt.CursorShape.CrossCursor)
+
+        self.unit_manager = unit_mgr
 
         self.undo_stack = QUndoStack(self)
         self.undo_stack.setUndoLimit(200)
@@ -123,6 +125,11 @@ class BaseScene(QGLWidget):
 
     def unsetCursor(self):
         self.setCursor(Qt.CursorShape.CrossCursor)
+
+    def applyCS(self):
+        self.program['cs_offset'].value = self.unit_manager.transformedXY()
+
+        print(self.unit_manager.transformedXY())
 
     def mapMouseToViewport(self, mouse_x, mouse_y):
         """

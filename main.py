@@ -1,7 +1,5 @@
-from src._imports import *
-from src.framework.scene.unit_manager import UnitManager
+from src.framework.managers.unit_manager import UnitManager
 from src.gui.widgets import *
-from src.framework.items.point_item import PointItem
 from src.framework.managers.point_manager import PointManager
 from src.framework.scene.base_scene import BaseScene
 
@@ -25,7 +23,7 @@ class DOT39(QMainWindow):
         self.toolbar = QToolBar(self)
         self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.toolbar)
 
-        self.scene = BaseScene(self)
+        self.scene = BaseScene(self.unit_manager, self)
         self.setCentralWidget(self.scene)
 
         self.createToolBarActions()
