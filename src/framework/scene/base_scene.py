@@ -115,6 +115,11 @@ class BaseScene(QGLWidget):
 
         self.unsetCursor()
 
+    def mouseDoubleClickEvent(self, event):
+        if event.button() == Qt.MouseButton.MiddleButton:
+            self.updateArcBall()
+            self.update()
+
     def wheelEvent(self, event):
         self.camera_zoom += -event.angleDelta().y() * 0.001
 
@@ -131,63 +136,28 @@ class BaseScene(QGLWidget):
 
         print(self.unit_manager.transformedXY())
 
-    def mapMouseToViewport(self, mouse_x, mouse_y):
-        """
-        Maps mouse screen coordinates to the OpenGL scene viewport.
+    def itemMeshPoints(self):
+        # Calculate the bounding box of all items
+        mesh_points = []
 
-        :param mouse_x: The X position of the mouse in screen coordinates.
-        :param mouse_y: The Y position of the mouse in screen coordinates.
-        :return: A 3D coordinate in the OpenGL scene.
-        """
-        # Get viewport dimensions
-        viewport = self.ctx.viewport
-        width, height = viewport[2], viewport[3]
+        for item in self.items():
+            if isinstance(item, PointGroupItem):
+                for p in item.points():
+                    mesh_points.append(p.pos())
+            elif isinstance(item, TerrainItem):
+                for p in item.points():
+                    mesh_points.append([*p])
+            else:
+                mesh_points.append(item.pos())
 
-        # Normalize mouse coordinates to range [-1, 1]
-        norm_x = (2.0 * mouse_x) / width - 1.0
-        norm_y = 1.0 - (2.0 * mouse_y) / height  # Flip y-axis
-        norm_z = 1.0  # Default to near plane
-
-        # Create the normalized device coordinates (NDC)
-        ndc = np.array([norm_x, norm_y, norm_z, 1.0], dtype=np.float32)
-
-        # Retrieve matrices
-        projection_matrix = Matrix44.perspective_projection(60.0, self.aspect_ratio, 0.0001, 10000.0)
-        lookat_matrix = Matrix44.look_at(
-            (0.0, 0.0, self.camera_zoom),  # Camera position
-            (0.0, 0.0, 0.0),  # Look-at target
-            (0.0, 1.0, 0.0)  # Up vector
-        )
-        view_matrix = self.arc_ball.Transform
-
-        # Combine matrices
-        transform_matrix = projection_matrix * lookat_matrix * view_matrix
-        inverse_transform = np.linalg.inv(transform_matrix)
-
-        # Convert NDC back to world space
-        world_coords = np.dot(inverse_transform, ndc)
-        world_coords /= world_coords[3]  # Normalize by w component
-
-        return Vector3(world_coords[:3])
+        return mesh_points
 
     def updateArcBall(self):
         if self.items():
             # Create ArcBall
             self.arc_ball = ArcBallUtil(self.width(), self.height())
 
-            mesh_points = []
-
-            for item in self.items():
-                if isinstance(item, PointGroupItem):
-                    for p in item.points():
-                        mesh_points.append(p.pos())
-                elif isinstance(item, TerrainItem):
-                    for p in item.points():
-                        mesh_points.append([*p])
-                else:
-                    mesh_points.append(item.pos())
-
-            print(mesh_points)
+            mesh_points = self.itemMeshPoints()
 
             bounding_box_min = np.min(mesh_points, axis=0)
             bounding_box_max = np.max(mesh_points, axis=0)

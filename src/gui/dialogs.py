@@ -132,13 +132,11 @@ class EditPointGroupDialog(QDialog):
     def accept(self):
         # Iterate through each row of the table
         for row in range(self.editor.rowCount()):
-            point = self.editor.item(row, 0).itemData()
-
             # Extract values from the table items for the current row
             num = int(self.editor.item(row, 0).text())
-            north = float(self.editor.item(row, 1).text()) / point.standardDiv()
-            east = float(self.editor.item(row, 2).text()) / point.standardDiv()
-            elev = float(self.editor.item(row, 3).text()) / point.standardDiv()
+            north = float(self.editor.item(row, 1).text()) / 10
+            east = float(self.editor.item(row, 2).text()) / 10
+            elev = float(self.editor.item(row, 3).text()) / 10
             desc = self.editor.item(row, 4).text()
 
             # Create a dictionary similar to point_attr
