@@ -26,6 +26,15 @@ class ToolBarContainer(QWidget):
         self.layout().addLayout(hlayout1)
         self.layout().addLayout(hlayout2)
 
+    def addRow(self, widgets: list[QWidget]):
+        hlayout = QHBoxLayout()
+
+        for w in widgets:
+            hlayout.addWidget(w)
+
+        self.layout().addLayout(hlayout)
+
+
     def name(self):
         return self._name
 
