@@ -35,3 +35,7 @@ class PointGroupItem(BaseItem):
         for item in self.points():
             item.render()
 
+    def update(self):
+        for point in self.points():
+            point.update()
+

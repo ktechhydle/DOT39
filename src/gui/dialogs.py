@@ -72,7 +72,6 @@ class EditPointGroupDialog(QDialog):
 
         # Undo storage
         self.og_point_attr = []
-        self.new_point_attr = []
 
         self.createUI()
         self.createTable()
@@ -115,10 +114,9 @@ class EditPointGroupDialog(QDialog):
             self.og_point_attr.append(point_attr)
 
             point_num_item = QTableWidgetItem(f'{point.pointNumber()}')
-            point_num_item.setData(Qt.ItemDataRole.UserRole, point)
-            point_northing_item = QTableWidgetItem(f'{round(point.y() * point.standardDiv(), 4)}')
-            point_easting_item = QTableWidgetItem(f'{round(point.x() * point.standardDiv(), 4)}')
-            point_elevation_item = QTableWidgetItem(f'{round(point.z() * point.standardDiv(), 4)}')
+            point_northing_item = QTableWidgetItem(f'{round(point.y(), 4)}')
+            point_easting_item = QTableWidgetItem(f'{round(point.x(), 4)}')
+            point_elevation_item = QTableWidgetItem(f'{round(point.z(), 4)}')
             point_description_item = QTableWidgetItem(point.name())
 
             self.editor.setItem(row_count, 0, point_num_item)
@@ -130,13 +128,15 @@ class EditPointGroupDialog(QDialog):
             row_count += 1
 
     def accept(self):
+        new_point_attr = []
+
         # Iterate through each row of the table
         for row in range(self.editor.rowCount()):
             # Extract values from the table items for the current row
             num = int(self.editor.item(row, 0).text())
-            north = float(self.editor.item(row, 1).text()) / 10
-            east = float(self.editor.item(row, 2).text()) / 10
-            elev = float(self.editor.item(row, 3).text()) / 10
+            north = float(self.editor.item(row, 1).text())
+            east = float(self.editor.item(row, 2).text())
+            elev = float(self.editor.item(row, 3).text())
             desc = self.editor.item(row, 4).text()
 
             # Create a dictionary similar to point_attr
@@ -147,9 +147,9 @@ class EditPointGroupDialog(QDialog):
                 'elev': elev,
                 'desc': desc
             }
-            self.new_point_attr.append(point_attr)
+            new_point_attr.append(point_attr)
 
-        self.scene.addUndoCommand(EditPointsCommand(self.point_group.points(), self.og_point_attr, self.new_point_attr))
+        self.scene.addUndoCommand(EditPointsCommand(self.point_group, self.og_point_attr, new_point_attr))
 
         self.close()
 

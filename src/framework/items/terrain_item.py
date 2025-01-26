@@ -14,7 +14,7 @@ class TerrainItem(BaseItem):
 
         self.program = program
         self.ctx = scene.ctx
-        self.outline_vbo = self.createOutlineVbo()
+        self.vbo = self.createVbo()
 
     def color(self):
         return self._color
@@ -41,9 +41,9 @@ class TerrainItem(BaseItem):
 
     def setPoints(self, points: list[tuple[float, float, float]]):
         self._points = points
-        self.outline_vbo = self.createOutlineVbo()
+        self.vbo = self.createVbo()
 
-    def createOutlineVbo(self):
+    def createVbo(self):
         if len(self.points()) < 3:
             return None  # Not enough points for triangulated mesh
 
@@ -69,7 +69,7 @@ class TerrainItem(BaseItem):
     def render(self):
         super().render()
 
-        if self.outline_vbo:
+        if self.vbo:
             # Render points
             current_color = self.outlineColor()
             if self.isSelected():
@@ -79,6 +79,9 @@ class TerrainItem(BaseItem):
             else:
                 self.program['color'].value = current_color
 
-            outline_vao = self.ctx.simple_vertex_array(self.program, self.outline_vbo, 'in_vert')
+            outline_vao = self.ctx.simple_vertex_array(self.program, self.vbo, 'in_vert')
             outline_vao.render(GL.TRIANGLES)
+
+    def update(self):
+        self.vbo = self.createVbo()
 

@@ -31,11 +31,11 @@ class PointItem(BaseItem):
         # Create a VBO that defines the vertices for the `+` shape
         vertices = np.array([
             # Horizontal line
-            -0.01 + self.x(), 0.0 + self.y(), 0.0 + self.z(),
-            0.01 + self.x(), 0.0 + self.y(), 0.0 + self.z(),
+            -1.0 + self.x(), 0.0 + self.y(), 0.0 + self.z(),
+            1.0 + self.x(), 0.0 + self.y(), 0.0 + self.z(),
             # Vertical line
-            0.0 + self.x(), -0.01 + self.y(), 0.0 + self.z(),
-            0.0 + self.x(), 0.01 + self.y(), 0.0 + self.z(),
+            0.0 + self.x(), -1.0 + self.y(), 0.0 + self.z(),
+            0.0 + self.x(), 1.0 + self.y(), 0.0 + self.z(),
         ], dtype='f4')
 
         vbo = self.ctx.buffer(vertices)
@@ -65,4 +65,8 @@ class PointItem(BaseItem):
 
         vao = self.ctx.simple_vertex_array(self.program, self.vbo, 'in_vert', index_buffer=self.ibo)
         vao.render(GL.LINES)
+
+    def update(self):
+        self.vbo = self.createVbo()
+        self.ibo = self.createIbo()
 

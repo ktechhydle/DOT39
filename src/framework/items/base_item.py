@@ -9,19 +9,12 @@ class BaseItem(object):
         self._visible = True
         self._is_selectable = True
         self._selected = False
-        self._standard_div = 100.0
 
     def name(self):
         return self._name
 
-    def standardDiv(self):
-        return self._standard_div
-
     def setName(self, name: str):
         self._name = name
-
-    def setStandardDiv(self, div: float):
-        self._standard_div = div
 
     def setSelected(self, s: bool):
         self._selected = s
@@ -45,7 +38,7 @@ class BaseItem(object):
         self._pos = pos
 
     def pos(self):
-        return [self._pos[0] / self.standardDiv(), self._pos[1] / self.standardDiv(), self._pos[2] / self.standardDiv()]
+        return [self._pos[0], self._pos[1], self._pos[2]]
 
     def x(self):
         return self.pos()[0]
@@ -64,4 +57,7 @@ class BaseItem(object):
             return
 
     def destroy(self):
+        pass
+
+    def update(self):
         pass
