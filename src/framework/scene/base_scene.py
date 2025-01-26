@@ -65,18 +65,29 @@ class BaseScene(QGLWidget):
 
         self.aspect_ratio = self.width() / max(1.0, self.height())
 
-        perspective = Matrix44.perspective_projection(60.0, self.aspect_ratio, 0.0001, 10000.0)
+        # Orthographic projection
+        ortho_size = self.camera_zoom  # Define the size of the orthographic view
+        ortho_left = -self.aspect_ratio * ortho_size
+        ortho_right = self.aspect_ratio * ortho_size
+        ortho_bottom = -ortho_size
+        ortho_top = ortho_size
+        ortho_near = -10000.0  # Adjust based on your scene
+        ortho_far = 10000.0
+
+        orthographic = Matrix44.orthogonal_projection(
+            ortho_left, ortho_right, ortho_bottom, ortho_top, ortho_near, ortho_far
+        )
+
+        # View transformation (same as before)
         lookat = Matrix44.look_at(
             (0.0, 0.0, self.camera_zoom),
             (0.0, 0.0, 0.0),
             (0.0, 1.0, 0.0)
         )
         self.arc_ball.Transform[3, :3] = -self.arc_ball.Transform[:3, :3].T @ self.center
-        self.view_matrix.write((perspective * lookat * self.arc_ball.Transform).astype('f4'))
+        self.view_matrix.write((orthographic * lookat * self.arc_ball.Transform).astype('f4'))
 
-        # The coordinate system still needs work before applying
-        # self.applyCS()
-
+        # Render items
         for item in self.items():
             item.render()
 
@@ -105,8 +116,8 @@ class BaseScene(QGLWidget):
         elif event.buttons() & Qt.MouseButton.MiddleButton:
             x_movement = event.x() - self.prev_x
             y_movement = event.y() - self.prev_y
-            self.center[0] -= x_movement * (self.camera_zoom / 750)
-            self.center[1] += y_movement * (self.camera_zoom / 750)
+            self.center[0] -= x_movement * (self.camera_zoom / 10)
+            self.center[1] += y_movement * (self.camera_zoom / 10)
             self.prev_x = event.x()
             self.prev_y = event.y()
 
