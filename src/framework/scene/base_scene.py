@@ -114,11 +114,13 @@ class BaseScene(QGLWidget):
             item = self.itemAt(event.x(), event.y())
 
             if item:
-                item.setSelected(True)
-                self.update()
-
                 if event.modifiers() & Qt.KeyboardModifier.ShiftModifier:
+                    item.setSelected(True)
+                    self.update()
                     return
+
+                self.clearSelection()
+                item.setSelected(True)
 
             else:
                 self.clearSelection()
