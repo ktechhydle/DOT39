@@ -35,6 +35,10 @@ class PointGroupItem(BaseItem):
         for item in self.points():
             item.render(color)
 
+    def hover(self):
+        for item in self.points():
+            item.hover()
+
     def update(self):
         for point in self.points():
             point.update()

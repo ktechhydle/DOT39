@@ -89,6 +89,12 @@ class TerrainItem(BaseItem):
             outline_vao = self.ctx.simple_vertex_array(self.program, self.vbo, 'in_vert')
             outline_vao.render(GL.TRIANGLES)
 
+    def hover(self):
+        self.program['alphaValue'].value = 0.75
+
+        vao = self.ctx.simple_vertex_array(self.program, self.vbo, 'in_vert')
+        vao.render(GL.LINES)
+
     def update(self):
         self.vbo = self.createVbo()
 

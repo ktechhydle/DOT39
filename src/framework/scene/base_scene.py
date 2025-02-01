@@ -64,10 +64,7 @@ class BaseScene(QGLWidget):
         self.arc_ball.setBounds(width, height)
 
         # Resize selection framebuffer
-        self.selection_texture = self.ctx.texture((w, h), 4, dtype='i4')
-        self.depth_texture = self.ctx.depth_texture((w, h))
-        self.selection_fbo = self.ctx.framebuffer(color_attachments=[self.selection_texture],
-                                                  depth_attachment=self.depth_texture)
+        self.resizeSelectionBuffers(w, h)
 
         # Console Info
         print(f'OpenGL Viewport Resized To: {width, height}')
@@ -148,6 +145,12 @@ class BaseScene(QGLWidget):
             self.prev_y = event.y()
 
             self.update()
+
+        else:
+            item = self.itemAt(event.x(), event.y())
+
+            if item:
+                item.hover()
 
     def mouseReleaseEvent(self, event):
         if (event.buttons() & Qt.MouseButton.MiddleButton) and (event.modifiers() & Qt.KeyboardModifier.ShiftModifier):
@@ -273,6 +276,10 @@ class BaseScene(QGLWidget):
         :return: None
         """
         y = self.height() - y - 1  # Invert Y for OpenGL coordinates
+        print('---- Locating Scene Items ----')
+        print(f'X: {x}')
+        print(f'Y: {y}')
+        print('Rendering For Selection')
 
         # Render to selection framebuffer
         self.renderForSelection()
@@ -304,6 +311,16 @@ class BaseScene(QGLWidget):
         for i, item in enumerate(self.items(), start=1):  # IDs start at 1
             item.render(color=(i / 255.0, 0, 0, 1))
             print((i / 255.0, 0, 0, 1))
+
+    def resizeSelectionBuffers(self, w, h):
+        """
+        Resizes the selection framebuffer
+        :return: None
+        """
+        self.selection_texture = self.ctx.texture((w, h), 4, dtype='i4')
+        self.depth_texture = self.ctx.depth_texture((w, h))
+        self.selection_fbo = self.ctx.framebuffer(color_attachments=[self.selection_texture],
+                                                  depth_attachment=self.depth_texture)
 
     def undoStack(self) -> QUndoStack:
         return self.undo_stack

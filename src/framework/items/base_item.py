@@ -56,7 +56,7 @@ class BaseItem(object):
         if not self.isVisible():
             return
 
-    def destroy(self):
+    def hover(self):
         pass
 
     def update(self):

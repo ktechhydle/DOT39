@@ -74,6 +74,12 @@ class PointItem(BaseItem):
             vao = self.ctx.simple_vertex_array(self.program, self.vbo, 'in_vert', index_buffer=self.ibo)
             vao.render(GL.LINES)
 
+    def hover(self):
+        self.program['alphaValue'].value = 0.75
+
+        vao = self.ctx.simple_vertex_array(self.program, self.vbo, 'in_vert', index_buffer=self.ibo)
+        vao.render(GL.LINES)
+
     def update(self):
         self.vbo = self.createVbo()
         self.ibo = self.createIbo()
