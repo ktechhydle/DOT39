@@ -55,7 +55,8 @@ class PointItem(BaseItem):
         super().render()
 
         if color:
-            self.program['color'].value = color
+            self.program['color'].value = (color[0], color[1], color[2])
+            self.program['alphaValue'].value = color[3]
 
             vao = self.ctx.simple_vertex_array(self.program, self.vbo, 'in_vert', index_buffer=self.ibo)
             vao.render(GL.LINES)

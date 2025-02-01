@@ -80,5 +80,6 @@ if __name__ == '__main__':
 
     win = DOT39()
     win.show()
+    win.showMaximized()
 
     sys.exit(app.exec())

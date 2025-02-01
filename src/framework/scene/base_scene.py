@@ -34,6 +34,7 @@ class BaseScene(QGLWidget):
         self.ctx.clear(*self.bg_color)
         self.ctx.enable(GL.DEPTH_TEST)
         self.ctx.wireframe = self.wireframe
+        self.ctx.line_width = 2.0
 
         self.program = self.ctx.program(
             vertex_shader=vertex_shad,
@@ -46,6 +47,13 @@ class BaseScene(QGLWidget):
         self.center = np.zeros(3)
         self.scale = 1.0
 
+        # Create Selection Framebuffer
+        self.selection_texture = self.ctx.texture((self.width(), self.height()), 4,
+                                                  dtype='i4')  # Integer texture for IDs
+        self.depth_texture = self.ctx.depth_texture((self.width(), self.height()))
+        self.selection_fbo = self.ctx.framebuffer(color_attachments=[self.selection_texture],
+                                                  depth_attachment=self.depth_texture)
+
         # Console Info
         print('---- DOT39 Compiled Successfully ----\n---- OpenGL Attributes Initialized ----')
         print('OpenGL Version: ', self.ctx.version_code)
@@ -55,6 +63,12 @@ class BaseScene(QGLWidget):
         height = max(2, h)
         self.ctx.viewport = (0, 0, width, height)
         self.arc_ball.setBounds(width, height)
+
+        # Resize selection framebuffer
+        self.selection_texture = self.ctx.texture((w, h), 4, dtype='i4')
+        self.depth_texture = self.ctx.depth_texture((w, h))
+        self.selection_fbo = self.ctx.framebuffer(color_attachments=[self.selection_texture],
+                                                  depth_attachment=self.depth_texture)
 
         # Console Info
         print(f'OpenGL Viewport Resized To: {width, height}')
@@ -100,7 +114,16 @@ class BaseScene(QGLWidget):
         print('Current Matrix: ', self.program['matrix'].value)
 
     def mousePressEvent(self, event):
-        if (event.buttons() & Qt.MouseButton.MiddleButton) and (event.modifiers() & Qt.KeyboardModifier.ShiftModifier):
+        if event.buttons() & Qt.MouseButton.LeftButton:
+            item = self.itemAt(event.x(), event.y())
+
+            if item:
+                item.setSelected(True)
+                self.update()
+            else:
+                self.clearSelection()
+
+        elif (event.buttons() & Qt.MouseButton.MiddleButton) and (event.modifiers() & Qt.KeyboardModifier.ShiftModifier):
             self.arc_ball.onClickLeftDown(event.x(), event.y())
         elif event.buttons() & Qt.MouseButton.MiddleButton:
             self.setCursor(Qt.CursorShape.ClosedHandCursor)
@@ -246,7 +269,38 @@ class BaseScene(QGLWidget):
         :param y: float
         :return: None
         """
-        pass
+        y = self.height() - y - 1  # Invert Y for OpenGL coordinates
+
+        # Render to selection framebuffer
+        self.renderForSelection()
+
+        # Read the pixel under the cursor
+        pixel_data = self.selection_fbo.read(viewport=(x, y, 1, 1), alignment=4, dtype='i4')
+        color_values = np.frombuffer(pixel_data, dtype=np.float32)[:3]  # Extract RGB
+        object_id = int(color_values[0] * 255)
+
+        self.ctx.screen.use()
+        self.update()
+
+        # Find the selected object
+        if 0 < object_id <= len(self.items()):
+            selected_item = self.items()[object_id - 1]  # IDs start at 1
+            return selected_item
+
+        return None
+
+    def renderForSelection(self):
+        """
+        Renders the scene with object IDs into an offscreen framebuffer
+        :return: None
+        """
+        self.selection_fbo.use()
+        self.ctx.clear(0, 0, 0, 0)
+
+        # Use a simple shader for selection rendering
+        for i, item in enumerate(self.items(), start=1):  # IDs start at 1
+            item.render(color=(i / 255.0, 0, 0, 1))
+            print((i / 255.0, 0, 0, 1))
 
     def undoStack(self) -> QUndoStack:
         return self.undo_stack

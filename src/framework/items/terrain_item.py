@@ -70,7 +70,8 @@ class TerrainItem(BaseItem):
         super().render()
 
         if color:
-            self.program['color'].value = color
+            self.program['color'].value = (color[0], color[1], color[2])
+            self.program['alphaValue'].value = color[3]
 
             outline_vao = self.ctx.simple_vertex_array(self.program, self.vbo, 'in_vert')
             outline_vao.render(GL.TRIANGLES)
