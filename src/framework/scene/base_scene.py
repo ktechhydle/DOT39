@@ -146,12 +146,6 @@ class BaseScene(QGLWidget):
 
             self.update()
 
-        else:
-            item = self.itemAt(event.x(), event.y())
-
-            if item:
-                item.hover()
-
     def mouseReleaseEvent(self, event):
         if (event.buttons() & Qt.MouseButton.MiddleButton) and (event.modifiers() & Qt.KeyboardModifier.ShiftModifier):
             self.arc_ball.onClickLeftUp()
