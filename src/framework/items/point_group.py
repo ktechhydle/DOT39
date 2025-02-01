@@ -31,9 +31,9 @@ class PointGroupItem(BaseItem):
         for item in self.points():
             item.setSelected(s)
 
-    def render(self):
+    def render(self, color=None):
         for item in self.points():
-            item.render()
+            item.render(color)
 
     def update(self):
         for point in self.points():

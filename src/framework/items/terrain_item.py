@@ -66,10 +66,16 @@ class TerrainItem(BaseItem):
         vbo = self.ctx.buffer(vertices.tobytes())
         return vbo
 
-    def render(self):
+    def render(self, color=None):
         super().render()
 
-        if self.vbo:
+        if color:
+            self.program['color'].value = color
+
+            outline_vao = self.ctx.simple_vertex_array(self.program, self.vbo, 'in_vert')
+            outline_vao.render(GL.TRIANGLES)
+
+        else:
             # Render points
             current_color = self.outlineColor()
             if self.isSelected():

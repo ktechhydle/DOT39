@@ -162,6 +162,11 @@ class BaseScene(QGLWidget):
         print(f'Coordinate System Offset: {x, y}')
 
     def itemMeshPoints(self):
+        """
+        Returns a list of all item positions and points
+        :return: list[float]
+        """
+
         # Calculate the bounding box of all items
         mesh_points = []
 
@@ -193,6 +198,12 @@ class BaseScene(QGLWidget):
             self.arc_ball.Transform[3, :3] = -self.center / self.scale
 
     def addItem(self, item: BaseItem):
+        """
+        Adds the item to the render que
+        :param item: BaseItem
+        :return: None
+        """
+
         if item not in self._items:
             self._items.append(item)
 
@@ -201,6 +212,11 @@ class BaseScene(QGLWidget):
         self.update()
 
     def removeItem(self, item: BaseItem):
+        """
+        Removes items from the render que
+        :param item: BaseItem
+        :return: None
+        """
         self._items.remove(item)
 
         print('Item Removed')
@@ -208,6 +224,10 @@ class BaseScene(QGLWidget):
         self.update()
 
     def items(self) -> list[BaseItem]:
+        """
+        Returns a list of items currently in the render que
+        :return: list[BaseItem]
+        """
         return self._items
 
     def selectedItems(self):
@@ -219,7 +239,13 @@ class BaseScene(QGLWidget):
 
         self.update()
 
-    def itemAt(self, pos):
+    def itemAt(self, x, y):
+        """
+        Retrieves the item at the specified x, y screen coordinates
+        :param x: float
+        :param y: float
+        :return: None
+        """
         pass
 
     def undoStack(self) -> QUndoStack:

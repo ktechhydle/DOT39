@@ -52,7 +52,7 @@ class BaseItem(object):
     def scene(self):
         return self._scene
 
-    def render(self):
+    def render(self, color=None):
         if not self.isVisible():
             return
 
