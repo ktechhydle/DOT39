@@ -318,6 +318,14 @@ class BaseScene(QGLWidget):
         self.selection_fbo = self.ctx.framebuffer(color_attachments=[self.selection_texture],
                                                   depth_attachment=self.depth_texture)
 
+    def undo(self):
+        self.undo_stack.undo()
+        self.update()
+
+    def redo(self):
+        self.undo_stack.redo()
+        self.update()
+
     def undoStack(self) -> QUndoStack:
         return self.undo_stack
 

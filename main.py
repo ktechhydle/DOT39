@@ -56,11 +56,11 @@ class DOT39(QMainWindow):
     def createShortcuts(self):
         undo_action = QAction('Undo', self)
         undo_action.setShortcut(QKeySequence('Ctrl+Z'))
-        undo_action.triggered.connect(self.scene.undoStack().undo)
+        undo_action.triggered.connect(self.scene.undo)
 
         redo_action = QAction('Redo', self)
         redo_action.setShortcut(QKeySequence('Ctrl+Y'))
-        redo_action.triggered.connect(self.scene.undoStack().redo)
+        redo_action.triggered.connect(self.scene.redo)
 
         self.addAction(undo_action)
         self.addAction(redo_action)
