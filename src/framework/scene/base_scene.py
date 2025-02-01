@@ -27,14 +27,13 @@ class BaseScene(QGLWidget):
         self.camera_zoom = 2.0
 
         self._items = []
-        self._selected_items = []
 
     def initializeGL(self):
         self.ctx = GL.create_context()
         self.ctx.clear(*self.bg_color)
         self.ctx.enable(GL.DEPTH_TEST)
         self.ctx.wireframe = self.wireframe
-        self.ctx.line_width = 2.0
+        self.ctx.line_width = 3.0
 
         self.program = self.ctx.program(
             vertex_shader=vertex_shad,
@@ -120,6 +119,10 @@ class BaseScene(QGLWidget):
             if item:
                 item.setSelected(True)
                 self.update()
+
+                if event.modifiers() & Qt.KeyboardModifier.ShiftModifier:
+                    return
+
             else:
                 self.clearSelection()
 
