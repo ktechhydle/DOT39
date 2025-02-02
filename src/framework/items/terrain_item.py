@@ -6,7 +6,7 @@ from scipy.spatial import Delaunay
 
 
 class TerrainItem(BaseItem):
-    def __init__(self, scene, program, points: list[tuple[float]] = [(0.0, 0.0, 0.0)], name=''):
+    def __init__(self, scene, program, points: list[tuple[float, float, float]] = [(0.0, 0.0, 0.0)], name=''):
         super().__init__(scene, name)
         self._color = hexToRGB('#00ff00')
         self._outline_color = hexToRGB('#00ff00')

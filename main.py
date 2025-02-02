@@ -68,6 +68,9 @@ class DOT39(QMainWindow):
         self.addAction(undo_action)
         self.addAction(redo_action)
 
+    def addTestObj(self):
+        self.pointManager.directImport('sample_data/points.txt')
+
     def glScene(self):
         return self.scene
 
@@ -84,5 +87,6 @@ if __name__ == '__main__':
     win = DOT39()
     win.show()
     win.showMaximized()
+    win.addTestObj()
 
     sys.exit(app.exec())

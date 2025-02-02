@@ -65,6 +65,48 @@ class PointManager:
             self.parent().point_group_count += 1
             self.processPoints(points)
 
+    def directImport(self, file: str):
+        points = []
+
+        if file.endswith('.csv'):
+            with open(file, 'r') as f:
+                reader = csv.reader(f)
+                headers = next(reader)
+                for row in reader:
+                    if len(row) < 4:
+                        continue
+                    points.append({
+                        'Point Number': row[0],  # First column
+                        'Northing': float(row[1]),  # Second column
+                        'Easting': float(row[2]),  # Third column
+                        'Elevation': float(row[3]),  # Fourth column
+                        'Description': row[4] if len(row) > 4 else ''  # Fifth column (optional)
+                    })
+
+        elif file.endswith('.txt'):
+            with open(file, 'r') as f:
+                for line in f.readlines():
+                    line = line.strip()
+
+                    if not line:  # Skip empty lines
+                        continue
+
+                    row = line.split(sep=',')  # Split line into parts (default delimiter: whitespace)
+
+                    if isConvertibleToFloat(row[1]):
+                        points.append({
+                            'Point Number': row[0],  # First value
+                            'Northing': float(row[1]),  # Second value
+                            'Easting': float(row[2]),  # Third value
+                            'Elevation': float(row[3]),  # Fourth value
+                            'Description': row[4] if len(row) > 4 else ''  # Optional fifth value
+                        })
+
+        print(points, sep='\n')
+
+        self.parent().point_group_count += 1
+        self.processPoints(points)
+
     def processPoints(self, points: list[dict]):
         if points:
             point_items = []
