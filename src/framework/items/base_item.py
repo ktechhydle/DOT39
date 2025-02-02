@@ -9,6 +9,7 @@ class BaseItem(object):
         self._visible = True
         self._is_selectable = True
         self._selected = False
+        self._hovered = False
 
     def name(self):
         return self._name
@@ -19,6 +20,9 @@ class BaseItem(object):
     def setSelected(self, s: bool):
         self._selected = s
 
+    def setHovered(self, hovered: bool):
+        self._hovered = hovered
+
     def setVisible(self, v: bool):
         self._visible = v
 
@@ -27,6 +31,9 @@ class BaseItem(object):
 
     def isVisible(self):
         return self._visible
+
+    def isHovered(self):
+        return self._hovered
 
     def setSelectable(self, s: bool):
         self._is_selectable = s
@@ -55,9 +62,6 @@ class BaseItem(object):
     def render(self, color=None):
         if not self.isVisible():
             return
-
-    def hover(self):
-        pass
 
     def update(self):
         pass

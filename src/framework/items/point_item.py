@@ -64,7 +64,7 @@ class PointItem(BaseItem):
         else:
             # Use the shader program and draw
             current_color = self.color()
-            if self.isSelected():
+            if self.isSelected() or self.isHovered():
                 # Invert the color
                 inverted_color = tuple(1.0 - c for c in current_color)
                 self.program['color'].value = inverted_color
@@ -73,9 +73,6 @@ class PointItem(BaseItem):
 
             vao = self.ctx.simple_vertex_array(self.program, self.vbo, 'in_vert', index_buffer=self.ibo)
             vao.render(GL.LINES)
-
-    def hover(self):
-        pass
 
     def update(self):
         self.vbo = self.createVbo()

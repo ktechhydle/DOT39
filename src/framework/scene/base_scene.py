@@ -21,7 +21,7 @@ class BaseScene(QGLWidget):
 
         self.ctx = None
         self.program = None
-        self.wireframe = True
+        self._wireframe = True
         self.bg_color = hexToRGB('#000000')
         self.aspect_ratio = 1.0
         self.camera_zoom = 2.0
@@ -32,7 +32,7 @@ class BaseScene(QGLWidget):
         self.ctx = GL.create_context()
         self.ctx.clear(*self.bg_color)
         self.ctx.enable(GL.DEPTH_TEST)
-        self.ctx.wireframe = self.wireframe
+        self.ctx.wireframe = self.isWireframe()
         self.ctx.line_width = 3.0
 
         self.program = self.ctx.program(
@@ -152,9 +152,11 @@ class BaseScene(QGLWidget):
             item = self.itemAt(event.x(), event.y())
 
             if item:
-                item.hover()
-            else:
+                item.setHovered(True)
                 self.update()
+            else:
+                for item in self.items():
+                    item.setHovered(False)
 
     def mouseReleaseEvent(self, event):
         if (event.buttons() & Qt.MouseButton.MiddleButton) and (event.modifiers() & Qt.KeyboardModifier.ShiftModifier):
@@ -350,7 +352,7 @@ class BaseScene(QGLWidget):
         self.update()
 
     def isWireframe(self):
-        return self.wireframe
+        return self._wireframe
 
     def setWireframe(self, enabled: bool):
         self.wireframe = enabled

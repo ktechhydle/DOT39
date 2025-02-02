@@ -31,6 +31,12 @@ class PointGroupItem(BaseItem):
         for item in self.points():
             item.setSelected(s)
 
+    def setHovered(self, hovered: bool):
+        super().setHovered(hovered)
+
+        for item in self.points():
+            item.setHovered(hovered)
+
     def render(self, color=None):
         for item in self.points():
             item.render(color)
