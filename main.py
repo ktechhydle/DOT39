@@ -35,14 +35,17 @@ class DOT39(QMainWindow):
         surface_panel_widgets = []
 
         import_points_btn = QPushButton('Import Point Data')
+        import_points_btn.setObjectName('toolbarButton')
         import_points_btn.clicked.connect(self.pointManager.importPoints)
         points_panel_widgets_1.append(import_points_btn)
 
         edit_points_btn = QPushButton('Edit Points')
+        edit_points_btn.setObjectName('toolbarButton')
         edit_points_btn.clicked.connect(self.pointManager.editPoints)
         points_panel_widgets_2.append(edit_points_btn)
 
         create_points_from_group = QPushButton('Create Surface From Points')
+        create_points_from_group.setObjectName('toolbarButton')
         create_points_from_group.clicked.connect(self.pointManager.convertGroupToSurface)
         surface_panel_widgets.append(create_points_from_group)
 
