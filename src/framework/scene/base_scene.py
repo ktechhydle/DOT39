@@ -134,21 +134,22 @@ class BaseScene(QGLWidget):
 
     def mouseMoveEvent(self, event):
         if (event.buttons() & Qt.MouseButton.MiddleButton) and (event.modifiers() & Qt.KeyboardModifier.ShiftModifier):
+            # Orbit logic
             self.arc_ball.onDrag(event.x(), event.y())
-
             self.update()
-
         elif event.buttons() & Qt.MouseButton.MiddleButton:
+            # Panning logic
             x_movement = event.x() - self.prev_x
             y_movement = event.y() - self.prev_y
             self.center[0] -= x_movement * (self.camera_zoom / 10)
             self.center[1] += y_movement * (self.camera_zoom / 10)
+            self.center[2] += y_movement * (self.camera_zoom / 10)
             self.prev_x = event.x()
             self.prev_y = event.y()
 
             self.update()
-
         else:
+            # Item hover effect logic
             item = self.itemAt(event.x(), event.y())
 
             if item:
