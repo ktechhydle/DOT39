@@ -148,6 +148,14 @@ class BaseScene(QGLWidget):
 
             self.update()
 
+        else:
+            item = self.itemAt(event.x(), event.y())
+
+            if item:
+                item.hover()
+            else:
+                self.update()
+
     def mouseReleaseEvent(self, event):
         if (event.buttons() & Qt.MouseButton.MiddleButton) and (event.modifiers() & Qt.KeyboardModifier.ShiftModifier):
             self.arc_ball.onClickLeftUp()
@@ -264,12 +272,12 @@ class BaseScene(QGLWidget):
 
         self.update()
 
-    def itemAt(self, x, y):
+    def itemAt(self, x, y) -> BaseItem or None:
         """
         Retrieves the item at the specified x, y screen coordinates
         :param x: float
         :param y: float
-        :return: None
+        :return: BaseItem
         """
         y = self.height() - y - 1  # Invert Y for OpenGL coordinates
         print('---- Locating Scene Items ----')
