@@ -78,7 +78,7 @@ class DOT39(QMainWindow):
 if __name__ == '__main__':
     from mp_software_stylesheets.styles import blenderCSS
 
-    app = QApplication([])
+    app = QApplication(sys.argv + ['-platform', 'windows:darkmode=1'])
     app.setStyleSheet(blenderCSS)
 
     win = DOT39()
