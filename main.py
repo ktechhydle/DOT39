@@ -1,7 +1,8 @@
-from src.framework.managers.unit_manager import UnitManager
 from src.gui.widgets import *
-from src.framework.managers.point_manager import PointManager
 from src.framework.scene.base_scene import BaseScene
+from src.framework.managers.unit_manager import UnitManager
+from src.framework.managers.point_manager import PointManager
+from src.framework.managers.surface_manager import SurfaceManager
 
 
 class DOT39(QMainWindow):
@@ -11,6 +12,7 @@ class DOT39(QMainWindow):
         self.setWindowIcon(QIcon('resources/icons/logos/dot39_logo.svg'))
 
         self.pointManager = PointManager(self)
+        self.surfaceManager = SurfaceManager(self)
         self.unit_manager = UnitManager()
 
         self.point_group_count = 0
@@ -32,7 +34,8 @@ class DOT39(QMainWindow):
     def createToolBarActions(self):
         points_panel_widgets_1 = []
         points_panel_widgets_2 = []
-        surface_panel_widgets = []
+        surface_panel_widgets_1 = []
+        surface_panel_widgets_2 = []
 
         import_points_btn = QPushButton('Import Point Data')
         import_points_btn.setObjectName('toolbarButton')
@@ -44,14 +47,20 @@ class DOT39(QMainWindow):
         edit_points_btn.clicked.connect(self.pointManager.editPoints)
         points_panel_widgets_2.append(edit_points_btn)
 
-        create_points_from_group = QPushButton('Create Surface From Points')
-        create_points_from_group.setObjectName('toolbarButton')
-        create_points_from_group.clicked.connect(self.pointManager.convertGroupToSurface)
-        surface_panel_widgets.append(create_points_from_group)
+        create_surface_from_group = QPushButton('Create Surface From Points')
+        create_surface_from_group.setObjectName('toolbarButton')
+        create_surface_from_group.clicked.connect(self.pointManager.convertGroupToSurface)
+        surface_panel_widgets_1.append(create_surface_from_group)
+
+        create_surface_from_file = QPushButton('Create Surface From Data')
+        create_surface_from_file.setObjectName('toolbarButton')
+        create_surface_from_file.clicked.connect(self.surfaceManager.importSurfaceData)
+        surface_panel_widgets_2.append(create_surface_from_file)
 
         points_panel = ToolBarContainer('Points', points_panel_widgets_1)
         points_panel.addRow(points_panel_widgets_2)
-        surface_panel = ToolBarContainer('Surface', surface_panel_widgets)
+        surface_panel = ToolBarContainer('Surface', surface_panel_widgets_1)
+        surface_panel.addRow(surface_panel_widgets_2)
 
         self.toolbar.addWidget(points_panel)
         self.toolbar.addWidget(surface_panel)
@@ -87,6 +96,6 @@ if __name__ == '__main__':
     win = DOT39()
     win.show()
     win.showMaximized()
-    win.addTestObj()
+    #win.addTestObj()
 
     sys.exit(app.exec())

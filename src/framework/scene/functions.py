@@ -16,6 +16,13 @@ def hexToRGB(hex_code):
     return r, g, b
 
 
+def isConvertibleToFloat(value):
+    try:
+        return float(value)
+    except ValueError:
+        return None
+
+
 vertex_shad = open('shaders/main_vertex_shader.glsl', 'r').read()
 fragment_shad = open('shaders/main_fragment_shader.glsl', 'r').read()
 

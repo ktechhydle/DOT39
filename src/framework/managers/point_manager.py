@@ -1,16 +1,10 @@
 from src._imports import *
+from src.framework.scene.functions import isConvertibleToFloat
 from src.gui.dialogs import GetPointGroupDialog, EditPointGroupDialog
 from src.framework.items.point_group import PointGroupItem
 from src.framework.items.point_item import PointItem
 from src.framework.items.terrain_item import TerrainItem
 from src.framework.scene.undo_commands import *
-
-
-def isConvertibleToFloat(value):
-    try:
-        return float(value)
-    except ValueError:
-        return None
 
 
 class PointManager:
