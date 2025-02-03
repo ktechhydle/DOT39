@@ -56,6 +56,8 @@ class SurfaceManager:
                             lon, lat = rasterio.transform.xy(transform, row, col)
                             points.append((lon, lat, value))
 
+            self.parent().terrain_item_count += 1
+
             item = TerrainItem(self.parent().glScene(), self.parent().glScene().shaderProgram(), points,
                                name=f'Terrain Item #{self.parent().terrain_item_count}')
             self.parent().glScene().addUndoCommand(AddItemCommand(item, self.parent().glScene()))
