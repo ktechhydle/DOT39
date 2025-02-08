@@ -1,4 +1,5 @@
 from src._imports import *
+from src.errors.standard_error import DOT39StandardError
 from src.framework.items.base_item import BaseItem
 from src.framework.items.point_item import PointItem
 from src.framework.scene.functions import hexToRGB
@@ -45,9 +46,9 @@ class TerrainItem(BaseItem):
 
     def createVbo(self):
         if len(self.points()) < 3:
-            return None  # Not enough points for triangulated mesh
+            raise DOT39StandardError('Not enough points to create a surface (minimum of 3 required)')
 
-            # Convert points to a numpy array
+        # Convert points to a numpy array
         points = np.array(self.points(), dtype='f4')
 
         # Use only the x, y coordinates for triangulation
@@ -88,4 +89,3 @@ class TerrainItem(BaseItem):
 
     def update(self):
         self.vbo = self.createVbo()
-

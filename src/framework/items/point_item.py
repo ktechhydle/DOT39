@@ -43,28 +43,31 @@ class PointItem(BaseItem):
         return vbo
 
     def createTextVbo(self):
-        font = QFont('Arial', 1)
-        font.setLetterSpacing(QFont.AbsoluteSpacing, 0.5)
-        path = QPainterPath()
-        path.addText(QPointF(0, 0), font, self.name())
+        if self.name():
+            font = QFont('Arial', 1)
+            font.setLetterSpacing(QFont.AbsoluteSpacing, 0.5)
+            path = QPainterPath()
+            path.addText(QPointF(0, 0), font, self.name())
 
-        # Convert the path to polygons
-        polygons = path.toSubpathPolygons()
+            # Convert the path to polygons
+            polygons = path.toSubpathPolygons()
 
-        # Extract vertex data
-        vertices = []
-        for polygon in polygons:
-            for point in polygon:
-                vertices.append(point.x() + (self.x() + 0.5))
-                vertices.append(-point.y() + (self.y() - 2))
-                vertices.append(self.z())
+            # Extract vertex data
+            vertices = []
+            for polygon in polygons:
+                for point in polygon:
+                    vertices.append(point.x() + (self.x() + 0.5))
+                    vertices.append(-point.y() + (self.y() - 2))
+                    vertices.append(self.z())
 
-            # Add a break in the drawing sequence
-            vertices.append(float('nan'))
-            vertices.append(float('nan'))
-            vertices.append(float('nan'))
+                # Add a break in the drawing sequence
+                vertices.append(float('nan'))
+                vertices.append(float('nan'))
+                vertices.append(float('nan'))
 
-        return self.ctx.buffer(np.array(vertices, dtype='f4'))
+            return self.ctx.buffer(np.array(vertices, dtype='f4'))
+
+        return None
 
     def createIbo(self):
         # Create a IBO that defines the indices for the `+` shape

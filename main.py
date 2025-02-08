@@ -98,4 +98,12 @@ if __name__ == '__main__':
     win.showMaximized()
     win.addTestObj()
 
+    # Crash handler
+    def handle_exception(exctype, value, tb):
+        QMessageBox.critical(win, 'Error:(', f'DOT39 encountered an error:\n\n{value}\n')
+        sys.__excepthook__(exctype, value, tb)
+
+    # Set the global exception hook
+    sys.excepthook = handle_exception
+
     sys.exit(app.exec())
