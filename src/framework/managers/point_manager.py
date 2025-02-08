@@ -136,10 +136,15 @@ class PointManager:
             point_group = dialog.activeResult()
             self.parent().terrain_item_count += 1
 
+            points = []
+
+            for item in point_group.points():
+                points.append((item.x(), item.y(), item.z()))
+
             surface_item = TerrainItem(self.parent().glScene(),
                                        self.parent().glScene().shaderProgram(),
+                                       points=points,
                                        name=f'Terrain Item #{self.parent().terrain_item_count}')
-            surface_item.fromPointItems(point_group.points())
 
             self.parent().glScene().addUndoCommand(PointsToSurfaceCommand(point_group,
                                                                           surface_item,
