@@ -9,25 +9,12 @@ from scipy.spatial import Delaunay
 class TerrainItem(BaseItem):
     def __init__(self, scene, program, points: list[tuple[float, float, float]] = [(0.0, 0.0, 0.0)], name=''):
         super().__init__(scene, name)
-        self._color = hexToRGB('#00ff00')
-        self._outline_color = hexToRGB('#00ff00')
+        self.setColor(hexToRGB('#00ff00'))
         self._points = points
 
         self.program = program
         self.ctx = scene.ctx
         self.vbo = self.createVbo()
-
-    def color(self):
-        return self._color
-
-    def outlineColor(self):
-        return self._outline_color
-
-    def setColor(self, color: str):
-        self._color = color
-
-    def setOutlineColor(self, color: str):
-        self._outline_color = color
 
     def points(self):
         return self._points
@@ -76,7 +63,7 @@ class TerrainItem(BaseItem):
 
         else:
             # Render points
-            current_color = self.outlineColor()
+            current_color = self.color()
             if self.isSelected() or self.isHovered():
                 # Invert the color
                 inverted_color = tuple(1.0 - c for c in current_color)

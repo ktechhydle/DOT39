@@ -7,7 +7,7 @@ class PointItem(BaseItem):
     def __init__(self, scene, program: GL.Program, number, pos: list[float] = [0.0, 0.0, 0.0], name=''):
         super().__init__(scene, name)
         self.setPos(pos)
-        self._color = hexToRGB('#ff0000')
+        self.setColor(hexToRGB('#ff0000'))
         self._point_num = number
 
         self.program = program
@@ -16,17 +16,11 @@ class PointItem(BaseItem):
         self.text_vbo = self.createTextVbo()
         self.ibo = self.createIbo()
 
-    def color(self):
-        return self._color
-
     def pointNumber(self):
         return self._point_num
 
     def setPointNumber(self, value):
         self._point_num = value
-
-    def setColor(self, color: str):
-        self._color = color
 
     def createVbo(self):
         # Create a VBO that defines the vertices for the `+` shape

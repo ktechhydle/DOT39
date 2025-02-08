@@ -5,6 +5,7 @@ class BaseItem(object):
     def __init__(self, scene, name: str = ''):
         self._scene = scene
         self._name = name
+        self._color = (0.0, 0.0, 0.0)
         self._pos = [0.0, 0.0, 0.0]
         self._visible = True
         self._is_selectable = True
@@ -16,6 +17,9 @@ class BaseItem(object):
 
     def setName(self, name: str):
         self._name = name
+
+    def setColor(self, color: tuple[float, float, float]):
+        self._color = color
 
     def setSelected(self, s: bool):
         self._selected = s
@@ -55,6 +59,9 @@ class BaseItem(object):
 
     def z(self):
         return self.pos()[2]
+
+    def color(self):
+        return self._color
 
     def scene(self):
         return self._scene

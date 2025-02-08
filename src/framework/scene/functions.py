@@ -1,4 +1,4 @@
-def hexToRGB(hex_code):
+def hexToRGB(hex_code) -> tuple[float, float, float]:
     """
     Converts a hex color code to an RGB tuple.
 
