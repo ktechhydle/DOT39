@@ -96,6 +96,6 @@ if __name__ == '__main__':
     win = DOT39()
     win.show()
     win.showMaximized()
-    #win.addTestObj()
+    win.addTestObj()
 
     sys.exit(app.exec())

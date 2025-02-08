@@ -73,9 +73,6 @@ class TerrainItem(BaseItem):
             self.program['color'].value = (color[0], color[1], color[2])
             self.program['alphaValue'].value = color[3]
 
-            outline_vao = self.ctx.simple_vertex_array(self.program, self.vbo, 'in_vert')
-            outline_vao.render(GL.TRIANGLES)
-
         else:
             # Render points
             current_color = self.outlineColor()
@@ -86,8 +83,8 @@ class TerrainItem(BaseItem):
             else:
                 self.program['color'].value = current_color
 
-            outline_vao = self.ctx.simple_vertex_array(self.program, self.vbo, 'in_vert')
-            outline_vao.render(GL.TRIANGLES)
+        outline_vao = self.ctx.simple_vertex_array(self.program, self.vbo, 'in_vert')
+        outline_vao.render(GL.TRIANGLES)
 
     def update(self):
         self.vbo = self.createVbo()
