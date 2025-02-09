@@ -172,7 +172,9 @@ class BaseScene(QGLWidget):
 
     def wheelEvent(self, event):
         zoom_delta = -event.angleDelta().y() * 0.001
-        self.camera_zoom = max(0.1, self.camera_zoom + zoom_delta)  # Prevent negative zoom
+        self.camera_zoom = max(0.1, self.camera_zoom + zoom_delta)
+
+        self.clearHover()
         self.update()
 
     def unsetCursor(self):
@@ -271,6 +273,10 @@ class BaseScene(QGLWidget):
             item.setSelected(False)
 
         self.update()
+
+    def clearHover(self):
+        for item in self.items():
+            item.setHovered(False)
 
     def itemAt(self, x, y) -> BaseItem or None:
         """
