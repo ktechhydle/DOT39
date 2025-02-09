@@ -22,14 +22,20 @@ class DOT39(QMainWindow):
         self.createUI()
 
     def createUI(self):
-        self.toolbar = QToolBar(self)
-        self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.toolbar)
+        self.top_toolbar = QToolBar(self)
+        self.top_toolbar.setMovable(False)
+        self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.top_toolbar)
+        self.left_toolbar = QToolBar(self)
+        self.left_toolbar.setMovable(False)
+        self.left_toolbar.setAllowedAreas(Qt.ToolBarArea.LeftToolBarArea)
+        self.addToolBar(Qt.ToolBarArea.LeftToolBarArea, self.left_toolbar)
 
         self.scene = BaseScene(self.unit_manager, self)
         self.setCentralWidget(self.scene)
 
         self.createToolBarActions()
         self.createShortcuts()
+        self.createPanels()
 
     def createToolBarActions(self):
         points_panel_widgets_1 = []
@@ -62,8 +68,8 @@ class DOT39(QMainWindow):
         surface_panel = ToolBarContainer('Surface', surface_panel_widgets_1)
         surface_panel.addRow(surface_panel_widgets_2)
 
-        self.toolbar.addWidget(points_panel)
-        self.toolbar.addWidget(surface_panel)
+        self.top_toolbar.addWidget(points_panel)
+        self.top_toolbar.addWidget(surface_panel)
 
     def createShortcuts(self):
         undo_action = QAction('Undo', self)
@@ -76,6 +82,10 @@ class DOT39(QMainWindow):
 
         self.addAction(undo_action)
         self.addAction(redo_action)
+
+    def createPanels(self):
+        self.toolbox = ToolBox(self)
+        self.left_toolbar.addWidget(self.toolbox)
 
     def addTestObj(self):
         self.pointManager.directImport('sample_data/points.txt')
