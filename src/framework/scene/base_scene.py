@@ -124,8 +124,8 @@ class BaseScene(QGLWidget):
 
             else:
                 self.clearSelection()
-
         elif (event.buttons() & Qt.MouseButton.MiddleButton) and (event.modifiers() & Qt.KeyboardModifier.ShiftModifier):
+            self.setCursor(Qt.CursorShape.SizeAllCursor)
             self.arc_ball.onClickLeftDown(event.x(), event.y())
         elif event.buttons() & Qt.MouseButton.MiddleButton:
             self.setCursor(Qt.CursorShape.ClosedHandCursor)
@@ -136,7 +136,6 @@ class BaseScene(QGLWidget):
         if (event.buttons() & Qt.MouseButton.MiddleButton) and (event.modifiers() & Qt.KeyboardModifier.ShiftModifier):
             # Orbit logic
             self.arc_ball.onDrag(event.x(), event.y())
-            self.setCursor(Qt.CursorShape.SizeAllCursor)
             self.update()
         elif event.buttons() & Qt.MouseButton.MiddleButton:
             # Panning logic
