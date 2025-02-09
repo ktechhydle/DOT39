@@ -76,19 +76,19 @@ class BaseScene(QGLWidget):
         self.aspect_ratio = self.width() / max(1.0, self.height())
 
         # Orthographic projection
-        ortho_size = self.camera_zoom  # Define the size of the orthographic view
+        ortho_size = self.camera_zoom
         ortho_left = -self.aspect_ratio * ortho_size
         ortho_right = self.aspect_ratio * ortho_size
         ortho_bottom = -ortho_size
         ortho_top = ortho_size
-        ortho_near = -10000.0  # Adjust based on your scene
+        ortho_near = -10000.0
         ortho_far = 10000.0
 
         orthographic = Matrix44.orthogonal_projection(
             ortho_left, ortho_right, ortho_bottom, ortho_top, ortho_near, ortho_far
         )
 
-        # View transformation (same as before)
+        # View transformation
         lookat = Matrix44.look_at(
             (0.0, 0.0, self.camera_zoom),
             (0.0, 0.0, 0.0),
@@ -205,7 +205,7 @@ class BaseScene(QGLWidget):
         # Calculate the bounding box of all items
         mesh_points = []
 
-        for item in self.items():
+        for item in self.visibleItems():
             if isinstance(item, PointGroupItem):
                 for p in item.points():
                     mesh_points.append(p.pos())
@@ -218,7 +218,7 @@ class BaseScene(QGLWidget):
         return mesh_points
 
     def updateArcBall(self):
-        if self.items():
+        if self.visibleItems():
             # Create ArcBall
             self.arc_ball = ArcBallUtil(self.width(), self.height())
 
@@ -264,6 +264,15 @@ class BaseScene(QGLWidget):
         :return: list[BaseItem]
         """
         return self._items
+
+    def visibleItems(self) -> list[BaseItem]:
+        l = []
+
+        for item in self.items():
+            if item.isVisible():
+                l.append(item)
+
+        return l
 
     def selectedItems(self):
         return [item for item in self.items() if item.isSelected()]
