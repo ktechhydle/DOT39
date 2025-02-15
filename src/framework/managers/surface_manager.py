@@ -1,8 +1,8 @@
 from src._imports import *
 from src.framework.scene.functions import isConvertibleToFloat
-from src.framework.items.terrain_item import TerrainItem
 from src.framework.scene.undo_commands import *
-import rasterio
+from src.framework.items.terrain_item import TerrainItem
+from src.errors.standard_error import DOT39StandardError
 
 
 class SurfaceManager:
@@ -13,34 +13,39 @@ class SurfaceManager:
         file, _ = QFileDialog.getOpenFileName(self.parent(),
                                               'Import Surface Data',
                                               '',
-                                              'Supported types (*.csv *.txt *.tif *.tiff)')
+                                              'Supported types (*.csv *.txt)')
 
         if file:
             points = []
 
-            if file.endswith('.csv'):
-                with open(file, 'r') as f:
-                    reader = csv.reader(f)
-                    headers = next(reader)
-                    for row in reader:
-                        if len(row) < 4:
-                            continue
-                        points.append((float(row[2]), float(row[1]), float(row[3])))
-
-            elif file.endswith('.txt'):
-                with open(file, 'r') as f:
-                    for line in f.readlines():
-                        line = line.strip()
-
-                        if not line:  # Skip empty lines
-                            continue
-
-                        row = line.split(sep=',')  # Split line into parts (default delimiter: whitespace)
-
-                        if isConvertibleToFloat(row[1]):
+            try:
+                if file.endswith('.csv'):
+                    with open(file, 'r') as f:
+                        reader = csv.reader(f)
+                        headers = next(reader)
+                        for row in reader:
+                            if len(row) < 4:
+                                continue
                             points.append((float(row[2]), float(row[1]), float(row[3])))
 
-            elif file.endswith('.tiff') or file.endswith('.tif'):
+                elif file.endswith('.txt'):
+                    with open(file, 'r') as f:
+                        for line in f.readlines():
+                            line = line.strip()
+
+                            if not line:
+                                continue
+
+                            row = line.split(sep=',')
+
+                            if isConvertibleToFloat(row[1]):
+                                points.append((float(row[2]), float(row[1]), float(row[3])))
+            except:
+                raise DOT39StandardError('Provided data is either corrupted or incorrectly formatted. Please'
+                                         ' use Northing Easting Elevation data style.')
+
+            # Potential GEOTIFF Import
+            '''elif file.endswith('.tiff') or file.endswith('.tif'):
                 with rasterio.open(file) as dataset:
                     band1 = dataset.read(1)  # Read the first band (elevation or intensity)
                     transform = dataset.transform  # Get affine transformation
@@ -54,7 +59,7 @@ class SurfaceManager:
 
                             # Convert pixel coordinates to real-world coordinates
                             lon, lat = rasterio.transform.xy(transform, row, col)
-                            points.append((lon, lat, value))
+                            points.append((lon, lat, value))'''
 
             self.parent().terrain_item_count += 1
 
