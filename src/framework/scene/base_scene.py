@@ -139,9 +139,13 @@ class BaseScene(QGLWidget):
             # Panning logic
             x_movement = event.x() - self.prev_x
             y_movement = event.y() - self.prev_y
-            self.center[0] -= x_movement * (self.camera_zoom / 10)
-            self.center[1] += y_movement * (self.camera_zoom / 10)
-            self.center[2] += y_movement * (self.camera_zoom / 10)
+
+            right = self.arc_ball.Transform[:3, 0]  # Right vector (local X axis)
+            up = self.arc_ball.Transform[:3, 1]  # Up vector (local Y axis)
+
+            movement = (x_movement * right - y_movement * up) * (self.camera_zoom * 5)
+            self.center -= movement
+
             self.prev_x = event.x()
             self.prev_y = event.y()
 
