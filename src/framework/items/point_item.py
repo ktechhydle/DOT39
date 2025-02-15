@@ -52,7 +52,7 @@ class PointItem(BaseItem):
                 for point in polygon:
                     vertices.append(point.x() + (self.x() + 0.5))
                     vertices.append(-point.y() + (self.y() - 2))
-                    vertices.append(self.z())
+                    vertices.append(100000)  # Letters only visible when facing top down
 
                 # Add a break in the drawing sequence
                 vertices.append(float('nan'))
