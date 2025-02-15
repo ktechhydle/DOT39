@@ -73,6 +73,7 @@ class BaseScene(QGLWidget):
         print(f'OpenGL Viewport Resized To: {width, height}')
 
     def paintGL(self):
+        self.ctx.wireframe = self.isWireframe()
         self.ctx.clear(*self.bg_color)
         self.ctx.enable_only(GL.DEPTH_TEST | GL.BLEND)
 
@@ -348,7 +349,7 @@ class BaseScene(QGLWidget):
         return self._wireframe
 
     def setWireframe(self, enabled: bool):
-        self.wireframe = enabled
+        self._wireframe = enabled
 
         self.update()
 

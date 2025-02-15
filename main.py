@@ -1,4 +1,5 @@
 from src.gui.widgets import *
+from src.gui.panels import ScenePanel
 from src.framework.scene.base_scene import BaseScene
 from src.framework.managers.unit_manager import UnitManager
 from src.framework.managers.point_manager import PointManager
@@ -25,10 +26,10 @@ class DOT39(QMainWindow):
         self.top_toolbar = QToolBar(self)
         self.top_toolbar.setMovable(False)
         self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.top_toolbar)
-        self.left_toolbar = QToolBar(self)
-        self.left_toolbar.setMovable(False)
-        self.left_toolbar.setAllowedAreas(Qt.ToolBarArea.LeftToolBarArea)
-        self.addToolBar(Qt.ToolBarArea.LeftToolBarArea, self.left_toolbar)
+        self.left_dock = QDockWidget(self)
+        self.left_dock.setTitleBarWidget(QWidget())
+        self.left_dock.setAllowedAreas(Qt.DockWidgetArea.LeftDockWidgetArea)
+        self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.left_dock)
 
         self.scene = BaseScene(self)
         self.setCentralWidget(self.scene)
@@ -85,7 +86,10 @@ class DOT39(QMainWindow):
 
     def createPanels(self):
         self.toolbox = ToolBox(self)
-        self.left_toolbar.addWidget(self.toolbox)
+        self.left_dock.setWidget(self.toolbox)
+
+        self.scene_panel = ScenePanel(self.scene, self)
+        self.toolbox.addItem(self.scene_panel, 'Scene')
 
     def addTestObj(self):
         self.pointManager.directImport('sample_data/points.txt')
