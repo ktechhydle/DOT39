@@ -64,10 +64,12 @@ class TerrainItem(BaseItem):
         else:
             # Render points
             current_color = self.color()
-            if self.isSelected() or self.isHovered():
-                # Invert the color
-                inverted_color = tuple(1.0 - c for c in current_color)
-                self.program['color'].value = inverted_color
+            if self.isSelected():
+                self.program['color'].value = hexToRGB('#007fff')
+
+            elif self.isHovered():
+                self.program['color'].value = hexToRGB('#0058b2')
+
             else:
                 self.program['color'].value = current_color
 
