@@ -6,27 +6,30 @@ from src.framework.items.terrain_item import TerrainItem
 from src.framework.scene.functions import hexToRGB, vertex_shad, fragment_shad
 from src.framework.scene.arcball import ArcBallUtil
 from src.framework.scene.undo_commands import *
+from src.framework.managers.tool_manager import ToolManager
+from src.framework.tools.selection_tool import SelectionTool
 
 
 class BaseScene(QGLWidget):
-    def __init__(self, unit_mgr, parent=None):
+    def __init__(self, parent=None):
         super(BaseScene, self).__init__(parent)
         self.setMouseTracking(True)
         self.setCursor(Qt.CursorShape.CrossCursor)
 
-        self.unit_manager = unit_mgr
-
+        # Public
         self.undo_stack = QUndoStack(self)
         self.undo_stack.setUndoLimit(200)
-
         self.ctx = None
         self.program = None
-        self._wireframe = True
         self.bg_color = hexToRGB('#000000')
         self.aspect_ratio = 1.0
         self.camera_zoom = 2.0
 
+        # Private
         self._items = []
+        self._wireframe = True
+        self._tool_manager = ToolManager(self)
+        self._selection_tool = SelectionTool(self)
 
     def initializeGL(self):
         self.ctx = GL.create_context()
@@ -109,34 +112,26 @@ class BaseScene(QGLWidget):
         print('Current Zoom Amount: ', self.camera_zoom)
         print('Current Matrix: ', self.program['matrix'].value)
 
-    def mousePressEvent(self, event):
+    def mousePressEvent(self, event: QMouseEvent):
         if event.buttons() & Qt.MouseButton.LeftButton:
-            item = self.itemAt(event.x(), event.y())
+            if self._tool_manager.currentTool() == ToolManager.SelectionTool:
+                self._selection_tool.mousePress(event)
 
-            if item:
-                if event.modifiers() & Qt.KeyboardModifier.ShiftModifier:
-                    item.setSelected(True)
-                    self.update()
-                    return
-
-                self.clearSelection()
-                item.setSelected(True)
-
-            else:
-                self.clearSelection()
         elif (event.buttons() & Qt.MouseButton.MiddleButton) and (event.modifiers() & Qt.KeyboardModifier.ShiftModifier):
             self.setCursor(Qt.CursorShape.SizeAllCursor)
             self.arc_ball.onClickLeftDown(event.x(), event.y())
+
         elif event.buttons() & Qt.MouseButton.MiddleButton:
             self.setCursor(Qt.CursorShape.ClosedHandCursor)
             self.prev_x = event.x()
             self.prev_y = event.y()
 
-    def mouseMoveEvent(self, event):
+    def mouseMoveEvent(self, event: QMouseEvent):
         if (event.buttons() & Qt.MouseButton.MiddleButton) and (event.modifiers() & Qt.KeyboardModifier.ShiftModifier):
             # Orbit logic
             self.arc_ball.onDrag(event.x(), event.y())
             self.update()
+
         elif event.buttons() & Qt.MouseButton.MiddleButton:
             # Panning logic
             x_movement = event.x() - self.prev_x
@@ -148,6 +143,7 @@ class BaseScene(QGLWidget):
             self.prev_y = event.y()
 
             self.update()
+
         else:
             # Item hover effect logic
             item = self.itemAt(event.x(), event.y())
@@ -159,18 +155,18 @@ class BaseScene(QGLWidget):
                 for item in self.items():
                     item.setHovered(False)
 
-    def mouseReleaseEvent(self, event):
+    def mouseReleaseEvent(self, event: QMouseEvent):
         if (event.buttons() & Qt.MouseButton.MiddleButton) and (event.modifiers() & Qt.KeyboardModifier.ShiftModifier):
             self.arc_ball.onClickLeftUp()
 
         self.unsetCursor()
 
-    def mouseDoubleClickEvent(self, event):
+    def mouseDoubleClickEvent(self, event: QMouseEvent):
         if event.button() == Qt.MouseButton.MiddleButton:
             self.updateArcBall()
             self.update()
 
-    def wheelEvent(self, event):
+    def wheelEvent(self, event: QWheelEvent):
         zoom_delta = -event.angleDelta().y() * 0.001
         self.camera_zoom = max(0.1, self.camera_zoom + zoom_delta)
 
@@ -179,22 +175,6 @@ class BaseScene(QGLWidget):
 
     def unsetCursor(self):
         self.setCursor(Qt.CursorShape.CrossCursor)
-
-    def applyCS(self):
-        x, y = self.unit_manager.transformedXY()
-
-        for item in self.items():
-            if not hasattr(item, '_translated'):
-                item._translated = True
-
-                if isinstance(item, PointGroupItem):
-                    for point in item.points():
-                        point.setPos([point.x() + x, point.y() + y, point.z()])
-
-                elif isinstance(item, PointItem):
-                    item.setPos([item.x() + x, item.y() + y, item.z()])
-
-        print(f'Coordinate System Offset: {x, y}')
 
     def itemMeshPoints(self):
         """

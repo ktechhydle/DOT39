@@ -30,7 +30,7 @@ class DOT39(QMainWindow):
         self.left_toolbar.setAllowedAreas(Qt.ToolBarArea.LeftToolBarArea)
         self.addToolBar(Qt.ToolBarArea.LeftToolBarArea, self.left_toolbar)
 
-        self.scene = BaseScene(self.unit_manager, self)
+        self.scene = BaseScene(self)
         self.setCentralWidget(self.scene)
 
         self.createToolBarActions()
