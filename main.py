@@ -26,10 +26,6 @@ class DOT39(QMainWindow):
         self.top_toolbar = QToolBar(self)
         self.top_toolbar.setMovable(False)
         self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.top_toolbar)
-        self.left_dock = QDockWidget(self)
-        self.left_dock.setTitleBarWidget(QWidget())
-        self.left_dock.setAllowedAreas(Qt.DockWidgetArea.LeftDockWidgetArea)
-        self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.left_dock)
 
         self.scene = BaseScene(self)
         self.setCentralWidget(self.scene)
@@ -85,11 +81,14 @@ class DOT39(QMainWindow):
         self.addAction(redo_action)
 
     def createPanels(self):
-        self.toolbox = ToolBox(self)
-        self.left_dock.setWidget(self.toolbox)
+        self.toolbox = ToolBox(self.scene)
+        self.toolbox.setFixedWidth(300)
+        self.toolbox.move(11, 11)
 
         self.scene_panel = ScenePanel(self.scene, self)
+
         self.toolbox.addItem(self.scene_panel, 'Scene')
+        self.toolbox.addSpacer()
 
     def addTestObj(self):
         self.pointManager.directImport('sample_data/points.txt')

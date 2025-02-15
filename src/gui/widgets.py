@@ -147,8 +147,7 @@ class ToolBox(QScrollArea):
             if not button.widget.isVisible():
                 button.widget.setVisible(True)
                 if not hasattr(button, 'expandedHeight'):
-                    button.expandedHeight = button.widget.height() + button.height() + (
-                        button.height() if sys.platform == 'darwin' else 0)
+                    button.expandedHeight = button.widget.height() + button.height()
                 button.setFixedHeight(button.expandedHeight)
                 self.ensureWidgetVisible(button.widget)
         else:

@@ -61,6 +61,8 @@ class BaseScene(QGLWidget):
         print('OpenGL Version: ', self.ctx.version_code)
 
     def resizeGL(self, w, h):
+        self.parent().toolbox.setFixedHeight(h - 22)
+
         width = max(2, w)
         height = max(2, h)
         self.ctx.viewport = (0, 0, width, height)
