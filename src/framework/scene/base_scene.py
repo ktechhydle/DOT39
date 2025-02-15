@@ -140,8 +140,8 @@ class BaseScene(QGLWidget):
             x_movement = event.x() - self.prev_x
             y_movement = event.y() - self.prev_y
 
-            right = self.arc_ball.Transform[:3, 0]  # Right vector (local X axis)
-            up = self.arc_ball.Transform[:3, 1]  # Up vector (local Y axis)
+            right = self.arc_ball.Transform[:3, 0]
+            up = self.arc_ball.Transform[:3, 1]
 
             movement = (x_movement * right - y_movement * up) * (self.camera_zoom * 5)
             self.center -= movement
