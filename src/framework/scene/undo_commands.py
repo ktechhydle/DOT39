@@ -58,3 +58,21 @@ class EditPointsCommand(QUndoCommand):
         self.point_group.update()
 
 
+class VisibilityChangedCommand(QUndoCommand):
+    def __init__(self, items: list, new_attr: list[bool], old_attr: list[bool]):
+        super().__init__()
+
+        self.items = items
+        self.new_attr = new_attr
+        self.old_attr = old_attr
+
+    def redo(self):
+        for item, new_attribute in zip(self.items, self.new_attr):
+            item.setVisible(new_attribute)
+
+    def undo(self):
+        for item, old_attribute in zip(self.items, self.old_attr):
+            item.setVisible(old_attribute)
+
+
+

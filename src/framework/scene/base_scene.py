@@ -122,7 +122,8 @@ class BaseScene(QGLWidget):
             if self._tool_manager.currentTool() == ToolManager.SelectionTool:
                 self._selection_tool.mousePress(event)
 
-        elif (event.buttons() & Qt.MouseButton.MiddleButton) and (event.modifiers() & Qt.KeyboardModifier.ShiftModifier):
+        elif (event.buttons() & Qt.MouseButton.MiddleButton) and (
+                event.modifiers() & Qt.KeyboardModifier.ShiftModifier):
             self.setCursor(Qt.CursorShape.SizeAllCursor)
             self.arc_ball.onClickLeftDown(event.x(), event.y())
 
@@ -171,7 +172,7 @@ class BaseScene(QGLWidget):
         zoom_delta = -event.angleDelta().y() * 0.001
         self.camera_zoom = max(0.1, self.camera_zoom + zoom_delta)
 
-        self.clearHover()
+        self.selectionTool().clearHover()
         self.update()
 
     def contextMenuEvent(self, event):
@@ -267,22 +268,6 @@ class BaseScene(QGLWidget):
 
         return None
 
-    def selectAll(self):
-        self.clearSelection()
-
-        for item in self.visibleItems():
-            item.setSelected(True)
-
-    def clearSelection(self):
-        for item in self.items():
-            item.setSelected(False)
-
-        self.update()
-
-    def clearHover(self):
-        for item in self.items():
-            item.setHovered(False)
-
     def itemAt(self, x, y) -> BaseItem or None:
         """
         Retrieves the item at the specified x, y screen coordinates
@@ -373,3 +358,6 @@ class BaseScene(QGLWidget):
 
     def shaderProgram(self) -> GL.Program:
         return self.program
+
+    def selectionTool(self) -> SelectionTool:
+        return self._selection_tool

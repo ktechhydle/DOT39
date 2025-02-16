@@ -41,7 +41,7 @@ class GetPointGroupDialog(QDialog):
         self.layout().addWidget(self.button_group)
 
     def valChanged(self):
-        self.scene.clearSelection()
+        self.scene.selectionTool().clearSelection()
 
         item = self.point_group_combo.itemData(self.point_group_combo.currentIndex())
         item.setSelected(True)
@@ -55,7 +55,7 @@ class GetPointGroupDialog(QDialog):
         return self._result
 
     def close(self):
-        self.scene.clearSelection()
+        self.scene.selectionTool().clearSelection()
 
         super().close()
 
