@@ -38,7 +38,9 @@ class PointItem(BaseItem):
 
     def createTextVbo(self):
         if self.name():
-            font = QFont('Proxy 9', 1)
+            font_id = QFontDatabase.addApplicationFont('resources/fonts/Proxy 9.ttf')
+            font_families = QFontDatabase.applicationFontFamilies(font_id)
+            font = QFont(font_families[0], 1)
             font.setLetterSpacing(QFont.AbsoluteSpacing, 0.5)
             path = QPainterPath()
             path.addText(QPointF(0, 0), font, self.name())
