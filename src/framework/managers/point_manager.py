@@ -1,10 +1,11 @@
 from src._imports import *
-from src.framework.scene.functions import isConvertibleToFloat
 from src.gui.dialogs import GetPointGroupDialog, EditPointGroupDialog
+from src.framework.scene.functions import isConvertibleToFloat
 from src.framework.items.point_group import PointGroupItem
 from src.framework.items.point_item import PointItem
 from src.framework.items.terrain_item import TerrainItem
 from src.framework.scene.undo_commands import *
+from src.errors.standard_error import DOT39StandardError
 
 
 class PointManager:
@@ -20,6 +21,53 @@ class PointManager:
         if file:
             points = []
 
+            try:
+                if file.endswith('.csv'):
+                    with open(file, 'r') as f:
+                        reader = csv.reader(f)
+                        headers = next(reader)
+                        for row in reader:
+                            if len(row) < 4:
+                                continue
+                            points.append({
+                                'Point Number': row[0],  # First column
+                                'Northing': float(row[1]),  # Second column
+                                'Easting': float(row[2]),  # Third column
+                                'Elevation': float(row[3]),  # Fourth column
+                                'Description': row[4] if len(row) > 4 else ''  # Fifth column (optional)
+                            })
+
+                elif file.endswith('.txt'):
+                    with open(file, 'r') as f:
+                        for line in f.readlines():
+                            line = line.strip()
+
+                            if not line:  # Skip empty lines
+                                continue
+
+                            row = line.split(sep=',')  # Split line into parts (default delimiter: whitespace)
+
+                            if isConvertibleToFloat(row[1]):
+                                points.append({
+                                    'Point Number': row[0],  # First value
+                                    'Northing': float(row[1]),  # Second value
+                                    'Easting': float(row[2]),  # Third value
+                                    'Elevation': float(row[3]),  # Fourth value
+                                    'Description': row[4] if len(row) > 4 else ''  # Optional fifth value
+                                })
+            except:
+                raise DOT39StandardError('Provided data is either corrupted or incorrectly formatted. Please'
+                                         ' use PNEED style.')
+
+            print(points, sep='\n')
+
+            self.parent().point_group_count += 1
+            self.processPoints(points)
+
+    def directImport(self, file: str):
+        points = []
+
+        try:
             if file.endswith('.csv'):
                 with open(file, 'r') as f:
                     reader = csv.reader(f)
@@ -53,48 +101,9 @@ class PointManager:
                                 'Elevation': float(row[3]),  # Fourth value
                                 'Description': row[4] if len(row) > 4 else ''  # Optional fifth value
                             })
-
-            print(points, sep='\n')
-
-            self.parent().point_group_count += 1
-            self.processPoints(points)
-
-    def directImport(self, file: str):
-        points = []
-
-        if file.endswith('.csv'):
-            with open(file, 'r') as f:
-                reader = csv.reader(f)
-                headers = next(reader)
-                for row in reader:
-                    if len(row) < 4:
-                        continue
-                    points.append({
-                        'Point Number': row[0],  # First column
-                        'Northing': float(row[1]),  # Second column
-                        'Easting': float(row[2]),  # Third column
-                        'Elevation': float(row[3]),  # Fourth column
-                        'Description': row[4] if len(row) > 4 else ''  # Fifth column (optional)
-                    })
-
-        elif file.endswith('.txt'):
-            with open(file, 'r') as f:
-                for line in f.readlines():
-                    line = line.strip()
-
-                    if not line:  # Skip empty lines
-                        continue
-
-                    row = line.split(sep=',')  # Split line into parts (default delimiter: whitespace)
-
-                    if isConvertibleToFloat(row[1]):
-                        points.append({
-                            'Point Number': row[0],  # First value
-                            'Northing': float(row[1]),  # Second value
-                            'Easting': float(row[2]),  # Third value
-                            'Elevation': float(row[3]),  # Fourth value
-                            'Description': row[4] if len(row) > 4 else ''  # Optional fifth value
-                        })
+        except:
+            raise DOT39StandardError('Provided data is either corrupted or incorrectly formatted. Please'
+                                     ' use PNEED style.')
 
         print(points, sep='\n')
 

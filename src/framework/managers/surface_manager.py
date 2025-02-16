@@ -42,7 +42,7 @@ class SurfaceManager:
                                 points.append((float(row[2]), float(row[1]), float(row[3])))
             except:
                 raise DOT39StandardError('Provided data is either corrupted or incorrectly formatted. Please'
-                                         ' use Northing Easting Elevation data style.')
+                                         ' use PNEED formatted data.')
 
             # Potential GEOTIFF Import
             '''elif file.endswith('.tiff') or file.endswith('.tif'):
