@@ -173,8 +173,9 @@ class PointManager:
             if dialog.activeResult():
                 point_group = dialog.activeResult()
 
-        editor = EditPointGroupDialog(self.parent().glScene(), point_group, self.parent())
-        editor.show()
+        if point_group:
+            editor = EditPointGroupDialog(self.parent().glScene(), point_group, self.parent())
+            editor.show()
 
     def parent(self):
         return self._parent
