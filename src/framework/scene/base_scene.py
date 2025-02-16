@@ -183,7 +183,7 @@ class BaseScene(QGLWidget):
         self.update()
 
     def contextMenuEvent(self, event):
-        self._context_menu_manager.showMenu(event)
+        self._context_menu_manager.showSceneMenu(event)
 
     def unsetCursor(self):
         self.setCursor(Qt.CursorShape.CrossCursor)
@@ -274,6 +274,12 @@ class BaseScene(QGLWidget):
             return self.selectedItems()[0]
 
         return None
+
+    def selectAll(self):
+        self.clearSelection()
+
+        for item in self.visibleItems():
+            item.setSelected(True)
 
     def clearSelection(self):
         for item in self.items():

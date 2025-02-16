@@ -8,15 +8,15 @@ class ContextMenuManager(object):
         self.scene = scene
         self.parent = parent
 
-    def showMenu(self, event: QContextMenuEvent):
+    def showSceneMenu(self, event: QContextMenuEvent):
         menu = ContextMenu()
         menu.setAnimationEnabled(True)
 
-        self.addContextActions(menu)
+        self.addSceneContextActions(menu)
 
         menu.exec(self.scene.mapToGlobal(event.pos()))
 
-    def addContextActions(self, menu: ContextMenu):
+    def addSceneContextActions(self, menu: ContextMenu):
         if self.scene.selectedItems() and len(self.scene.selectedItems()) < 2:
             selected_item = self.scene.selectedItems()[0]
 
@@ -29,4 +29,8 @@ class ContextMenuManager(object):
                 menu.addAction(edit_points_action)
                 menu.addAction(to_surface_action)
 
+        select_all_action = QAction('Select All', menu)
+        select_all_action.triggered.connect(self.scene.selectAll)
+
         menu.addSeparator()
+        menu.addAction(select_all_action)
