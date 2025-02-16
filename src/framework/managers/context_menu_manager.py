@@ -17,8 +17,8 @@ class ContextMenuManager(object):
         menu.exec(self.scene.mapToGlobal(event.pos()))
 
     def addSceneContextActions(self, menu: ContextMenu):
-        if self.scene.selectedItems() and len(self.scene.selectedItems()) < 2:
-            selected_item = self.scene.selectedItems()[0]
+        if self.scene.activeSelection():
+            selected_item = self.scene.activeSelection()
 
             if isinstance(selected_item, PointGroupItem):
                 edit_points_action = QAction('Edit Points', menu)
