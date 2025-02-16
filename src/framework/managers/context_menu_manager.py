@@ -31,6 +31,9 @@ class ContextMenuManager(object):
 
         select_all_action = QAction('Select All', menu)
         select_all_action.triggered.connect(self.scene.selectAll)
+        clear_selection_action = QAction('Clear Selection', menu)
+        clear_selection_action.triggered.connect(self.scene.clearSelection)
 
         menu.addSeparator()
         menu.addAction(select_all_action)
+        menu.addAction(clear_selection_action)
