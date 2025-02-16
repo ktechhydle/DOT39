@@ -106,12 +106,12 @@ class BaseScene(QGLWidget):
         self.view_matrix.write((orthographic * lookat * self.arc_ball.Transform).astype('f4'))
 
         # Render items
-        for item in self.items():
+        for item in self.visibleItems():
             item.render()
 
         # Console Info
         print('---- Repainting OpenGL Viewport ----')
-        print(f'Rendering {len(self.items())} Items')
+        print(f'Rendering {len(self.visibleItems())} Items')
         print('Current Color: ', self.program['color'].value)
         print('Current Alpha Value: ', self.program['alphaValue'].value)
         print('Current Zoom Amount: ', self.camera_zoom)
@@ -154,15 +154,7 @@ class BaseScene(QGLWidget):
             self.update()
 
         else:
-            # Item hover effect logic
-            item = self.itemAt(event.x(), event.y())
-
-            if item:
-                item.setHovered(True)
-                self.update()
-            else:
-                for item in self.items():
-                    item.setHovered(False)
+            self._selection_tool.mouseMove(event)
 
     def mouseReleaseEvent(self, event: QMouseEvent):
         if (event.buttons() & Qt.MouseButton.MiddleButton) and (event.modifiers() & Qt.KeyboardModifier.ShiftModifier):
@@ -267,7 +259,7 @@ class BaseScene(QGLWidget):
         return l
 
     def selectedItems(self):
-        return [item for item in self.items() if item.isSelected()]
+        return [item for item in self.visibleItems() if item.isSelected()]
 
     def activeSelection(self) -> BaseItem or None:
         if self.selectedItems() and len(self.selectedItems()) < 2:
