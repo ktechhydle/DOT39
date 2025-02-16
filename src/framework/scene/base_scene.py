@@ -6,12 +6,13 @@ from src.framework.items.terrain_item import TerrainItem
 from src.framework.scene.functions import hexToRGB, vertex_shad, fragment_shad
 from src.framework.scene.arcball import ArcBallUtil
 from src.framework.scene.undo_commands import *
+from src.framework.managers.context_menu_manager import ContextMenuManager
 from src.framework.managers.tool_manager import ToolManager
 from src.framework.tools.selection_tool import SelectionTool
 
 
 class BaseScene(QGLWidget):
-    def __init__(self, parent=None):
+    def __init__(self, parent):
         super(BaseScene, self).__init__(parent)
         self.setMouseTracking(True)
         self.setCursor(Qt.CursorShape.CrossCursor)
@@ -28,6 +29,7 @@ class BaseScene(QGLWidget):
         # Private
         self._items = []
         self._wireframe = True
+        self._context_menu_manager = ContextMenuManager(self, parent)
         self._tool_manager = ToolManager(self)
         self._selection_tool = SelectionTool(self)
 
@@ -180,6 +182,9 @@ class BaseScene(QGLWidget):
         self.clearHover()
         self.update()
 
+    def contextMenuEvent(self, event):
+        self._context_menu_manager.showMenu(event)
+
     def unsetCursor(self):
         self.setCursor(Qt.CursorShape.CrossCursor)
 
@@ -263,6 +268,12 @@ class BaseScene(QGLWidget):
 
     def selectedItems(self):
         return [item for item in self.items() if item.isSelected()]
+
+    def activeSelection(self) -> BaseItem or None:
+        if self.selectedItems() and len(self.selectedItems()) < 2:
+            return self.selectedItems()[0]
+
+        return None
 
     def clearSelection(self):
         for item in self.items():

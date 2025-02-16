@@ -129,11 +129,20 @@ class PointManager:
             self.parent().glScene().updateArcBall()
 
     def convertGroupToSurface(self):
-        dialog = GetPointGroupDialog(self.parent().glScene(), self.parent())
-        dialog.exec()
+        item = self.parent().glScene().activeSelection()
+        point_group = None
 
-        if dialog.activeResult():
-            point_group = dialog.activeResult()
+        if item and isinstance(item, PointGroupItem):
+            point_group = self.parent().glScene().activeSelection()
+
+        else:
+            dialog = GetPointGroupDialog(self.parent().glScene(), self.parent())
+            dialog.exec()
+
+            if dialog.activeResult():
+                point_group = dialog.activeResult()
+
+        if point_group:
             self.parent().terrain_item_count += 1
 
             points = []
@@ -151,12 +160,21 @@ class PointManager:
                                                                           self.parent().glScene()))
 
     def editPoints(self):
-        dialog = GetPointGroupDialog(self.parent().glScene(), self.parent())
-        dialog.exec()
+        item = self.parent().glScene().activeSelection()
+        point_group = None
 
-        if dialog.activeResult():
-            editor = EditPointGroupDialog(self.parent().glScene(), dialog.activeResult(), self.parent())
-            editor.show()
+        if item and isinstance(item, PointGroupItem):
+            point_group = self.parent().glScene().activeSelection()
+
+        else:
+            dialog = GetPointGroupDialog(self.parent().glScene(), self.parent())
+            dialog.exec()
+
+            if dialog.activeResult():
+                point_group = dialog.activeResult()
+
+        editor = EditPointGroupDialog(self.parent().glScene(), point_group, self.parent())
+        editor.show()
 
     def parent(self):
         return self._parent
