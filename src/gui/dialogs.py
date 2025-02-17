@@ -64,7 +64,7 @@ class EditPointGroupDialog(QDialog):
     def __init__(self, scene, point_group: PointGroupItem, parent):
         super().__init__(parent)
         self.setWindowTitle('Point Editor')
-        self.setWindowFlag(Qt.WindowType.Tool)
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.resize(800, 300)
 
         self.scene = scene
@@ -87,16 +87,10 @@ class EditPointGroupDialog(QDialog):
                                                f'Elevation ({self.parent().unitManager().unitType()})',
                                                'Description'])
         self.editor.horizontalHeader().setSectionResizeMode(
-            QHeaderView.Stretch)
-
-        self.button_group = QDialogButtonBox(self)
-        self.button_group.addButton('Ok', QDialogButtonBox.AcceptRole)
-        self.button_group.addButton('Cancel', QDialogButtonBox.RejectRole)
-        self.button_group.accepted.connect(self.accept)
-        self.button_group.rejected.connect(self.cancel)
+            QHeaderView.ResizeMode.Stretch)
+        self.editor.verticalHeader().setHidden(True)
 
         self.layout().addWidget(self.editor)
-        self.layout().addWidget(self.button_group)
 
     def createTable(self):
         row_count = 0
@@ -127,7 +121,9 @@ class EditPointGroupDialog(QDialog):
 
             row_count += 1
 
-    def accept(self):
+        self.editor.cellChanged.connect(self.applyChanges)
+
+    def applyChanges(self):
         new_point_attr = []
 
         # Iterate through each row of the table
@@ -151,7 +147,4 @@ class EditPointGroupDialog(QDialog):
 
         self.scene.addUndoCommand(EditPointsCommand(self.point_group, self.og_point_attr, new_point_attr))
 
-        self.close()
-
-    def cancel(self):
-        self.close()
+        self.og_point_attr = new_point_attr
