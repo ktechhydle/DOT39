@@ -5,7 +5,7 @@ from src.framework.items.point_group import PointGroupItem
 from src.framework.items.point_item import PointItem
 from src.framework.items.terrain_item import TerrainItem
 from src.framework.scene.undo_commands import *
-from src.errors.standard_error import DOT39StandardError
+from src.errors.pnezd_data_error import DOT39PNEZDDataError
 
 
 class PointManager:
@@ -56,8 +56,7 @@ class PointManager:
                                     'Description': row[4] if len(row) > 4 else ''  # Optional fifth value
                                 })
             except:
-                raise DOT39StandardError('Provided data is either corrupted or incorrectly formatted. Please'
-                                         ' use PNEED style.')
+                raise DOT39PNEZDDataError()
 
             print(points, sep='\n')
 
@@ -102,8 +101,7 @@ class PointManager:
                                 'Description': row[4] if len(row) > 4 else ''  # Optional fifth value
                             })
         except:
-            raise DOT39StandardError('Provided data is either corrupted or incorrectly formatted. Please'
-                                     ' use PNEED style.')
+            raise DOT39PNEZDDataError()
 
         print(points, sep='\n')
 

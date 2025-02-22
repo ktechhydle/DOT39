@@ -7,7 +7,7 @@ class PointItem(BaseItem):
     def __init__(self, scene, program: GL.Program, number, pos: list[float] = [0.0, 0.0, 0.0], name=''):
         super().__init__(scene, name)
         self.setPos(pos)
-        self.setColor(hexToRGB('#ff0000'))
+        self.setColor(hexToRGB('#f67b7b'))
         self._point_num = number
 
         self.program = program

@@ -2,7 +2,7 @@ from src._imports import *
 from src.framework.scene.functions import isConvertibleToFloat
 from src.framework.scene.undo_commands import *
 from src.framework.items.terrain_item import TerrainItem
-from src.errors.standard_error import DOT39StandardError
+from src.errors.pnezd_data_error import DOT39PNEZDDataError
 
 
 class SurfaceManager:
@@ -41,8 +41,7 @@ class SurfaceManager:
                             if isConvertibleToFloat(row[1]):
                                 points.append((float(row[2]), float(row[1]), float(row[3])))
             except:
-                raise DOT39StandardError('Provided data is either corrupted or incorrectly formatted. Please'
-                                         ' use PNEED formatted data.')
+                raise DOT39PNEZDDataError()
 
             # Potential GEOTIFF Import
             '''elif file.endswith('.tiff') or file.endswith('.tif'):
