@@ -1,6 +1,7 @@
 from src.gui.widgets import *
 from src.gui.panels import ScenePanel
 from src.framework.scene.base_scene import BaseScene
+from src.framework.scene.undo_commands import AddItemCommand
 from src.framework.managers.unit_manager import UnitManager
 from src.framework.managers.point_manager import PointManager
 from src.framework.managers.surface_manager import SurfaceManager
@@ -99,7 +100,7 @@ class DOT39(QMainWindow):
         alignment.drawLine(50, 50)
         alignment.drawLine(100, 75)
 
-        self.glScene().addItem(alignment)
+        self.glScene().addUndoCommand(AddItemCommand(alignment, self.glScene()))
 
     def glScene(self):
         return self.scene
