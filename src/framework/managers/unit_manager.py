@@ -3,7 +3,7 @@ from pyproj import Transformer, CRS
 
 class UnitManager:
     def __init__(self):
-        self._unit_type = 'ft.'
+        self._unit_type = ''
         self._input_espg_code = None
         self._target_espg_code = None
 
