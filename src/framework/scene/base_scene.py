@@ -9,6 +9,7 @@ from src.framework.scene.undo_commands import *
 from src.framework.managers.context_menu_manager import ContextMenuManager
 from src.framework.managers.tool_manager import ToolManager
 from src.framework.tools.selection_tool import SelectionTool
+from src.framework.tools.alignment_tool import AlignmentTool
 
 
 class BaseScene(QGLWidget):
@@ -32,6 +33,7 @@ class BaseScene(QGLWidget):
         self._context_menu_manager = ContextMenuManager(self, parent)
         self._tool_manager = ToolManager(self)
         self._selection_tool = SelectionTool(self)
+        self._alignment_tool = AlignmentTool(self)
 
     def initializeGL(self):
         self.ctx = GL.create_context()
@@ -121,6 +123,8 @@ class BaseScene(QGLWidget):
         if event.buttons() & Qt.MouseButton.LeftButton:
             if self._tool_manager.currentTool() == ToolManager.SelectionTool:
                 self._selection_tool.mousePress(event)
+            elif self._tool_manager.currentTool() == ToolManager.AlignmentTool:
+                self._alignment_tool.mousePress(event)
 
         elif (event.buttons() & Qt.MouseButton.MiddleButton) and (
                 event.modifiers() & Qt.KeyboardModifier.ShiftModifier):

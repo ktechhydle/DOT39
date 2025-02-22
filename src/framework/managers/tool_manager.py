@@ -1,6 +1,7 @@
 class ToolManager(object):
     NoTool = 0
     SelectionTool = 1
+    AlignmentTool = 2
 
     def __init__(self, scene):
         self._scene = scene
