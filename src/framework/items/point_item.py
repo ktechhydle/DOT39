@@ -7,7 +7,7 @@ class PointItem(BaseItem):
     def __init__(self, scene, program: GL.Program, number, pos: list[float] = [0.0, 0.0, 0.0], name=''):
         super().__init__(scene, name)
         self.setPos(pos)
-        self.setColor(hexToRGB('#f67b7b'))
+        self.setColor(hexToRGB('#ff0000'))
         self._point_num = number
 
         self.program = program
@@ -41,7 +41,6 @@ class PointItem(BaseItem):
             font_id = QFontDatabase.addApplicationFont('resources/fonts/Proxy 9.ttf')
             font_families = QFontDatabase.applicationFontFamilies(font_id)
             font = QFont(font_families[0], 1)
-            font.setLetterSpacing(QFont.AbsoluteSpacing, 0.5)
             path = QPainterPath()
             path.addText(QPointF(0, 0), font, self.name())
 
@@ -78,29 +77,35 @@ class PointItem(BaseItem):
     def render(self, color=None):
         super().render()
 
-        if color:
-            self.program['color'].value = (color[0], color[1], color[2])
-            self.program['alphaValue'].value = color[3]
+        def set_color(color_value):
+            self.program['color'].value = color_value[:3]
+            self.program['alphaValue'].value = color_value[3]
 
+        # Set color for main object
+        if color:
+            set_color(color)
         else:
-            # Use the shader program and draw
             current_color = self.color()
             if self.isSelected():
                 self.program['color'].value = hexToRGB('#007fff')
-
             elif self.isHovered():
                 self.program['color'].value = hexToRGB('#0058b2')
-
             else:
                 self.program['color'].value = current_color
 
-        vao = self.ctx.simple_vertex_array(self.program, self.vbo, 'in_vert', index_buffer=self.ibo)
-        vao.render(GL.LINES)
+        # Render main object
+        self.ctx.simple_vertex_array(self.program, self.vbo, 'in_vert', index_buffer=self.ibo).render(GL.LINES)
 
-        # Render the text
+        # Render text if available
         if self.text_vbo:
-            text_vao = self.ctx.simple_vertex_array(self.program, self.text_vbo, 'in_vert')
-            text_vao.render(GL.LINE_LOOP)
+            if color:
+                set_color(color)
+            else:
+                self.program['color'].value = hexToRGB('#007fff') if self.isSelected() else (
+                    hexToRGB('#0058b2') if self.isHovered() else hexToRGB('#c800ff')
+                )
+
+            self.ctx.simple_vertex_array(self.program, self.text_vbo, 'in_vert').render(GL.LINE_LOOP)
 
     def update(self):
         self.vbo = self.createVbo()
