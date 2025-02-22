@@ -4,6 +4,7 @@ from src.framework.scene.base_scene import BaseScene
 from src.framework.managers.unit_manager import UnitManager
 from src.framework.managers.point_manager import PointManager
 from src.framework.managers.surface_manager import SurfaceManager
+from src.framework.items.alignment_item import AlignmentItem
 
 
 class DOT39(QMainWindow):
@@ -92,6 +93,13 @@ class DOT39(QMainWindow):
 
     def addTestObj(self):
         self.pointManager.directImport('sample_data/points.txt')
+
+        alignment = AlignmentItem(self.glScene(), self.glScene().shaderProgram())
+        alignment.drawStart(0, 0)
+        alignment.drawLine(50, 50)
+        alignment.drawLine(100, 75)
+
+        self.glScene().addItem(alignment)
 
     def glScene(self):
         return self.scene
