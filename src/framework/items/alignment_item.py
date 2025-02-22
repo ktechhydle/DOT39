@@ -73,6 +73,9 @@ class AlignmentItem(BaseItem):
         self._horizontal_path.clear()
         self.update()
 
+    def horizontalPath(self):
+        return self._horizontal_path
+
     def render(self, color=None):
         super().render()
 

@@ -3,6 +3,7 @@ from src.framework.items.base_item import BaseItem
 from src.framework.items.point_group import PointGroupItem
 from src.framework.items.point_item import PointItem
 from src.framework.items.terrain_item import TerrainItem
+from src.framework.items.alignment_item import AlignmentItem
 from src.framework.scene.functions import hexToRGB, vertex_shad, fragment_shad
 from src.framework.scene.arcball import ArcBallUtil
 from src.framework.scene.undo_commands import *
@@ -198,9 +199,18 @@ class BaseScene(QGLWidget):
             if isinstance(item, PointGroupItem):
                 for p in item.points():
                     mesh_points.append(p.pos())
+
             elif isinstance(item, TerrainItem):
                 for p in item.points():
                     mesh_points.append([*p])
+
+            elif isinstance(item, AlignmentItem):
+                polygons = item.horizontalPath().toSubpathPolygons()
+
+                for polygon in polygons:
+                    for point in polygon:
+                        mesh_points.append([point.x(), point.y(), 0])
+
             else:
                 mesh_points.append(item.pos())
 
