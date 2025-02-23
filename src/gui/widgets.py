@@ -42,6 +42,16 @@ class ToolBarContainer(QWidget):
         return self._widgets
 
 
+class ToolBarButton(QPushButton):
+    def __init__(self, text: str, checkable=False, toolbar_group=None):
+        super().__init__(text)
+        self.setCheckable(checkable)
+        self.setObjectName('toolbarButton')
+
+        if toolbar_group:
+            toolbar_group.addButton(self)
+
+
 class ToolBoxButton(QPushButton):
     def __init__(self, text):
         super().__init__()

@@ -37,6 +37,7 @@ class DOT39(QMainWindow):
         self.createPanels()
 
     def createToolBarActions(self):
+        self._toolbar_btn_group = QButtonGroup(self)
         points_panel_widgets_1 = []
         points_panel_widgets_2 = []
         surface_panel_widgets_1 = []
@@ -44,29 +45,23 @@ class DOT39(QMainWindow):
         alignment_panel_widgets_1 = []
         alignment_panel_widgets_2 = []
 
-        import_points_btn = QPushButton('Import Point Data')
-        import_points_btn.setObjectName('toolbarButton')
+        import_points_btn = ToolBarButton('Import Point Data')
         import_points_btn.clicked.connect(self.pointManager.importPoints)
         points_panel_widgets_1.append(import_points_btn)
 
-        edit_points_btn = QPushButton('Edit Points')
-        edit_points_btn.setObjectName('toolbarButton')
+        edit_points_btn = ToolBarButton('Edit Points')
         edit_points_btn.clicked.connect(self.pointManager.editPoints)
         points_panel_widgets_2.append(edit_points_btn)
 
-        create_surface_from_group = QPushButton('Create Surface From Points')
-        create_surface_from_group.setObjectName('toolbarButton')
+        create_surface_from_group = ToolBarButton('Create Surface From Points')
         create_surface_from_group.clicked.connect(self.pointManager.convertGroupToSurface)
         surface_panel_widgets_1.append(create_surface_from_group)
 
-        create_surface_from_file = QPushButton('Create Surface From Data')
-        create_surface_from_file.setObjectName('toolbarButton')
+        create_surface_from_file = ToolBarButton('Create Surface From Data')
         create_surface_from_file.clicked.connect(self.surfaceManager.importSurfaceData)
         surface_panel_widgets_2.append(create_surface_from_file)
 
-        self._alignment_tool_btn = QPushButton('Alignment Tool')
-        self._alignment_tool_btn.setObjectName('toolbarButton')
-        self._alignment_tool_btn.setCheckable(True)
+        self._alignment_tool_btn = ToolBarButton('Alignment Tool', checkable=True)
         self._alignment_tool_btn.clicked.connect(self.useAlignmentTool)
         alignment_panel_widgets_1.append(self._alignment_tool_btn)
 
