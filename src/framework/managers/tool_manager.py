@@ -10,6 +10,9 @@ class ToolManager(object):
     def setCurrentTool(self, tool: int):
         self._current_tool = tool
 
+    def resetTools(self):
+        self.setCurrentTool(self.SelectionTool)
+
     def currentTool(self) -> int:
         return self._current_tool
 

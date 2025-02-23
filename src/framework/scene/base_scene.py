@@ -74,7 +74,7 @@ class BaseScene(QGLWidget):
         self.arc_ball.setBounds(width, height)
 
         # Resize selection framebuffer
-        self.resizeSelectionBuffers(w, h)
+        self._resizeSelectionBuffers(w, h)
 
         # Console Info
         print(f'OpenGL Viewport Resized To: {width, height}')
@@ -163,7 +163,11 @@ class BaseScene(QGLWidget):
             self._selection_tool.mouseMove(event)
 
     def mouseReleaseEvent(self, event: QMouseEvent):
-        if (event.buttons() & Qt.MouseButton.MiddleButton) and (event.modifiers() & Qt.KeyboardModifier.ShiftModifier):
+        if event.buttons() & Qt.MouseButton.LeftButton:
+            if self._tool_manager.currentTool() == ToolManager.AlignmentTool:
+                self._alignment_tool.mouseRelease(event)
+
+        elif (event.buttons() & Qt.MouseButton.MiddleButton) and (event.modifiers() & Qt.KeyboardModifier.ShiftModifier):
             self.arc_ball.onClickLeftUp()
 
         self.unsetCursor()
@@ -277,6 +281,12 @@ class BaseScene(QGLWidget):
         return [item for item in self.visibleItems() if item.isSelected()]
 
     def activeSelection(self) -> BaseItem or None:
+        """
+        Returns the selected item (if there is only one item selected
+        on the scene)
+
+        :return: BaseItem
+        """
         if self.selectedItems() and len(self.selectedItems()) < 2:
             return self.selectedItems()[0]
 
@@ -296,7 +306,7 @@ class BaseScene(QGLWidget):
         print('Rendering For Selection')
 
         # Render to selection framebuffer
-        self.renderForSelection()
+        self._renderForSelection()
 
         # Read the pixel under the cursor
         pixel_data = self.selection_fbo.read(viewport=(x, y, 1, 1), alignment=4, dtype='i4')
@@ -313,7 +323,21 @@ class BaseScene(QGLWidget):
 
         return None
 
-    def renderForSelection(self):
+    def mapMouseToViewport(self, x, y):
+        """
+        Converts mouse coordinates to viewport coordinates.
+
+        :param x: Mouse X position
+        :param y: Mouse Y position
+        :return: Tuple (viewport_x, viewport_y)
+        """
+        # Convert to OpenGL viewport coordinates (Y is flipped)
+        viewport_x = (2.0 * x) / self.width() - 1.0
+        viewport_y = 1.0 - (2.0 * y) / self.height()
+
+        return viewport_x, viewport_y
+
+    def _renderForSelection(self):
         """
         Renders the scene with object IDs into an offscreen framebuffer
         :return: None
@@ -326,7 +350,7 @@ class BaseScene(QGLWidget):
             item.render(color=(i / 255.0, 0, 0, 1))
             print((i / 255.0, 0, 0, 1))
 
-    def resizeSelectionBuffers(self, w, h):
+    def _resizeSelectionBuffers(self, w, h):
         """
         Resizes the selection framebuffer
         :return: None
@@ -373,5 +397,11 @@ class BaseScene(QGLWidget):
     def shaderProgram(self) -> GL.Program:
         return self.program
 
+    def toolManager(self) -> ToolManager:
+        return self._tool_manager
+
     def selectionTool(self) -> SelectionTool:
         return self._selection_tool
+
+    def alignmentTool(self) -> AlignmentTool:
+        return self._alignment_tool
