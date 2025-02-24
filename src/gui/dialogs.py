@@ -230,7 +230,7 @@ class AlignmentCreatorDialog(QDialog):
         self._alignment_item.clearHorizontalPath()
 
         for i in range(self.editor.rowCount()):
-            if self.editor.item(i, 1).text() and (isConvertibleToFloat(self.editor.item(i, 1).text())
+            if self.editor.item(i, 1) and (isConvertibleToFloat(self.editor.item(i, 1).text())
                     and isConvertibleToFloat(self.editor.item(i, 2).text())):
                 if self.editor.item(i, 0).text() == 'Start Position':
                     self._alignment_item.drawStart(float(self.editor.item(i, 1).text()),
