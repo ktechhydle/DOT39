@@ -5,6 +5,7 @@ from src.framework.scene.undo_commands import AddItemCommand
 from src.framework.managers.unit_manager import UnitManager
 from src.framework.managers.point_manager import PointManager
 from src.framework.managers.surface_manager import SurfaceManager
+from src.framework.managers.alignment_manager import AlignmentManager
 from src.framework.items.alignment_item import AlignmentItem
 
 
@@ -16,11 +17,13 @@ class DOT39(QMainWindow):
 
         self.pointManager = PointManager(self)
         self.surfaceManager = SurfaceManager(self)
+        self.alignmentManager = AlignmentManager(self)
         self.unit_manager = UnitManager()
 
         self.point_group_count = 0
         self.point_item_count = 0
         self.terrain_item_count = 0
+        self.alignment_item_count = 0
 
         self.createUI()
 
@@ -61,9 +64,8 @@ class DOT39(QMainWindow):
         create_surface_from_file.clicked.connect(self.surfaceManager.importSurfaceData)
         surface_panel_widgets_2.append(create_surface_from_file)
 
-        self._alignment_tool_btn = ToolBarButton('Alignment Tool', checkable=True)
-        self._alignment_tool_btn.clicked.connect(self.useAlignmentTool)
-        alignment_panel_widgets_1.append(self._alignment_tool_btn)
+        create_alignment_btn = ToolBarButton('Create Alignment')
+        alignment_panel_widgets_1.append(create_alignment_btn)
 
         points_panel = ToolBarContainer('Points', points_panel_widgets_1)
         points_panel.addRow(points_panel_widgets_2)
@@ -107,13 +109,6 @@ class DOT39(QMainWindow):
         alignment.drawLine(100, 75)
 
         self.glScene().addUndoCommand(AddItemCommand(alignment, self.glScene()))
-
-    def useAlignmentTool(self):
-        if self._alignment_tool_btn.isChecked():
-            self.glScene().toolManager().setCurrentTool(self.glScene().toolManager().AlignmentTool)
-        else:
-            self.glScene().alignmentTool().finish()
-            self.glScene().toolManager().resetTools()
 
     def glScene(self):
         return self.scene

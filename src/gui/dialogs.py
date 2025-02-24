@@ -148,3 +148,15 @@ class EditPointGroupDialog(QDialog):
         self.scene.addUndoCommand(EditPointsCommand(self.point_group, self.og_point_attr, new_point_attr))
 
         self.og_point_attr = new_point_attr
+
+
+class AlignmentCreatorDialog(QDialog):
+    def __init__(self, scene, parent):
+        super().__init__(parent)
+        self.setWindowTitle('Create Alignment')
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
+        self.resize(800, 300)
+
+        self.scene = scene
+
+        self.createUI()
