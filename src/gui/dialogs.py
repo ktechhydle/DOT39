@@ -1,5 +1,7 @@
 from src._imports import *
 from src.framework.items.point_group import PointGroupItem
+from src.framework.items.alignment_item import AlignmentItem
+from src.framework.scene.functions import isConvertibleToFloat
 from src.framework.scene.undo_commands import *
 
 
@@ -158,10 +160,15 @@ class AlignmentCreatorDialog(QDialog):
         self.resize(800, 300)
 
         self.scene = scene
+        self._editor_row_count = 1
+        self._alignment_item = AlignmentItem(self.scene, self.scene.shaderProgram())
 
         self.createUI()
+        self.createTable()
 
     def createUI(self):
+        self.parent().alignment_item_count += 1
+
         self.setLayout(QVBoxLayout())
 
         self.add_point_btn = QPushButton('+')
@@ -170,21 +177,80 @@ class AlignmentCreatorDialog(QDialog):
         self.add_point_btn.clicked.connect(self.addNewPointOnAlignment)
 
         self.editor = QTableWidget(self)
-        self.editor.setColumnCount(7)
+        self.editor.setColumnCount(3)
         self.editor.setHorizontalHeaderLabels(['Type', 'X', 'Y'])
         self.editor.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.Stretch)
         self.editor.verticalHeader().setHidden(True)
+        self.editor.cellChanged.connect(self.updateAlignment)
+
+        self.button_group = QDialogButtonBox(self)
+        self.button_group.addButton('Ok', QDialogButtonBox.AcceptRole)
+        self.button_group.addButton('Cancel', QDialogButtonBox.RejectRole)
+        self.button_group.accepted.connect(self.accept)
+        self.button_group.rejected.connect(lambda: self.close(remove=True))
 
         self.layout().addWidget(self.add_point_btn)
         self.layout().addWidget(self.editor)
+        self.layout().addWidget(self.button_group)
+
+    def createTable(self):
+        self.editor.setRowCount(self._editor_row_count)
+
+        type_item = QTableWidgetItem('Start Position')
+        type_item.setFlags(type_item.flags() & ~Qt.ItemIsEditable)
+        x_item = QTableWidgetItem('0')
+        y_item = QTableWidgetItem('0')
+
+        self.editor.setItem(self._editor_row_count - 1, 0, type_item)
+        self.editor.setItem(self._editor_row_count - 1, 1, x_item)
+        self.editor.setItem(self._editor_row_count - 1, 2, y_item)
 
     def addNewPointOnAlignment(self):
         dialog = GetAlignmentTypeDialog(self.parent())
         dialog.exec()
 
         if dialog.activeResult():
+            self._editor_row_count += 1
+            self.editor.setRowCount(self._editor_row_count)
+
             point_type = dialog.activeResult()
+
+            if point_type == 'lineTo':
+                type_item = QTableWidgetItem('Line')
+                type_item.setFlags(type_item.flags() & ~Qt.ItemIsEditable)
+                x_item = QTableWidgetItem('0')
+                y_item = QTableWidgetItem('0')
+
+                self.editor.setItem(self._editor_row_count - 1, 0, type_item)
+                self.editor.setItem(self._editor_row_count - 1, 1, x_item)
+                self.editor.setItem(self._editor_row_count - 1, 2, y_item)
+
+    def updateAlignment(self):
+        self._alignment_item.clearHorizontalPath()
+
+        for i in range(self.editor.rowCount()):
+            if self.editor.item(i, 1).text() and (isConvertibleToFloat(self.editor.item(i, 1).text())
+                    and isConvertibleToFloat(self.editor.item(i, 2).text())):
+                if self.editor.item(i, 0).text() == 'Start Position':
+                    self._alignment_item.drawStart(float(self.editor.item(i, 1).text()),
+                                                   float(self.editor.item(i, 2).text()))
+                elif self.editor.item(i, 0).text() == 'Line':
+                    self._alignment_item.drawLine(float(self.editor.item(i, 1).text()),
+                                                   float(self.editor.item(i, 2).text()))
+
+        self.scene.addItem(self._alignment_item)
+
+    def accept(self):
+        self.scene.addUndoCommand(AddItemCommand(self._alignment_item, self.scene))
+
+        self.close()
+
+    def close(self, remove=False):
+        if remove:
+            self.scene.removeItem(self._alignment_item)
+
+        super().close()
 
 
 class GetAlignmentTypeDialog(QDialog):
