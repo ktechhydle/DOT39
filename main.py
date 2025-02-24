@@ -65,6 +65,7 @@ class DOT39(QMainWindow):
         surface_panel_widgets_2.append(create_surface_from_file)
 
         create_alignment_btn = ToolBarButton('Create Alignment')
+        create_alignment_btn.clicked.connect(self.alignmentManager.createAlignment)
         alignment_panel_widgets_1.append(create_alignment_btn)
 
         points_panel = ToolBarContainer('Points', points_panel_widgets_1)

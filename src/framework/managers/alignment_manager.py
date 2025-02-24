@@ -9,7 +9,8 @@ class AlignmentManager:
         self._parent = parent
 
     def createAlignment(self):
-        pass
+        dialog = AlignmentCreatorDialog(self.parent().glScene(), self.parent())
+        dialog.exec()
 
     def parent(self):
         return self._parent

@@ -160,3 +160,68 @@ class AlignmentCreatorDialog(QDialog):
         self.scene = scene
 
         self.createUI()
+
+    def createUI(self):
+        self.setLayout(QVBoxLayout())
+
+        self.add_point_btn = QPushButton('+')
+        self.add_point_btn.setToolTip('Add a new point along the alignment')
+        self.add_point_btn.setFixedWidth(25)
+        self.add_point_btn.clicked.connect(self.addNewPointOnAlignment)
+
+        self.editor = QTableWidget(self)
+        self.editor.setColumnCount(7)
+        self.editor.setHorizontalHeaderLabels(['Type', 'X', 'Y'])
+        self.editor.horizontalHeader().setSectionResizeMode(
+            QHeaderView.ResizeMode.Stretch)
+        self.editor.verticalHeader().setHidden(True)
+
+        self.layout().addWidget(self.add_point_btn)
+        self.layout().addWidget(self.editor)
+
+    def addNewPointOnAlignment(self):
+        dialog = GetAlignmentTypeDialog(self.parent())
+        dialog.exec()
+
+        if dialog.activeResult():
+            point_type = dialog.activeResult()
+
+
+class GetAlignmentTypeDialog(QDialog):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.setWindowTitle('Choose Type')
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
+
+        self._result = None
+
+        self.createPotentialList()
+        self.createUI()
+
+    def createPotentialList(self):
+        self.potential_list = {'New Line': 'lineTo'}
+
+    def createUI(self):
+        self.setLayout(QVBoxLayout())
+
+        self.chooser_combo = QComboBox(self)
+
+        for k, v in self.potential_list.items():
+            self.chooser_combo.addItem(k, v)
+
+        self.button_group = QDialogButtonBox(self)
+        self.button_group.addButton('Ok', QDialogButtonBox.AcceptRole)
+        self.button_group.addButton('Cancel', QDialogButtonBox.RejectRole)
+        self.button_group.accepted.connect(self.accept)
+        self.button_group.rejected.connect(self.close)
+
+        self.layout().addWidget(self.chooser_combo)
+        self.layout().addWidget(self.button_group)
+
+    def accept(self):
+        self._result = self.chooser_combo.itemData(self.chooser_combo.currentIndex())
+
+        self.close()
+
+    def activeResult(self) -> str:
+        return self._result
