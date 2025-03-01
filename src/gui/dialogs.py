@@ -253,12 +253,13 @@ class EditPointGroupDialog(QDialog):
 class EditAlignmentDialog(QDialog):
     def __init__(self, scene, alignment: AlignmentItem, parent):
         super().__init__(parent)
-        self.setWindowTitle('Point Editor')
+        self.setWindowTitle('Alignment Editor')
         self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.resize(800, 300)
 
         self.scene = scene
         self.alignment = alignment
+        self._editor_row_count = 1
 
         # Undo storage
         self.og_path = self.alignment.horizontalPath()
@@ -274,6 +275,10 @@ class EditAlignmentDialog(QDialog):
         self.add_point_btn.setToolTip('Add a new point along the alignment')
         self.add_point_btn.setFixedWidth(25)
         self.add_point_btn.clicked.connect(self.addNewPointOnAlignment)
+        self.remove_point_btn = QPushButton('-')
+        self.remove_point_btn.setToolTip('Remove the most recent point on the alignment')
+        self.remove_point_btn.setFixedWidth(25)
+        self.remove_point_btn.clicked.connect(self.removePointOnAlignment)
 
         self.editor = QTableWidget(self)
         self.editor.setColumnCount(3)
@@ -282,10 +287,26 @@ class EditAlignmentDialog(QDialog):
             QHeaderView.ResizeMode.Stretch)
         self.editor.verticalHeader().setHidden(True)
 
+        self.layout().addWidget(self.add_point_btn)
+        self.layout().addWidget(self.remove_point_btn)
         self.layout().addWidget(self.editor)
 
     def createTable(self):
-        self.editor.setRowCount(0)
+        for draw_type, coord in self.alignment.drawCalls().items():
+            self._editor_row_count += 1
+
+            x, y = coord
+
+            type_item = QTableWidgetItem(draw_type)
+            type_item.setFlags(type_item.flags() & ~Qt.ItemIsEditable)
+            x_item = QTableWidgetItem(x)
+            y_item = QTableWidgetItem(y)
+
+            self.editor.setItem(self._editor_row_count - 1, 0, type_item)
+            self.editor.setItem(self._editor_row_count - 1, 1, x_item)
+            self.editor.setItem(self._editor_row_count - 1, 2, y_item)
+
+        self.editor.setRowCount(self._editor_row_count)
         self.editor.cellChanged.connect(self.applyChanges)
 
     def itemTextInRow(self, row, column) -> str:
@@ -323,6 +344,13 @@ class EditAlignmentDialog(QDialog):
                 self.editor.setItem(self._editor_row_count - 1, 0, type_item)
                 self.editor.setItem(self._editor_row_count - 1, 1, x_item)
                 self.editor.setItem(self._editor_row_count - 1, 2, y_item)
+
+    def removePointOnAlignment(self):
+        if self.editor.rowCount() > 1:
+            self._editor_row_count -= 1
+            self.editor.removeRow(self._editor_row_count)
+
+        self.updateAlignment()
 
     def applyChanges(self):
         new_path = AlignmentItem(self.scene, self.scene.shaderProgram())
@@ -371,6 +399,10 @@ class AlignmentCreatorDialog(QDialog):
         self.add_point_btn.setToolTip('Add a new point along the alignment')
         self.add_point_btn.setFixedWidth(25)
         self.add_point_btn.clicked.connect(self.addNewPointOnAlignment)
+        self.remove_point_btn = QPushButton('-')
+        self.remove_point_btn.setToolTip('Remove the most recent point on the alignment')
+        self.remove_point_btn.setFixedWidth(25)
+        self.remove_point_btn.clicked.connect(self.removePointOnAlignment)
 
         self.editor = QTableWidget(self)
         self.editor.setColumnCount(3)
@@ -387,6 +419,7 @@ class AlignmentCreatorDialog(QDialog):
         self.button_group.rejected.connect(lambda: self.close(remove=True))
 
         self.layout().addWidget(self.add_point_btn)
+        self.layout().addWidget(self.remove_point_btn)
         self.layout().addWidget(self.editor)
         self.layout().addWidget(self.button_group)
 
@@ -431,6 +464,13 @@ class AlignmentCreatorDialog(QDialog):
                 self.editor.setItem(self._editor_row_count - 1, 0, type_item)
                 self.editor.setItem(self._editor_row_count - 1, 1, x_item)
                 self.editor.setItem(self._editor_row_count - 1, 2, y_item)
+
+    def removePointOnAlignment(self):
+        if self.editor.rowCount() > 1:
+            self._editor_row_count -= 1
+            self.editor.removeRow(self._editor_row_count)
+
+        self.updateAlignment()
 
     def updateAlignment(self):
         self._alignment_item.clearHorizontalPath()

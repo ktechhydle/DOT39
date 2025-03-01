@@ -80,7 +80,7 @@ class AlignmentItem(BaseItem):
 
         self.update()
 
-    def drawCalls(self) -> dict:
+    def drawCalls(self) -> dict[str, tuple]:
         return self._draw_calls
 
     def setDrawCalls(self, calls: dict):
