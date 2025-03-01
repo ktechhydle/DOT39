@@ -1,6 +1,7 @@
 from src._imports import *
 from src.gui.widgets import ContextMenu
 from src.framework.items.point_group import PointGroupItem
+from src.framework.items.alignment_item import AlignmentItem
 
 
 class ContextMenuManager(object):
@@ -28,6 +29,12 @@ class ContextMenuManager(object):
 
                 menu.addAction(edit_points_action)
                 menu.addAction(to_surface_action)
+
+            elif isinstance(selected_item, AlignmentItem):
+                edit_alignment_action = QAction('Edit Alignment', menu)
+                edit_alignment_action.triggered.connect(self.parent.alignmentManager.editAlignment)
+
+                menu.addAction(edit_alignment_action)
 
         select_all_action = QAction('Select All', menu)
         select_all_action.triggered.connect(self.scene.selectionTool().selectAll)
