@@ -58,6 +58,25 @@ class EditPointsCommand(QUndoCommand):
         self.point_group.update()
 
 
+class EditHorizontalAlignmentCommand(QUndoCommand):
+    def __init__(self, alignment, old_path, old_calls, new_path, new_calls):
+        super().__init__()
+
+        self.alignment = alignment
+        self.old_path = old_path
+        self.old_calls = old_calls
+        self.new_path = new_path
+        self.new_calls = new_calls
+
+    def redo(self):
+        self.alignment.setHorizontalPath(self.new_path)
+        self.alignment.setDrawCalls(self.new_calls)
+
+    def undo(self):
+        self.alignment.setHorizontalPath(self.old_path)
+        self.alignment.setDrawCalls(self.old_calls)
+
+
 class VisibilityChangedCommand(QUndoCommand):
     def __init__(self, items: list, new_attr: list[bool], old_attr: list[bool]):
         super().__init__()

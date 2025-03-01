@@ -250,6 +250,104 @@ class EditPointGroupDialog(QDialog):
         self.og_point_attr = new_point_attr
 
 
+class EditAlignmentDialog(QDialog):
+    def __init__(self, scene, alignment: AlignmentItem, parent):
+        super().__init__(parent)
+        self.setWindowTitle('Point Editor')
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
+        self.resize(800, 300)
+
+        self.scene = scene
+        self.alignment = alignment
+
+        # Undo storage
+        self.og_path = self.alignment.horizontalPath()
+        self.og_calls = self.alignment.drawCalls()
+
+        self.createUI()
+        self.createTable()
+
+    def createUI(self):
+        self.setLayout(QVBoxLayout())
+
+        self.add_point_btn = QPushButton('+')
+        self.add_point_btn.setToolTip('Add a new point along the alignment')
+        self.add_point_btn.setFixedWidth(25)
+        self.add_point_btn.clicked.connect(self.addNewPointOnAlignment)
+
+        self.editor = QTableWidget(self)
+        self.editor.setColumnCount(3)
+        self.editor.setHorizontalHeaderLabels(['Type', 'X', 'Y'])
+        self.editor.horizontalHeader().setSectionResizeMode(
+            QHeaderView.ResizeMode.Stretch)
+        self.editor.verticalHeader().setHidden(True)
+
+        self.layout().addWidget(self.editor)
+
+    def createTable(self):
+        self.editor.setRowCount(0)
+        self.editor.cellChanged.connect(self.applyChanges)
+
+    def itemTextInRow(self, row, column) -> str:
+        if self.editor.item(row, column):
+            return self.editor.item(row, column).text()
+
+        return ''
+
+    def addNewPointOnAlignment(self):
+        dialog = GetAlignmentTypeDialog(self.parent())
+        dialog.exec()
+
+        if dialog.activeResult():
+            self._editor_row_count += 1
+            self.editor.setRowCount(self._editor_row_count)
+
+            point_type = dialog.activeResult()
+
+            if point_type == 'lineTo':
+                type_item = QTableWidgetItem('Line')
+                type_item.setFlags(type_item.flags() & ~Qt.ItemIsEditable)
+                x_item = QTableWidgetItem('0')
+                y_item = QTableWidgetItem('0')
+
+                self.editor.setItem(self._editor_row_count - 1, 0, type_item)
+                self.editor.setItem(self._editor_row_count - 1, 1, x_item)
+                self.editor.setItem(self._editor_row_count - 1, 2, y_item)
+
+            elif point_type == 'circularCurveTo':
+                type_item = QTableWidgetItem('Circular Curve')
+                type_item.setFlags(type_item.flags() & ~Qt.ItemIsEditable)
+                x_item = QTableWidgetItem('0')
+                y_item = QTableWidgetItem('0')
+
+                self.editor.setItem(self._editor_row_count - 1, 0, type_item)
+                self.editor.setItem(self._editor_row_count - 1, 1, x_item)
+                self.editor.setItem(self._editor_row_count - 1, 2, y_item)
+
+    def applyChanges(self):
+        new_path = AlignmentItem(self.scene, self.scene.shaderProgram())
+
+        # Iterate through each row of the table
+        for i in range(self.editor.rowCount()):
+            if self.editor.item(i, 0):
+                type = self.itemTextInRow(i, 0)
+                x = self.itemTextInRow(i, 1)
+                y = self.itemTextInRow(i, 2)
+
+                if isConvertibleToFloat(x) and isConvertibleToFloat(y):
+                    if type == 'Start Position':
+                        new_path.drawStart(float(x), float(y))
+                    elif type == 'Line':
+                        new_path.drawLine(float(x), float(y))
+                    elif type == 'Circular Curve':
+                        new_path.drawCircularCurve(float(x), float(y))
+
+        self.scene.addUndoCommand(EditHorizontalAlignmentCommand(self.alignment, self.og_path, self.og_calls,
+                                                                 new_path.horizontalPath(), new_path.drawCalls()))
+
+        self.og_path = new_path.horizontalPath()
+
+
 class AlignmentCreatorDialog(QDialog):
     def __init__(self, scene, parent):
         super().__init__(parent)

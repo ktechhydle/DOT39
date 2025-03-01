@@ -80,9 +80,20 @@ class AlignmentItem(BaseItem):
 
         self.update()
 
+    def drawCalls(self) -> dict:
+        return self._draw_calls
+
+    def setDrawCalls(self, calls: dict):
+        self._draw_calls = calls
+
     def clearHorizontalPath(self):
         self._horizontal_path.clear()
         self._draw_calls = {}
+
+        self.update()
+
+    def setHorizontalPath(self, path: QPainterPath):
+        self._horizontal_path = path
 
         self.update()
 
