@@ -106,7 +106,7 @@ class GetAlignmentDialog(QDialog):
         item.setSelected(True)
 
     def accept(self):
-        self._result = self.alignment_combo.itemData(self.point_group_combo.currentIndex())
+        self._result = self.alignment_combo.itemData(self.alignment_combo.currentIndex())
 
         self.close()
 
