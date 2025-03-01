@@ -33,58 +33,52 @@ class AlignmentItem(BaseItem):
         return None
 
     def drawCircularCurve(self, to_x, to_y):
-        # Get the current position (previous point)
         prev_point = self._horizontal_path.currentPosition()
         prev_x, prev_y = prev_point.x(), prev_point.y()
 
-        # Calculate the direction vectors (tangent directions) for the line from the previous point to the target point
         dx = to_x - prev_x
         dy = to_y - prev_y
+        distance = math.hypot(dx, dy)
+        if distance == 0:
+            return  # No movement needed
 
-        # Calculate the normal vector of the line (perpendicular to the direction of the line)
-        normal_length = math.sqrt(dx ** 2 + dy ** 2)
-        normal_x = -dy / normal_length
-        normal_y = dx / normal_length
+        # Flip the normal vector direction to invert the curve
+        normal_x = dy / distance  # Previously: -dy / distance
+        normal_y = -dx / distance  # Previously: dx / distance
 
-        # You can control the curvature with this factor (the radius will be proportional to the curvature)
-        curvature = 0.5  # This determines how "tight" the curve is. Increase for tighter curves, decrease for wider.
+        curvature = 0.5  # Adjust curvature (0 < curvature < 1)
 
-        # The center of the circle will be offset from the midpoint of the line by the normal vector scaled by the radius.
-        radius = normal_length * curvature
-        center_x = (prev_x + to_x) / 2 + normal_x * radius
-        center_y = (prev_y + to_y) / 2 + normal_y * radius
+        # Calculate offset (h) and radius
+        h = curvature * distance
+        radius = math.sqrt((distance / 2) ** 2 + h ** 2)
 
-        # Calculate the angle of the arc (we will assume it's a half-circle)
+        # Midpoint between prev and to points
+        mid_x = (prev_x + to_x) / 2
+        mid_y = (prev_y + to_y) / 2
+
+        # Center of the circle (offset by flipped normal)
+        center_x = mid_x + normal_x * h
+        center_y = mid_y + normal_y * h
+
+        # Start and end angles
         start_angle = math.atan2(prev_y - center_y, prev_x - center_x)
         end_angle = math.atan2(to_y - center_y, to_x - center_x)
 
-        # Ensure the angle goes around 360 degrees if necessary
-        if end_angle < start_angle:
-            end_angle += 2 * math.pi  # Wrap the end angle
+        # Determine sweep direction (clockwise for inverted y-axis)
+        angle_diff = end_angle - start_angle
+        if angle_diff > 0:
+            angle_diff -= 2 * math.pi  # Force clockwise sweep
 
-        # Check whether to flip the curve based on the direction
-        # If the normal vector points up, draw the curve to the left
-        flip_curve = normal_x < 0
+        num_points = 100
+        angle_step = angle_diff / num_points
 
-        # We can now create points along the arc
-        num_points = 100  # Number of points to sample along the curve
-        angle_step = (end_angle - start_angle) / num_points
-
-        # Add the arc points to the path
         for i in range(num_points + 1):
             angle = start_angle + i * angle_step
             x = center_x + radius * math.cos(angle)
-
-            # Flip the y-direction if necessary based on `flip_curve`
-            if flip_curve:
-                y = center_y + radius * math.sin(angle)  # Draw to the left
-            else:
-                y = center_y - radius * math.sin(angle)  # Draw to the right
-
+            y = center_y + radius * math.sin(angle)
             self._horizontal_path.lineTo(x, y)
 
         self._draw_calls.append({'Circular Curve': (to_x, to_y)})
-
         self.update()
 
     def drawLine(self, to_x, to_y):
