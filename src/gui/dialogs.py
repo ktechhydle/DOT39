@@ -228,22 +228,25 @@ class EditPointGroupDialog(QDialog):
 
         # Iterate through each row of the table
         for row in range(self.editor.rowCount()):
-            # Extract values from the table items for the current row
-            num = int(self.editor.item(row, 0).text())
-            north = float(self.editor.item(row, 1).text())
-            east = float(self.editor.item(row, 2).text())
-            elev = float(self.editor.item(row, 3).text())
-            desc = self.editor.item(row, 4).text()
+            try:
+                # Extract values from the table items for the current row
+                num = int(self.editor.item(row, 0).text())
+                north = float(self.editor.item(row, 1).text())
+                east = float(self.editor.item(row, 2).text())
+                elev = float(self.editor.item(row, 3).text())
+                desc = self.editor.item(row, 4).text()
 
-            # Create a dictionary similar to point_attr
-            point_attr = {
-                'num': num,
-                'north': north,
-                'east': east,
-                'elev': elev,
-                'desc': desc
-            }
-            new_point_attr.append(point_attr)
+                # Create a dictionary similar to point_attr
+                point_attr = {
+                    'num': num,
+                    'north': north,
+                    'east': east,
+                    'elev': elev,
+                    'desc': desc
+                }
+                new_point_attr.append(point_attr)
+            except:
+                pass
 
         self.scene.addUndoCommand(EditPointsCommand(self.point_group, self.og_point_attr, new_point_attr))
 
@@ -361,19 +364,21 @@ class EditAlignmentDialog(QDialog):
         new_path = AlignmentItem(self.scene, self.scene.shaderProgram())
 
         # Iterate through each row of the table
-        for i in range(self.editor.rowCount()):
+        for i in range(self.editor.rowCount() + 1):
             if self.editor.item(i, 0):
                 type = self.itemTextInRow(i, 0)
                 x = self.itemTextInRow(i, 1)
                 y = self.itemTextInRow(i, 2)
 
-                if isConvertibleToFloat(x) and isConvertibleToFloat(y):
+                try:
                     if type == 'Start Position':
                         new_path.drawStart(float(x), float(y))
                     elif type == 'Line':
                         new_path.drawLine(float(x), float(y))
                     elif type == 'Circular Curve':
                         new_path.drawCircularCurve(float(x), float(y))
+                except:
+                    pass
 
         self.scene.addUndoCommand(EditHorizontalAlignmentCommand(self.alignment, self.og_path, self.og_calls,
                                                                  new_path.horizontalPath(), new_path.drawCalls()))
@@ -488,13 +493,15 @@ class AlignmentCreatorDialog(QDialog):
                 x = self.itemTextInRow(i, 1)
                 y = self.itemTextInRow(i, 2)
 
-                if isConvertibleToFloat(x) and isConvertibleToFloat(y):
+                try:
                     if type == 'Start Position':
                         self._alignment_item.drawStart(float(x), float(y))
                     elif type == 'Line':
                         self._alignment_item.drawLine(float(x), float(y))
                     elif type == 'Circular Curve':
                         self._alignment_item.drawCircularCurve(float(x), float(y))
+                except:
+                    pass
 
         self.scene.addItem(self._alignment_item)
 

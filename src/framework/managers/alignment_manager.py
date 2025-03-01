@@ -29,7 +29,7 @@ class AlignmentManager:
 
         if alignment:
             editor = EditAlignmentDialog(self.parent().glScene(), alignment, self.parent())
-            editor.show()
+            editor.exec()
 
     def parent(self):
         return self._parent
