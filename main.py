@@ -70,7 +70,7 @@ class DOT39(QMainWindow):
 
         edit_alignment_btn = ToolBarButton('Edit Alignment')
         edit_alignment_btn.clicked.connect(self.alignmentManager.editAlignment)
-        alignment_panel_widgets_1.append(edit_alignment_btn)
+        alignment_panel_widgets_2.append(edit_alignment_btn)
 
         points_panel = ToolBarContainer('Points', points_panel_widgets_1)
         points_panel.addRow(points_panel_widgets_2)
