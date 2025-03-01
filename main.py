@@ -112,6 +112,7 @@ class DOT39(QMainWindow):
         alignment.drawStart(0, 0)
         alignment.drawLine(50, 50)
         alignment.drawCircularCurve(100, 50)
+        alignment.drawCircularCurve(100, 100)
 
         self.glScene().addUndoCommand(AddItemCommand(alignment, self.glScene()))
 

@@ -40,13 +40,13 @@ class AlignmentItem(BaseItem):
         dy = to_y - prev_y
         distance = math.hypot(dx, dy)
         if distance == 0:
-            return  # No movement needed
+            return
 
         # Flip the normal vector direction to invert the curve
-        normal_x = dy / distance  # Previously: -dy / distance
-        normal_y = -dx / distance  # Previously: dx / distance
+        normal_x = dy / distance
+        normal_y = -dx / distance
 
-        curvature = 0.5  # Adjust curvature (0 < curvature < 1)
+        curvature = 0.5
 
         # Calculate offset (h) and radius
         h = curvature * distance
@@ -56,7 +56,7 @@ class AlignmentItem(BaseItem):
         mid_x = (prev_x + to_x) / 2
         mid_y = (prev_y + to_y) / 2
 
-        # Center of the circle (offset by flipped normal)
+        # Center of the circle
         center_x = mid_x + normal_x * h
         center_y = mid_y + normal_y * h
 
@@ -64,10 +64,12 @@ class AlignmentItem(BaseItem):
         start_angle = math.atan2(prev_y - center_y, prev_x - center_x)
         end_angle = math.atan2(to_y - center_y, to_x - center_x)
 
-        # Determine sweep direction (clockwise for inverted y-axis)
+        # Determine sweep direction
         angle_diff = end_angle - start_angle
         if angle_diff > 0:
-            angle_diff -= 2 * math.pi  # Force clockwise sweep
+            angle_diff -= 2 * math.pi
+        else:
+            angle_diff += 2 * math.pi
 
         num_points = 100
         angle_step = angle_diff / num_points
