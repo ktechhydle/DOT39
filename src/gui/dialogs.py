@@ -226,6 +226,16 @@ class AlignmentCreatorDialog(QDialog):
                 self.editor.setItem(self._editor_row_count - 1, 1, x_item)
                 self.editor.setItem(self._editor_row_count - 1, 2, y_item)
 
+            elif point_type == 'circularCurveTo':
+                type_item = QTableWidgetItem('Circular Curve')
+                type_item.setFlags(type_item.flags() & ~Qt.ItemIsEditable)
+                x_item = QTableWidgetItem('0')
+                y_item = QTableWidgetItem('0')
+
+                self.editor.setItem(self._editor_row_count - 1, 0, type_item)
+                self.editor.setItem(self._editor_row_count - 1, 1, x_item)
+                self.editor.setItem(self._editor_row_count - 1, 2, y_item)
+
     def updateAlignment(self):
         self._alignment_item.clearHorizontalPath()
 
@@ -240,6 +250,8 @@ class AlignmentCreatorDialog(QDialog):
                         self._alignment_item.drawStart(float(x), float(y))
                     elif type == 'Line':
                         self._alignment_item.drawLine(float(x), float(y))
+                    elif type == 'Circular Curve':
+                        self._alignment_item.drawCircularCurve(float(x), float(y))
 
         self.scene.addItem(self._alignment_item)
 
@@ -275,7 +287,8 @@ class GetAlignmentTypeDialog(QDialog):
         self.createUI()
 
     def createPotentialList(self):
-        self.potential_list = {'New Line': 'lineTo'}
+        self.potential_list = {'New Line': 'lineTo',
+                               'New Circular Curve': 'circularCurveTo'}
 
     def createUI(self):
         self.setLayout(QVBoxLayout())

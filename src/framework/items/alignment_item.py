@@ -32,14 +32,39 @@ class AlignmentItem(BaseItem):
 
         return None
 
-    def drawCircularCurve(self, center, radius, start_angle, end_angle, segments=50):
-        x_c, y_c = center
+    def drawCircularCurve(self, to_x, to_y, segments=50):
+        # Get the previous point
+        prev_point = self._horizontal_path.currentPosition()
+        x1, y1 = prev_point.x(), prev_point.y()
+
+        # Compute the midpoint
+        mid_x, mid_y = (x1 + to_x) / 2, (y1 + to_y) / 2
+
+        # Compute the perpendicular bisector's normal vector
+        dx, dy = to_x - x1, to_y - y1
+        normal_x, normal_y = -dy, dx
+
+        # Estimate a simple arc center by offsetting the midpoint
+        center_x, center_y = mid_x + normal_x * 0.5, mid_y + normal_y * 0.5
+        radius = np.hypot(x1 - center_x, y1 - center_y)
+
+        # Compute start and end angles
+        start_angle = np.degrees(np.arctan2(y1 - center_y, x1 - center_x))
+        end_angle = np.degrees(np.arctan2(to_y - center_y, to_x - center_x))
+
+        # Ensure proper angle direction
+        if end_angle < start_angle:
+            end_angle += 360
+
         angles = np.linspace(np.radians(start_angle), np.radians(end_angle), segments)
 
+        # Draw the curve
         for theta in angles:
-            x = x_c + radius * np.cos(theta)
-            y = y_c + radius * np.sin(theta)
+            x = center_x + radius * np.cos(theta)
+            y = center_y + radius * np.sin(theta)
             self._horizontal_path.lineTo(x, y)
+
+        self._draw_calls['Circular Curve'] = (to_x, to_y)
 
         self.update()
 
