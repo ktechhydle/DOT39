@@ -13,7 +13,7 @@ class AlignmentItem(BaseItem):
         self.program = program
         self.ctx = scene.ctx
         self._horizontal_path = QPainterPath()
-        self._draw_calls = {}
+        self._draw_calls = []
         self.vbo = self.createVbo()
 
     def createVbo(self):
@@ -64,31 +64,31 @@ class AlignmentItem(BaseItem):
             y = center_y + radius * np.sin(theta)
             self._horizontal_path.lineTo(x, y)
 
-        self._draw_calls['Circular Curve'] = (to_x, to_y)
+        self._draw_calls.append({'Circular Curve': (to_x, to_y)})
 
         self.update()
 
     def drawLine(self, to_x, to_y):
         self._horizontal_path.lineTo(to_x, to_y)
-        self._draw_calls['Line'] = (to_x, to_y)
+        self._draw_calls.append({'Line': (to_x, to_y)})
 
         self.update()
 
     def drawStart(self, x, y):
         self._horizontal_path.moveTo(x, y)
-        self._draw_calls['Start Position'] = (x, y)
+        self._draw_calls.append({'Start Position': (x, y)})
 
         self.update()
 
-    def drawCalls(self) -> dict[str, tuple]:
+    def drawCalls(self) -> list[dict[str, tuple]]:
         return self._draw_calls
 
-    def setDrawCalls(self, calls: dict):
+    def setDrawCalls(self, calls: list[dict[str, tuple]]):
         self._draw_calls = calls
 
     def clearHorizontalPath(self):
         self._horizontal_path.clear()
-        self._draw_calls = {}
+        self._draw_calls = []
 
         self.update()
 

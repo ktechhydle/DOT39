@@ -294,19 +294,20 @@ class EditAlignmentDialog(QDialog):
     def createTable(self):
         self.editor.setRowCount(len(self.alignment.drawCalls()))
 
-        for draw_type, coord in self.alignment.drawCalls().items():
-            x, y = coord
+        for container in self.alignment.drawCalls():
+            for draw_type, coord in container.items():
+                x, y = coord
 
-            type_item = QTableWidgetItem(draw_type)
-            type_item.setFlags(type_item.flags() & ~Qt.ItemIsEditable)
-            x_item = QTableWidgetItem(f'{x}')
-            y_item = QTableWidgetItem(f'{y}')
+                type_item = QTableWidgetItem(draw_type)
+                type_item.setFlags(type_item.flags() & ~Qt.ItemIsEditable)
+                x_item = QTableWidgetItem(f'{x}')
+                y_item = QTableWidgetItem(f'{y}')
 
-            self.editor.setItem(self._editor_row_count - 1, 0, type_item)
-            self.editor.setItem(self._editor_row_count - 1, 1, x_item)
-            self.editor.setItem(self._editor_row_count - 1, 2, y_item)
+                self.editor.setItem(self._editor_row_count - 1, 0, type_item)
+                self.editor.setItem(self._editor_row_count - 1, 1, x_item)
+                self.editor.setItem(self._editor_row_count - 1, 2, y_item)
 
-            self._editor_row_count += 1
+                self._editor_row_count += 1
 
         self.editor.cellChanged.connect(self.applyChanges)
         self._editor_row_count -= 1
