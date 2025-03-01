@@ -62,6 +62,104 @@ class GetPointGroupDialog(QDialog):
         super().close()
 
 
+class GetAlignmentDialog(QDialog):
+    def __init__(self, scene, parent):
+        super().__init__(parent)
+        self.setWindowTitle('Choose Point Group')
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
+
+        self.scene = scene
+        self._result = None
+
+        self.createPotentialList()
+        self.createUI()
+
+    def createPotentialList(self):
+        self.potential_list = {}
+
+        for item in self.scene.items():
+            if isinstance(item, AlignmentItem):
+                self.potential_list[item.name()] = item
+
+    def createUI(self):
+        self.setLayout(QVBoxLayout())
+
+        self.alignment_combo = QComboBox(self)
+        self.alignment_combo.currentIndexChanged.connect(self.valChanged)
+
+        for k, v in self.potential_list.items():
+            self.point_group_combo.addItem(k, v)
+
+        self.button_group = QDialogButtonBox(self)
+        self.button_group.addButton('Ok', QDialogButtonBox.AcceptRole)
+        self.button_group.addButton('Cancel', QDialogButtonBox.RejectRole)
+        self.button_group.accepted.connect(self.accept)
+        self.button_group.rejected.connect(self.close)
+
+        self.layout().addWidget(self.point_group_combo)
+        self.layout().addWidget(self.button_group)
+
+    def valChanged(self):
+        self.scene.selectionTool().clearSelection()
+
+        item = self.alignment_combo.itemData(self.point_group_combo.currentIndex())
+        item.setSelected(True)
+
+    def accept(self):
+        self._result = self.alignment_combo.itemData(self.point_group_combo.currentIndex())
+
+        self.close()
+
+    def activeResult(self) -> PointGroupItem:
+        return self._result
+
+    def close(self):
+        self.scene.selectionTool().clearSelection()
+
+        super().close()
+
+
+class GetAlignmentTypeDialog(QDialog):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.setWindowTitle('Choose Type')
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
+
+        self._result = None
+
+        self.createPotentialList()
+        self.createUI()
+
+    def createPotentialList(self):
+        self.potential_list = {'New Line': 'lineTo',
+                               'New Circular Curve': 'circularCurveTo'}
+
+    def createUI(self):
+        self.setLayout(QVBoxLayout())
+
+        self.chooser_combo = QComboBox(self)
+
+        for k, v in self.potential_list.items():
+            self.chooser_combo.addItem(k, v)
+
+        self.button_group = QDialogButtonBox(self)
+        self.button_group.addButton('Ok', QDialogButtonBox.AcceptRole)
+        self.button_group.addButton('Cancel', QDialogButtonBox.RejectRole)
+        self.button_group.accepted.connect(self.accept)
+        self.button_group.rejected.connect(self.close)
+
+        self.layout().addWidget(self.chooser_combo)
+        self.layout().addWidget(self.button_group)
+
+    def accept(self):
+        self._result = self.chooser_combo.itemData(self.chooser_combo.currentIndex())
+
+        self.close()
+
+    def activeResult(self) -> str:
+        return self._result
+
+
 class EditPointGroupDialog(QDialog):
     def __init__(self, scene, point_group: PointGroupItem, parent):
         super().__init__(parent)
@@ -273,44 +371,3 @@ class AlignmentCreatorDialog(QDialog):
             self.parent().alignment_item_count -= 1
 
         super().close()
-
-
-class GetAlignmentTypeDialog(QDialog):
-    def __init__(self, parent):
-        super().__init__(parent)
-        self.setWindowTitle('Choose Type')
-        self.setWindowModality(Qt.WindowModality.ApplicationModal)
-
-        self._result = None
-
-        self.createPotentialList()
-        self.createUI()
-
-    def createPotentialList(self):
-        self.potential_list = {'New Line': 'lineTo',
-                               'New Circular Curve': 'circularCurveTo'}
-
-    def createUI(self):
-        self.setLayout(QVBoxLayout())
-
-        self.chooser_combo = QComboBox(self)
-
-        for k, v in self.potential_list.items():
-            self.chooser_combo.addItem(k, v)
-
-        self.button_group = QDialogButtonBox(self)
-        self.button_group.addButton('Ok', QDialogButtonBox.AcceptRole)
-        self.button_group.addButton('Cancel', QDialogButtonBox.RejectRole)
-        self.button_group.accepted.connect(self.accept)
-        self.button_group.rejected.connect(self.close)
-
-        self.layout().addWidget(self.chooser_combo)
-        self.layout().addWidget(self.button_group)
-
-    def accept(self):
-        self._result = self.chooser_combo.itemData(self.chooser_combo.currentIndex())
-
-        self.close()
-
-    def activeResult(self) -> str:
-        return self._result
