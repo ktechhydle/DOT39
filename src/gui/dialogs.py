@@ -230,18 +230,27 @@ class AlignmentCreatorDialog(QDialog):
         self._alignment_item.clearHorizontalPath()
 
         for i in range(self.editor.rowCount()):
-            if self.editor.item(i, 1) and (isConvertibleToFloat(self.editor.item(i, 1).text())
-                    and isConvertibleToFloat(self.editor.item(i, 2).text())):
-                if self.editor.item(i, 0).text() == 'Start Position':
-                    self._alignment_item.drawStart(float(self.editor.item(i, 1).text()),
-                                                   float(self.editor.item(i, 2).text()))
-                elif self.editor.item(i, 0).text() == 'Line':
-                    self._alignment_item.drawLine(float(self.editor.item(i, 1).text()),
-                                                   float(self.editor.item(i, 2).text()))
+            if self.editor.item(i, 0):
+                type = self.itemTextInRow(i, 0)
+                x = self.itemTextInRow(i, 1)
+                y = self.itemTextInRow(i, 2)
+
+                if isConvertibleToFloat(x) and isConvertibleToFloat(y):
+                    if type == 'Start Position':
+                        self._alignment_item.drawStart(float(x), float(y))
+                    elif type == 'Line':
+                        self._alignment_item.drawLine(float(x), float(y))
 
         self.scene.addItem(self._alignment_item)
 
+    def itemTextInRow(self, row, column) -> str:
+        if self.editor.item(row, column):
+            return self.editor.item(row, column).text()
+
+        return ''
+
     def accept(self):
+        self._alignment_item.setName(f'Alignment Item #{self.parent().alignment_item_count}')
         self.scene.addUndoCommand(AddItemCommand(self._alignment_item, self.scene))
 
         self.close()
@@ -249,6 +258,7 @@ class AlignmentCreatorDialog(QDialog):
     def close(self, remove=False):
         if remove:
             self.scene.removeItem(self._alignment_item)
+            self.parent().alignment_item_count -= 1
 
         super().close()
 

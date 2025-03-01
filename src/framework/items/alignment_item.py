@@ -13,6 +13,7 @@ class AlignmentItem(BaseItem):
         self.program = program
         self.ctx = scene.ctx
         self._horizontal_path = QPainterPath()
+        self._draw_calls = {}
         self.vbo = self.createVbo()
 
     def createVbo(self):
@@ -42,35 +43,22 @@ class AlignmentItem(BaseItem):
 
         self.update()
 
-    def drawReverseCurve(self, center1, radius1, start_angle1, end_angle1, center2, radius2, start_angle2,
-                         end_angle2, segments=50):
-        self.drawCircularCurve(center1, radius1, start_angle1, end_angle1, segments)
-        self.drawCircularCurve(center2, radius2, start_angle2, end_angle2, segments)
-
-    def drawSpiralCurve(self, start, length, A, segments=50):
-        x0, y0 = start
-        t_vals = np.linspace(0, length / A, segments)
-
-        for t in t_vals:
-            S, C = fresnel(t)
-            x = x0 + A * C
-            y = y0 + A * S
-            self._horizontal_path.lineTo(x, y)
-
-        self.update()
-
     def drawLine(self, to_x, to_y):
         self._horizontal_path.lineTo(to_x, to_y)
+        self._draw_calls['Line'] = (to_x, to_y)
 
         self.update()
 
     def drawStart(self, x, y):
         self._horizontal_path.moveTo(x, y)
+        self._draw_calls['Start Position'] = (x, y)
 
         self.update()
 
     def clearHorizontalPath(self):
         self._horizontal_path.clear()
+        self._draw_calls = {}
+
         self.update()
 
     def horizontalPath(self):
