@@ -62,6 +62,10 @@ class AlignmentItem(BaseItem):
         if end_angle < start_angle:
             end_angle += 2 * math.pi  # Wrap the end angle
 
+        # Check whether to flip the curve based on the direction
+        # If the normal vector points up, draw the curve to the left
+        flip_curve = normal_x < 0
+
         # We can now create points along the arc
         num_points = 100  # Number of points to sample along the curve
         angle_step = (end_angle - start_angle) / num_points
@@ -70,7 +74,13 @@ class AlignmentItem(BaseItem):
         for i in range(num_points + 1):
             angle = start_angle + i * angle_step
             x = center_x + radius * math.cos(angle)
-            y = center_y + radius * math.sin(angle)
+
+            # Flip the y-direction if necessary based on `flip_curve`
+            if flip_curve:
+                y = center_y + radius * math.sin(angle)  # Draw to the left
+            else:
+                y = center_y - radius * math.sin(angle)  # Draw to the right
+
             self._horizontal_path.lineTo(x, y)
 
         self._draw_calls.append({'Circular Curve': (to_x, to_y)})
