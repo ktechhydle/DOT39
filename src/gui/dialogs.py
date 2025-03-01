@@ -65,7 +65,7 @@ class GetPointGroupDialog(QDialog):
 class GetAlignmentDialog(QDialog):
     def __init__(self, scene, parent):
         super().__init__(parent)
-        self.setWindowTitle('Choose Point Group')
+        self.setWindowTitle('Choose Alignment')
         self.setWindowModality(Qt.WindowModality.ApplicationModal)
 
         self.scene = scene
@@ -88,7 +88,7 @@ class GetAlignmentDialog(QDialog):
         self.alignment_combo.currentIndexChanged.connect(self.valChanged)
 
         for k, v in self.potential_list.items():
-            self.point_group_combo.addItem(k, v)
+            self.alignment_combo.addItem(k, v)
 
         self.button_group = QDialogButtonBox(self)
         self.button_group.addButton('Ok', QDialogButtonBox.AcceptRole)
@@ -96,13 +96,13 @@ class GetAlignmentDialog(QDialog):
         self.button_group.accepted.connect(self.accept)
         self.button_group.rejected.connect(self.close)
 
-        self.layout().addWidget(self.point_group_combo)
+        self.layout().addWidget(self.alignment_combo)
         self.layout().addWidget(self.button_group)
 
     def valChanged(self):
         self.scene.selectionTool().clearSelection()
 
-        item = self.alignment_combo.itemData(self.point_group_combo.currentIndex())
+        item = self.alignment_combo.itemData(self.alignment_combo.currentIndex())
         item.setSelected(True)
 
     def accept(self):
@@ -110,7 +110,7 @@ class GetAlignmentDialog(QDialog):
 
         self.close()
 
-    def activeResult(self) -> PointGroupItem:
+    def activeResult(self) -> AlignmentItem:
         return self._result
 
     def close(self):
