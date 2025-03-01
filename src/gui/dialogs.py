@@ -292,22 +292,24 @@ class EditAlignmentDialog(QDialog):
         self.layout().addWidget(self.editor)
 
     def createTable(self):
-        for draw_type, coord in self.alignment.drawCalls().items():
-            self._editor_row_count += 1
+        self.editor.setRowCount(len(self.alignment.drawCalls()))
 
+        for draw_type, coord in self.alignment.drawCalls().items():
             x, y = coord
 
             type_item = QTableWidgetItem(draw_type)
             type_item.setFlags(type_item.flags() & ~Qt.ItemIsEditable)
-            x_item = QTableWidgetItem(x)
-            y_item = QTableWidgetItem(y)
+            x_item = QTableWidgetItem(f'{x}')
+            y_item = QTableWidgetItem(f'{y}')
 
             self.editor.setItem(self._editor_row_count - 1, 0, type_item)
             self.editor.setItem(self._editor_row_count - 1, 1, x_item)
             self.editor.setItem(self._editor_row_count - 1, 2, y_item)
 
-        self.editor.setRowCount(self._editor_row_count)
+            self._editor_row_count += 1
+
         self.editor.cellChanged.connect(self.applyChanges)
+        self._editor_row_count -= 1
 
     def itemTextInRow(self, row, column) -> str:
         if self.editor.item(row, column):
@@ -345,12 +347,14 @@ class EditAlignmentDialog(QDialog):
                 self.editor.setItem(self._editor_row_count - 1, 1, x_item)
                 self.editor.setItem(self._editor_row_count - 1, 2, y_item)
 
+        self.applyChanges()
+
     def removePointOnAlignment(self):
         if self.editor.rowCount() > 1:
             self._editor_row_count -= 1
             self.editor.removeRow(self._editor_row_count)
 
-        self.updateAlignment()
+        self.applyChanges()
 
     def applyChanges(self):
         new_path = AlignmentItem(self.scene, self.scene.shaderProgram())
@@ -464,6 +468,8 @@ class AlignmentCreatorDialog(QDialog):
                 self.editor.setItem(self._editor_row_count - 1, 0, type_item)
                 self.editor.setItem(self._editor_row_count - 1, 1, x_item)
                 self.editor.setItem(self._editor_row_count - 1, 2, y_item)
+
+        self.updateAlignment()
 
     def removePointOnAlignment(self):
         if self.editor.rowCount() > 1:
