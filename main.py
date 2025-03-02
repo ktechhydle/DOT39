@@ -25,6 +25,8 @@ class DOT39(QMainWindow):
         self.terrain_item_count = 0
         self.alignment_item_count = 0
 
+        self._toolbar_panels = []
+
         self.createUI()
 
     def createUI(self):
@@ -35,6 +37,7 @@ class DOT39(QMainWindow):
         self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.top_toolbar)
 
         self.scene = BaseScene(self)
+        self.scene.setParent(self)
         self.setCentralWidget(self.scene)
 
         self.createToolBarActions()
@@ -42,10 +45,12 @@ class DOT39(QMainWindow):
         self.createPanels()
 
     def createToolBarActions(self):
-        home_button = QToolButton()
-        home_button.setText('Home')
-        home_button.setIcon(QIcon('resources/icons/logos/dot39_logo.svg'))
-        home_button.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
+        self.home_btn = QToolButton()
+        self.home_btn.setText('Home')
+        self.home_btn.setIcon(QIcon('resources/icons/logos/dot39_logo.svg'))
+        self.home_btn.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
+        self.home_btn.setCheckable(True)
+        self.home_btn.clicked.connect(self.updateCentralWidget)
 
         self._toolbar_btn_group = QButtonGroup(self)
         points_panel_widgets_1 = []
@@ -85,8 +90,11 @@ class DOT39(QMainWindow):
         surface_panel.addRow(surface_panel_widgets_2)
         alignment_panel = ToolBarContainer('Alignment', alignment_panel_widgets_1)
         alignment_panel.addRow(alignment_panel_widgets_2)
+        self._toolbar_panels.append(points_panel)
+        self._toolbar_panels.append(surface_panel)
+        self._toolbar_panels.append(alignment_panel)
 
-        self.top_toolbar.addWidget(home_button)
+        self.top_toolbar.addWidget(self.home_btn)
         self.top_toolbar.addWidget(points_panel)
         self.top_toolbar.addWidget(surface_panel)
         self.top_toolbar.addWidget(alignment_panel)
@@ -125,8 +133,30 @@ class DOT39(QMainWindow):
 
         self.glScene().addUndoCommand(AddItemCommand(alignment, self.glScene()))
 
+    def updateCentralWidget(self):
+        if self.home_btn.isChecked():
+            self.setToolBarPanelsEnabled(False)
+
+            # Instead of replacing self.scene, just hide it
+            self.scene.setParent(None)
+            self.setCentralWidget(QWidget())
+
+        else:
+            self.setToolBarPanelsEnabled(True)
+
+            # Restore scene only if its not already set
+            if self.centralWidget() is not self.scene:
+                self.setCentralWidget(self.scene)
+
+    def setToolBarPanelsEnabled(self, enabled: bool):
+        for panel in self._toolbar_panels:
+            panel.setEnabled(enabled)
+
     def glScene(self):
         return self.scene
+
+    def toolBarPanels(self) -> list[ToolBarContainer]:
+        return self._toolbar_panels
 
     def unitManager(self):
         return self.unit_manager
@@ -142,6 +172,7 @@ if __name__ == '__main__':
     win.show()
     win.showMaximized()
     win.addTestObj()
+    win.updateCentralWidget()
 
     # Crash handler
     def handle_exception(exctype, value, tb):

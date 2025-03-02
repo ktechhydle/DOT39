@@ -197,6 +197,15 @@ class ToolBox(QScrollArea):
         return self._control_parent
 
 
+class HomeButton(QToolButton):
+    def __init__(self):
+        super().__init__()
+        self.setText('Home')
+        self.setIcon(QIcon('resources/icons/logos/dot39_logo.svg'))
+        self.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
+        self.setCheckable(True)
+
+
 class ContextMenu(QMenu):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
