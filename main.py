@@ -97,6 +97,7 @@ class DOT39(QMainWindow):
 
     def createPanels(self):
         self.toolbox = ToolBox(self.scene)
+        self.toolbox.setCursor(Qt.CursorShape.ArrowCursor)
         self.toolbox.setFixedWidth(300)
         self.toolbox.move(11, 11)
 

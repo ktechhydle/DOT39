@@ -34,7 +34,6 @@ class ToolBarContainer(QWidget):
 
         self.layout().addLayout(hlayout)
 
-
     def name(self):
         return self._name
 
