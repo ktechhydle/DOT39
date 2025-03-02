@@ -29,7 +29,9 @@ class DOT39(QMainWindow):
 
     def createUI(self):
         self.top_toolbar = QToolBar(self)
+        self.top_toolbar.setIconSize(QSize(50, 50))
         self.top_toolbar.setMovable(False)
+        self.top_toolbar.contextMenuEvent = lambda *event: None
         self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.top_toolbar)
 
         self.scene = BaseScene(self)
@@ -40,6 +42,11 @@ class DOT39(QMainWindow):
         self.createPanels()
 
     def createToolBarActions(self):
+        home_button = QToolButton()
+        home_button.setText('Home')
+        home_button.setIcon(QIcon('resources/icons/logos/dot39_logo.svg'))
+        home_button.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
+
         self._toolbar_btn_group = QButtonGroup(self)
         points_panel_widgets_1 = []
         points_panel_widgets_2 = []
@@ -79,6 +86,7 @@ class DOT39(QMainWindow):
         alignment_panel = ToolBarContainer('Alignment', alignment_panel_widgets_1)
         alignment_panel.addRow(alignment_panel_widgets_2)
 
+        self.top_toolbar.addWidget(home_button)
         self.top_toolbar.addWidget(points_panel)
         self.top_toolbar.addWidget(surface_panel)
         self.top_toolbar.addWidget(alignment_panel)

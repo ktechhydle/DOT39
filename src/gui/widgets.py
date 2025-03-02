@@ -120,6 +120,21 @@ class ToolBox(QScrollArea):
         self._control_parent = parent
         self._buttons = []
 
+    def contextMenuEvent(self, event):
+        menu = ContextMenu()
+        menu.setAnimationEnabled(True)
+
+        collapse_all_action = QAction('Collapse All', self)
+        collapse_all_action.triggered.connect(self.collapseAll)
+        expand_all_action = QAction('Expand All', self)
+        expand_all_action.triggered.connect(self.expandAll)
+
+        menu.addAction(collapse_all_action)
+        menu.addSeparator()
+        menu.addAction(expand_all_action)
+
+        menu.exec(self.mapToGlobal(event.pos()))
+
     def addItem(self, widget: QWidget, text: str, icon: QIcon = None):
         button = ToolBoxButton(text)
         button.setObjectName('panelTitle')
