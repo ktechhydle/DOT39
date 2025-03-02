@@ -119,6 +119,7 @@ class ToolBox(QScrollArea):
 
         self._control_parent = parent
         self._buttons = []
+        self._radius = 5
 
     def contextMenuEvent(self, event):
         menu = ContextMenu()
@@ -134,6 +135,18 @@ class ToolBox(QScrollArea):
         menu.addAction(expand_all_action)
 
         menu.exec(self.mapToGlobal(event.pos()))
+
+    def resizeEvent(self, event):
+        path = QPainterPath()
+        rect = QRectF(self.rect()).adjusted(.5, .5, -1.5, -1.5)
+        path.addRoundedRect(rect, self._radius, self._radius)
+
+        palette = self.palette()
+        palette.setColor(QPalette.Window, QColor(0, 0, 0, 200))  # Set the color
+        self.setPalette(palette)
+
+        region = QRegion(path.toFillPolygon(QTransform()).toPolygon())
+        self.setMask(region)
 
     def addItem(self, widget: QWidget, text: str, icon: QIcon = None):
         button = ToolBoxButton(text)
@@ -226,17 +239,16 @@ class ContextMenu(QMenu):
             return m
 
     def resizeEvent(self, event):
-        if not sys.platform == 'darwin':
-            path = QPainterPath()
-            rect = QRectF(self.rect()).adjusted(.5, .5, -1.5, -1.5)
-            path.addRoundedRect(rect, self.radius, self.radius)
+        path = QPainterPath()
+        rect = QRectF(self.rect()).adjusted(.5, .5, -1.5, -1.5)
+        path.addRoundedRect(rect, self.radius, self.radius)
 
-            palette = self.palette()
-            palette.setColor(QPalette.Window, QColor(0, 0, 0, 200))  # Set the color
-            self.setPalette(palette)
+        palette = self.palette()
+        palette.setColor(QPalette.Window, QColor(0, 0, 0, 200))  # Set the color
+        self.setPalette(palette)
 
-            region = QRegion(path.toFillPolygon(QTransform()).toPolygon())
-            self.setMask(region)
+        region = QRegion(path.toFillPolygon(QTransform()).toPolygon())
+        self.setMask(region)
 
     def exec(self, pos=None):
         if pos and self.animationEnabled():
