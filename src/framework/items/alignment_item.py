@@ -83,6 +83,30 @@ class AlignmentItem(BaseItem):
         self._draw_calls.append({'Circular Curve': (to_x, to_y)})
         self.update()
 
+    def drawClothoid(self, to_x, to_y, num_points=100, a=1.0):
+        p1 = self._horizontal_path.currentPosition()
+        x0, y0 = p1.x(), p1.y()
+
+        dx = to_x - x0
+        dy = to_y - y0
+        distance = math.hypot(dx, dy)
+        theta = math.atan2(dy, dx)
+
+        t_values = np.linspace(0, 1, num_points)
+
+        for t in t_values:
+            # Compute Fresnel integrals for clothoid
+            S, C = fresnel(a * t)
+
+            # Transform clothoid points to global coordinates
+            x = x0 + distance * (C * np.cos(theta) + S * np.sin(theta))
+            y = y0 + distance * (C * np.sin(theta) - S * np.cos(theta))
+
+            self._horizontal_path.lineTo(x, y)
+
+        self._draw_calls.append({'Clothoid Curve': (to_x, to_y)})
+        self.update()
+
     def drawLine(self, to_x, to_y):
         self._horizontal_path.lineTo(to_x, to_y)
         self._draw_calls.append({'Line': (to_x, to_y)})

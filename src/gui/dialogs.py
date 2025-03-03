@@ -132,7 +132,8 @@ class GetAlignmentTypeDialog(QDialog):
 
     def createPotentialList(self):
         self.potential_list = {'New Line': 'lineTo',
-                               'New Circular Curve': 'circularCurveTo'}
+                               'New Circular Curve': 'circularCurveTo',
+                               'New Clothoid Curve': 'clothoidCurveTo'}
 
     def createUI(self):
         self.setLayout(QVBoxLayout())
@@ -351,6 +352,16 @@ class EditAlignmentDialog(QDialog):
                 self.editor.setItem(self._editor_row_count - 1, 1, x_item)
                 self.editor.setItem(self._editor_row_count - 1, 2, y_item)
 
+            elif point_type == 'clothoidCurveTo':
+                type_item = QTableWidgetItem('Clothoid Curve')
+                type_item.setFlags(type_item.flags() & ~Qt.ItemIsEditable)
+                x_item = QTableWidgetItem('0')
+                y_item = QTableWidgetItem('0')
+
+                self.editor.setItem(self._editor_row_count - 1, 0, type_item)
+                self.editor.setItem(self._editor_row_count - 1, 1, x_item)
+                self.editor.setItem(self._editor_row_count - 1, 2, y_item)
+
         self.applyChanges()
 
     def removePointOnAlignment(self):
@@ -377,6 +388,8 @@ class EditAlignmentDialog(QDialog):
                         new_path.drawLine(float(x), float(y))
                     elif type == 'Circular Curve':
                         new_path.drawCircularCurve(float(x), float(y))
+                    elif type == 'Clothoid Curve':
+                        new_path.drawClothoid(float(x), float(y))
                 except:
                     pass
 
@@ -475,6 +488,16 @@ class AlignmentCreatorDialog(QDialog):
                 self.editor.setItem(self._editor_row_count - 1, 1, x_item)
                 self.editor.setItem(self._editor_row_count - 1, 2, y_item)
 
+            elif point_type == 'clothoidCurveTo':
+                type_item = QTableWidgetItem('Clothoid Curve')
+                type_item.setFlags(type_item.flags() & ~Qt.ItemIsEditable)
+                x_item = QTableWidgetItem('0')
+                y_item = QTableWidgetItem('0')
+
+                self.editor.setItem(self._editor_row_count - 1, 0, type_item)
+                self.editor.setItem(self._editor_row_count - 1, 1, x_item)
+                self.editor.setItem(self._editor_row_count - 1, 2, y_item)
+
         self.updateAlignment()
 
     def removePointOnAlignment(self):
@@ -500,6 +523,8 @@ class AlignmentCreatorDialog(QDialog):
                         self._alignment_item.drawLine(float(x), float(y))
                     elif type == 'Circular Curve':
                         self._alignment_item.drawCircularCurve(float(x), float(y))
+                    elif type == 'Clothoid Curve':
+                        self._alignment_item.drawClothoid(float(x), float(y))
                 except:
                     pass
 
