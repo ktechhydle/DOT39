@@ -1,4 +1,5 @@
 from src._imports import *
+import re
 
 
 class ToolBarContainer(QWidget):
@@ -208,6 +209,41 @@ class ToolBox(QScrollArea):
 
     def controlParent(self) -> QWidget:
         return self._control_parent
+
+
+class AnimatedLabel(QLabel):
+    def __init__(self, text, parent=None, interval=100):
+        super().__init__('', parent)
+
+        self.full_html = text
+        self.full_text = self.stripHTMLTags(text)
+        self.current_index = 0
+        self.typing_speed = interval
+
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.updateText)
+        self.timer.start(self.typing_speed)
+
+    def stripHTMLTags(self, html):
+        return re.sub(r'<[^>]+>', '', html)
+
+    def rebuildHTML(self, visible_text):
+        rebuilt_text = self.full_html.replace(self.full_text, visible_text, 1)
+        return rebuilt_text
+
+    def updateText(self):
+        if self.current_index < len(self.full_text):
+            visible_text = self.full_text[:self.current_index + 1]
+            self.setText(self.rebuildHTML(visible_text))
+            self.current_index += 1
+        else:
+            self.timer.stop()
+            QTimer.singleShot(1500, self.restartAnimation)
+
+    def restartAnimation(self):
+        self.current_index = 0
+        self.setText('')
+        self.timer.start(self.typing_speed)
 
 
 class HomeButton(QToolButton):

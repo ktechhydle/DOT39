@@ -1,5 +1,5 @@
 from src._imports import *
-from src.gui.widgets import ToolBarContainer
+from src.gui.widgets import ToolBarContainer, AnimatedLabel
 
 
 class BasePanel(QWidget):
@@ -18,10 +18,10 @@ class HomePanel(BasePanel):
         self.createUI()
 
     def createUI(self):
-        label = QLabel('<h1>Welcome</h1>', self)
-        label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        title_label = AnimatedLabel('<h1>Welcome to DOT39</h1>', self)
+        title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.layout().addWidget(label)
+        self.layout().addWidget(title_label)
         self.layout().addStretch()
 
 
