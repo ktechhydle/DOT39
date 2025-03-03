@@ -32,55 +32,40 @@ class AlignmentItem(BaseItem):
 
         return None
 
-    def drawCircularCurve(self, to_x, to_y):
+    def drawCircularCurve(self, to_x, to_y, segments=50):
+        # Get the previous point
         prev_point = self._horizontal_path.currentPosition()
-        prev_x, prev_y = prev_point.x(), prev_point.y()
+        x1, y1 = prev_point.x(), prev_point.y()
 
-        dx = to_x - prev_x
-        dy = to_y - prev_y
-        distance = math.hypot(dx, dy)
-        if distance == 0:
-            return
+        # Compute the midpoint
+        mid_x, mid_y = (x1 + to_x) / 2, (y1 + to_y) / 2
 
-        # Flip the normal vector direction to invert the curve
-        normal_x = dy / distance
-        normal_y = -dx / distance
+        # Compute the perpendicular bisector's normal vector
+        dx, dy = to_x - x1, to_y - y1
+        normal_x, normal_y = -dy, dx
 
-        curvature = 0.5
+        # Estimate a simple arc center by offsetting the midpoint
+        center_x, center_y = mid_x + normal_x * 0.5, mid_y + normal_y * 0.5
+        radius = np.hypot(x1 - center_x, y1 - center_y)
 
-        # Calculate offset (h) and radius
-        h = curvature * distance
-        radius = math.sqrt((distance / 2) ** 2 + h ** 2)
+        # Compute start and end angles
+        start_angle = np.degrees(np.arctan2(y1 - center_y, x1 - center_x))
+        end_angle = np.degrees(np.arctan2(to_y - center_y, to_x - center_x))
 
-        # Midpoint between prev and to points
-        mid_x = (prev_x + to_x) / 2
-        mid_y = (prev_y + to_y) / 2
+        # Ensure proper angle direction
+        if end_angle < start_angle:
+            end_angle += 360
 
-        # Center of the circle
-        center_x = mid_x + normal_x * h
-        center_y = mid_y + normal_y * h
+        angles = np.linspace(np.radians(start_angle), np.radians(end_angle), segments)
 
-        # Start and end angles
-        start_angle = math.atan2(prev_y - center_y, prev_x - center_x)
-        end_angle = math.atan2(to_y - center_y, to_x - center_x)
-
-        # Determine sweep direction
-        angle_diff = end_angle - start_angle
-        if angle_diff > 0:
-            angle_diff -= 2 * math.pi
-        else:
-            angle_diff += 2 * math.pi
-
-        num_points = 100
-        angle_step = angle_diff / num_points
-
-        for i in range(num_points + 1):
-            angle = start_angle + i * angle_step
-            x = center_x + radius * math.cos(angle)
-            y = center_y + radius * math.sin(angle)
+        # Draw the curve
+        for theta in angles:
+            x = center_x + radius * np.cos(theta)
+            y = center_y + radius * np.sin(theta)
             self._horizontal_path.lineTo(x, y)
 
         self._draw_calls.append({'Circular Curve': (to_x, to_y)})
+
         self.update()
 
     def drawClothoid(self, to_x, to_y, num_points=100, a=1.0):
