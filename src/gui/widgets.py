@@ -219,6 +219,7 @@ class AnimatedLabel(QLabel):
         self.full_text = self.stripHTMLTags(text)
         self.current_index = 0
         self.typing_speed = interval
+        self.deleting = False  # New state variable
 
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.updateText)
@@ -232,17 +233,28 @@ class AnimatedLabel(QLabel):
         return rebuilt_text
 
     def updateText(self):
-        if self.current_index < len(self.full_text):
-            visible_text = self.full_text[:self.current_index + 1]
-            self.setText(self.rebuildHTML(visible_text))
-            self.current_index += 1
-        else:
-            self.timer.stop()
-            QTimer.singleShot(1500, self.restartAnimation)
+        if self.isVisible():
+            if not self.deleting:  # Typing phase
+                if self.current_index < len(self.full_text):
+                    self.current_index += 1
+                    self.setText(self.rebuildHTML(self.full_text[:self.current_index]))
+                else:
+                    self.timer.stop()
+                    QTimer.singleShot(1500, self.startDeleting)
+            else:  # Deleting phase
+                if self.current_index > 0:
+                    self.current_index -= 1
+                    self.setText(self.rebuildHTML(self.full_text[:self.current_index]))
+                else:
+                    self.timer.stop()
+                    QTimer.singleShot(500, self.restartTyping)
 
-    def restartAnimation(self):
-        self.current_index = 0
-        self.setText('')
+    def startDeleting(self):
+        self.deleting = True
+        self.timer.start(self.typing_speed)
+
+    def restartTyping(self):
+        self.deleting = False
         self.timer.start(self.typing_speed)
 
 
