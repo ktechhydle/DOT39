@@ -10,6 +10,21 @@ class BasePanel(QWidget):
         pass
 
 
+class HomePanel(BasePanel):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setLayout(QVBoxLayout())
+
+        self.createUI()
+
+    def createUI(self):
+        label = QLabel('<h1>Welcome</h1>', self)
+        label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.layout().addWidget(label)
+        self.layout().addStretch()
+
+
 class ScenePanel(BasePanel):
     def __init__(self, scene, parent=None):
         super().__init__(parent)

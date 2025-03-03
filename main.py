@@ -1,5 +1,5 @@
 from src.gui.widgets import *
-from src.gui.panels import ScenePanel
+from src.gui.panels import ScenePanel, HomePanel
 from src.framework.scene.base_scene import BaseScene
 from src.framework.scene.undo_commands import AddItemCommand
 from src.framework.managers.unit_manager import UnitManager
@@ -117,6 +117,7 @@ class DOT39(QMainWindow):
         self.toolbox.setFixedWidth(300)
         self.toolbox.move(11, 11)
 
+        self.home_panel = HomePanel()
         self.scene_panel = ScenePanel(self.scene, self)
 
         self.toolbox.addItem(self.scene_panel, 'Scene')
@@ -139,13 +140,15 @@ class DOT39(QMainWindow):
 
             # Instead of replacing self.scene, just hide it
             self.scene.setParent(None)
-            self.setCentralWidget(QWidget())
+            self.home_panel.setParent(self)
+            self.setCentralWidget(self.home_panel)
 
         else:
             self.setToolBarPanelsEnabled(True)
 
             # Restore scene only if its not already set
             if self.centralWidget() is not self.scene:
+                self.home_panel.setParent(None)
                 self.setCentralWidget(self.scene)
 
     def setToolBarPanelsEnabled(self, enabled: bool):
