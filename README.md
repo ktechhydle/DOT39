@@ -1,3 +1,5 @@
+<img src="resources/icons/logos/dot39_logo.svg" width="125">
+
 # DOT39
 DOT39 is the open source roadway design software for civil engineers. It includes a powerful _(yet simple)_ toolset 
 allowing civil engineers to design roads easier and quicker.
@@ -14,7 +16,7 @@ alignment, there are literally three steps:
 
 1. Press the "Create Alignment" button
 2. Edit and define your alignment points in a table editor
-3. Constrain the alignment with curves
+3. Auto generate alignment curves based on defined standards
 
 In DOT39, four different dialogs and windows to create a alignment don't exist. Its entirely done all in one _unified_ 
 dialog.
