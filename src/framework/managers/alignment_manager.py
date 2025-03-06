@@ -46,23 +46,15 @@ class AlignmentManager:
                 alignment = dialog.activeResult()
 
         if alignment:
-            item = self.parent().glScene().activeSelection()
-            terrain = None
+            dialog = GetTerrainDialog(self.parent().glScene(), self.parent())
+            dialog.exec()
 
-            if item and isinstance(item, TerrainItem):
-                terrain = self.parent().glScene().activeSelection()
-
-            else:
-                dialog = GetTerrainDialog(self.parent().glScene(), self.parent())
+            if dialog.activeResult():
+                dialog = VerticalAlignmentCreatorDialog(self.parent().glScene(),
+                                                        alignment,
+                                                        dialog.activeResult(),
+                                                        self.parent())
                 dialog.exec()
-
-                if dialog.activeResult():
-                    terrain = dialog.activeResult()
-
-            if terrain:
-                dialog = VerticalAlignmentCreatorDialog(self.parent().glScene(), alignment, terrain, self.parent())
-                dialog.exec()
-
 
     def parent(self):
         return self._parent

@@ -109,7 +109,14 @@ class AlignmentItem(BaseItem):
         self.update()
 
     def coordAt(self, i):
-        return 0, 0
+        if i < 0 or i >= self._horizontal_path.elementCount():
+            raise IndexError(f"Index {i} out of range for the horizontal path.")
+
+            # Get the element at index i
+        element = self._horizontal_path.elementAt(i)
+
+        # Return the x and y coordinates
+        return element.x, element.y
 
     def drawCalls(self) -> list[dict[str, tuple]]:
         return self._draw_calls

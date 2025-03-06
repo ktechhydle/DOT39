@@ -12,8 +12,15 @@ class VerticalAlignmentViewer(QGraphicsView):
         self.tool_btn = tool_btn
 
         self._graphics_scene = QGraphicsScene()
-        self._graphics_scene.setSceneRect(QRectF(0, 0, alignment.horizontalPath().length(), 200))
+        self._graphics_scene.setSceneRect(QRectF(0, 0, self.alignment_item.horizontalPath().length(), 500))
         self.setScene(self._graphics_scene)
+
+        # Add methods for zooming
+        self.zoomInFactor = 1.25
+        self.zoomClamp = True
+        self.zoom = 20
+        self.zoomStep = 1
+        self.zoomRange = [4, 50]
 
         self.createScene()
 
@@ -23,8 +30,31 @@ class VerticalAlignmentViewer(QGraphicsView):
 
             if self.terrain_item.getElevationAt(x, y):
                 z = self.terrain_item.getElevationAt(x, y)
+                print(f'Z: {z}')
 
-                item = QGraphicsEllipseItem(QRectF(5, 5, -5, -5))
+                item = QGraphicsEllipseItem(QRectF(1, 1, -1, -1))
+                item.setPen(QPen(QColor('#00ff00'), 1))
                 item.setX(x)
                 item.setY(z)
                 self._graphics_scene.addItem(item)
+
+    def wheelEvent(self, event):
+        # Calculate zoom Factor
+        zoomOutFactor = 1 / self.zoomInFactor
+
+        # Calculate zoom
+        if event.angleDelta().y() > 0:
+            zoomFactor = self.zoomInFactor
+            self.zoom += self.zoomStep
+        else:
+            zoomFactor = zoomOutFactor
+            self.zoom -= self.zoomStep
+
+        # Deal with clamping!
+        clamped = False
+        if self.zoom < self.zoomRange[0]: self.zoom, clamped = self.zoomRange[0], True
+        if self.zoom > self.zoomRange[1]: self.zoom, clamped = self.zoomRange[1], True
+
+        if not clamped or self.zoomClamp is False:
+            self.scale(zoomFactor, zoomFactor)
+
