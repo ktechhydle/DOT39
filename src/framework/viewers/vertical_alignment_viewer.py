@@ -1,6 +1,7 @@
 from src._imports import *
 from src.framework.items.alignment_item import AlignmentItem
 from src.framework.items.terrain_item import TerrainItem
+from src.framework.viewers.items import EllipsePointItem, BoundingBoxItem
 
 
 class VerticalAlignmentViewer(QGraphicsView):
@@ -47,19 +48,20 @@ class VerticalAlignmentViewer(QGraphicsView):
                 min_x = min(min_x, x)
                 min_z = min(min_z, z)
 
-                item = QGraphicsEllipseItem(QRectF(0, 1, -1, -1))
-                item.setPen(QPen(QColor('#00ff00'), 1))
+                item = EllipsePointItem('#00ff00', bottom=True, rect=QRectF(1, 1, -1, -1))
                 item.setScale(0.25)
-                item.setZValue(-10000)
                 item.setX(x)
                 item.setY(z)
                 self._graphics_scene.addItem(item)
 
-        # Set the scene rect based on the max X and Z values
-        self._graphics_scene.setSceneRect(min_x, min_z, max_x - min_x, max_z - min_z)
+        rect = BoundingBoxItem(bottom=True, rect=QRectF(self.alignment_item.horizontalPath().elementAt(0).x,
+                                                        100000 - min_z,
+                                                        self.alignment_item.horizontalPath().currentPosition().x(),
+                                                        -100000))
+        self._graphics_scene.addItem(rect)
 
-        # Fit the view to the scene
-        self.fitInView(self._graphics_scene.itemsBoundingRect(), Qt.AspectRatioMode.KeepAspectRatio)
+        self._graphics_scene.setSceneRect(min_x, min_z, max_x - min_x, max_z - min_z)
+        self.fitInView(Qt.AspectRatioMode.KeepAspectRatio)
 
     def wheelEvent(self, event):
         # Calculate zoom Factor
@@ -81,3 +83,11 @@ class VerticalAlignmentViewer(QGraphicsView):
         if not clamped or self.zoomClamp is False:
             self.scale(zoomFactor, zoomFactor)
 
+    def fitInView(self, mode: Qt.AspectRatioMode):
+        rect = QRectF()
+
+        for item in self._graphics_scene.items():
+            if not isinstance(item, BoundingBoxItem):
+                rect = rect.united(item.boundingRect())
+
+        super().fitInView(rect, mode)
