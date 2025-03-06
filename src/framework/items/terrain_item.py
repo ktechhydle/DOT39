@@ -16,6 +16,11 @@ class TerrainItem(BaseItem):
         self.ctx = scene.ctx
         self.vbo = self.createVbo()
 
+        # Prepare Delaunay triangulation
+        self._points_np = np.array(self._points, dtype='f4')
+        self._points_2d = self._points_np[:, :2]
+        self.tri = Delaunay(self._points_2d)
+
     def points(self):
         return self._points
 
@@ -29,7 +34,36 @@ class TerrainItem(BaseItem):
 
     def setPoints(self, points: list[tuple[float, float, float]]):
         self._points = points
-        self.vbo = self.createVbo()
+
+        self.update()
+
+    def getElevationAt(self, x, y):
+        # Find the simplex (triangle) containing the point (x, y)
+        simplex = self.tri.find_simplex([x, y])
+
+        if simplex == -1:
+            return None
+
+        # Get the indices of the vertices of the triangle
+        triangle_vertices = self.tri.simplices[simplex]
+
+        # Extract the 3 points of the triangle
+        p0, p1, p2 = self._points_np[triangle_vertices]
+
+        # Calculate the barycentric coordinates (lambda1, lambda2, lambda3) of the point (x, y) within the triangle
+        # These are calculated using the inverse of the matrix formed by the triangle's points and the point (x, y)
+        denom = (p1[1] - p2[1]) * (p0[0] - p2[0]) + (p2[0] - p1[0]) * (p0[1] - p2[1])
+        if denom == 0:
+            return None
+
+        lambda1 = ((p1[1] - p2[1]) * (x - p2[0]) + (p2[0] - p1[0]) * (y - p2[1])) / denom
+        lambda2 = ((p2[1] - p0[1]) * (x - p2[0]) + (p0[0] - p2[0]) * (y - p2[1])) / denom
+        lambda3 = 1 - lambda1 - lambda2
+
+        # Calculate the elevation (z-value) using the barycentric coordinates
+        elevation = lambda1 * p0[2] + lambda2 * p1[2] + lambda3 * p2[2]
+
+        return elevation
 
     def createVbo(self):
         if len(self.points()) < 3:
@@ -77,4 +111,7 @@ class TerrainItem(BaseItem):
         outline_vao.render(GL.TRIANGLES)
 
     def update(self):
+        self._points_np = np.array(self._points, dtype='f4')
+        self._points_2d = self._points_np[:, :2]
+        self.tri = Delaunay(self._points_2d)
         self.vbo = self.createVbo()
