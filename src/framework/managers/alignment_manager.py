@@ -1,5 +1,5 @@
 from src._imports import *
-from src.gui.dialogs import AlignmentCreatorDialog, GetAlignmentDialog, EditAlignmentDialog
+from src.gui.dialogs import AlignmentCreatorDialog, GetAlignmentDialog
 from src.framework.scene.functions import isConvertibleToFloat
 from src.framework.scene.undo_commands import *
 from src.framework.items.alignment_item import AlignmentItem
@@ -28,8 +28,7 @@ class AlignmentManager:
                 alignment = dialog.activeResult()
 
         if alignment:
-            editor = EditAlignmentDialog(self.parent().glScene(), alignment, self.parent())
-            editor.exec()
+            pass
 
     def parent(self):
         return self._parent
