@@ -1,8 +1,10 @@
 from src._imports import *
 from src.framework.items.point_group import PointGroupItem
 from src.framework.items.alignment_item import AlignmentItem
+from src.framework.items.terrain_item import TerrainItem
 from src.framework.scene.functions import isConvertibleToFloat
 from src.framework.scene.undo_commands import *
+from src.framework.viewers.vertical_alignment_viewer import VerticalAlignmentViewer
 
 
 class GetPointGroupDialog(QDialog):
@@ -119,29 +121,33 @@ class GetAlignmentDialog(QDialog):
         super().close()
 
 
-class GetAlignmentTypeDialog(QDialog):
-    def __init__(self, parent):
+class GetTerrainDialog(QDialog):
+    def __init__(self, scene, parent):
         super().__init__(parent)
-        self.setWindowTitle('Choose Type')
+        self.setWindowTitle('Choose Terrain')
         self.setWindowModality(Qt.WindowModality.ApplicationModal)
 
+        self.scene = scene
         self._result = None
 
         self.createPotentialList()
         self.createUI()
 
     def createPotentialList(self):
-        self.potential_list = {'New Line': 'lineTo',
-                               'New Circular Curve': 'circularCurveTo',
-                               'New Clothoid Curve': 'clothoidCurveTo'}
+        self.potential_list = {}
+
+        for item in self.scene.items():
+            if isinstance(item, TerrainItem):
+                self.potential_list[item.name()] = item
 
     def createUI(self):
         self.setLayout(QVBoxLayout())
 
-        self.chooser_combo = QComboBox(self)
+        self.terrain_combo = QComboBox(self)
+        self.terrain_combo.currentIndexChanged.connect(self.valChanged)
 
         for k, v in self.potential_list.items():
-            self.chooser_combo.addItem(k, v)
+            self.terrain_combo.addItem(k, v)
 
         self.button_group = QDialogButtonBox(self)
         self.button_group.addButton('Ok', QDialogButtonBox.AcceptRole)
@@ -149,16 +155,27 @@ class GetAlignmentTypeDialog(QDialog):
         self.button_group.accepted.connect(self.accept)
         self.button_group.rejected.connect(self.close)
 
-        self.layout().addWidget(self.chooser_combo)
+        self.layout().addWidget(self.terrain_combo)
         self.layout().addWidget(self.button_group)
 
+    def valChanged(self):
+        self.scene.selectionTool().clearSelection()
+
+        item = self.terrain_combo.itemData(self.terrain_combo.currentIndex())
+        item.setSelected(True)
+
     def accept(self):
-        self._result = self.chooser_combo.itemData(self.chooser_combo.currentIndex())
+        self._result = self.terrain_combo.itemData(self.terrain_combo.currentIndex())
 
         self.close()
 
-    def activeResult(self) -> str:
+    def activeResult(self) -> TerrainItem:
         return self._result
+
+    def close(self):
+        self.scene.selectionTool().clearSelection()
+
+        super().close()
 
 
 class EditPointGroupDialog(QDialog):
@@ -370,5 +387,42 @@ class AlignmentCreatorDialog(QDialog):
         if remove:
             self.scene.removeItem(self._alignment_item)
             self.parent().alignment_item_count -= 1
+
+        super().close()
+
+
+class VerticalAlignmentCreatorDialog(QDialog):
+    def __init__(self, scene, alignment: AlignmentItem, terrain: TerrainItem, parent):
+        super().__init__(parent)
+        self.setWindowTitle('Vertical Alignment')
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
+        self.resize(800, 300)
+
+        self.scene = scene
+        self.alignment_item = alignment
+        self.terrain_item = terrain
+
+        self.createUI()
+
+    def createUI(self):
+        self.setLayout(QVBoxLayout())
+
+        self.viewer = VerticalAlignmentViewer(self.alignment_item, self.terrain_item, QPushButton(), self)
+
+        self.button_group = QDialogButtonBox(self)
+        self.button_group.addButton('Ok', QDialogButtonBox.AcceptRole)
+        self.button_group.addButton('Cancel', QDialogButtonBox.RejectRole)
+        self.button_group.accepted.connect(self.accept)
+        self.button_group.rejected.connect(lambda: self.close(remove=True))
+
+        self.layout().addWidget(self.viewer)
+        self.layout().addWidget(self.button_group)
+
+    def accept(self):
+        self.close()
+
+    def close(self, remove=False):
+        if remove:
+            self.alignment_item.clearVerticalPath()
 
         super().close()

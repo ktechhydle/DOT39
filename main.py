@@ -80,6 +80,10 @@ class DOT39(QMainWindow):
         create_alignment_btn.clicked.connect(self.alignmentManager.createAlignment)
         alignment_panel_widgets_1.append(create_alignment_btn)
 
+        create_vertical_alignment_btn = ToolBarButton('Create Vertical Alignment')
+        create_vertical_alignment_btn.clicked.connect(self.alignmentManager.createVerticalAlignment)
+        alignment_panel_widgets_1.append(create_vertical_alignment_btn)
+
         edit_alignment_btn = ToolBarButton('Edit Alignment')
         edit_alignment_btn.clicked.connect(self.alignmentManager.editAlignment)
         alignment_panel_widgets_2.append(edit_alignment_btn)

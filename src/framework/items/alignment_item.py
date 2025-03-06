@@ -108,6 +108,9 @@ class AlignmentItem(BaseItem):
 
         self.update()
 
+    def coordAt(self, i):
+        return 0, 0
+
     def drawCalls(self) -> list[dict[str, tuple]]:
         return self._draw_calls
 
