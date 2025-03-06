@@ -14,7 +14,9 @@ from src.framework.tools.selection_tool import SelectionTool
 
 class BaseScene(QGLWidget):
     def __init__(self, parent):
-        super(BaseScene, self).__init__(parent)
+        format = QGLFormat()
+        format.setSamples(4)
+        super(BaseScene, self).__init__(format, parent)
         self.setMouseTracking(True)
         self.setCursor(Qt.CursorShape.CrossCursor)
 
