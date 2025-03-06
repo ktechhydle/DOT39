@@ -38,11 +38,27 @@ class PointItem(BaseItem):
 
     def createTextVbo(self):
         if self.name():
-            font_id = QFontDatabase.addApplicationFont('resources/fonts/Proxy 9.ttf')
+            font_id = QFontDatabase.addApplicationFont('resources/fonts/Simplex.ttf')
             font_families = QFontDatabase.applicationFontFamilies(font_id)
             font = QFont(font_families[0], 1)
+
             path = QPainterPath()
-            path.addText(QPointF(0, 0), font, self.name())
+
+            # Define the text with newlines
+            lines = [
+                f'{self.name()}',
+                f'X: {self.x()}',
+                f'Y: {self.y()}'
+            ]
+
+            # Set the starting point for the text
+            current_position = QPointF(0, 0)
+
+            # Loop over each line and add it at the appropriate position
+            for line in lines:
+                path.addText(current_position, font, line)
+                # Adjust the current_position for the next line (move it down)
+                current_position.setY(current_position.y() + font.pointSize())
 
             # Convert the path to polygons
             polygons = path.toSubpathPolygons()
