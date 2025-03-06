@@ -14,14 +14,21 @@ class HomePanel(BasePanel):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setLayout(QVBoxLayout())
+        self.layout().setContentsMargins(50, 20, 50, 20)
 
         self.createUI()
 
     def createUI(self):
         title_label = AnimatedLabel('<h1>Welcome to DOT39</h1>', self)
         title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        new_file_label = QLabel('<h1>New File</h1>', self)
+        recent_files_label = QLabel('<h1>Recent Files</h1>', self)
 
         self.layout().addWidget(title_label)
+        self.layout().addSpacing(20)
+        self.layout().addWidget(new_file_label)
+        self.layout().addSpacing(20)
+        self.layout().addWidget(recent_files_label)
         self.layout().addStretch()
 
 
