@@ -25,6 +25,11 @@ class VerticalAlignmentViewer(QGraphicsView):
         self.createScene()
 
     def createScene(self):
+        if not self.alignment_item.verticalPath().isEmpty():
+            item = QGraphicsPathItem(self.alignment_item.verticalPath())
+            item.setPen(QPen(QColor('#ff0000'), 1))
+            self._graphics_scene.addItem(self.alignment_item.verticalPath())
+
         max_x = float('-inf')
         max_z = float('-inf')
         min_x = float('inf')
