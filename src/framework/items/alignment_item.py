@@ -42,13 +42,23 @@ class AlignmentItem(BaseItem):
 
         return None
 
-    def drawCircularCurve(self):
-        #self._horizontal_path.lineTo()
+    def drawCircularCurve(self, center_x, center_y, radius, start_angle, sweep_angle):
+        rect = QRectF(center_x - radius, center_y - radius, 2 * radius, 2 * radius)
+        self._horizontal_path.arcTo(rect, start_angle, sweep_angle)
 
         self.update()
 
-    def drawClothoid(self):
-        #self._horizontal_path.lineTo()
+    def drawClothoid(self, length, a, start_x=0, start_y=0, start_angle=0):
+        t = np.linspace(0, length / a, num=100)
+        S, C = fresnel(t)
+
+        # Scale the curve
+        x = start_x + a * C * np.cos(np.radians(start_angle)) - a * S * np.sin(np.radians(start_angle))
+        y = start_y + a * S * np.cos(np.radians(start_angle)) + a * C * np.sin(np.radians(start_angle))
+
+        self._horizontal_path.moveTo(start_x, start_y)
+        for i in range(len(x)):
+            self._horizontal_path.lineTo(x[i], y[i])
 
         self.update()
 
