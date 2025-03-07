@@ -540,3 +540,36 @@ class VerticalAlignmentCreatorDialog(QDialog):
             self.alignment_item.clearVerticalPath()
 
         super().close()
+
+
+class AlignmentAutoGeneratorDialog(QDialog):
+    def __init__(self, scene, alignment: AlignmentItem, parent):
+        super().__init__(parent)
+        self.setWindowTitle('Create Alignment')
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
+        self.resize(800, 300)
+
+        self.scene = scene
+        self._alignment_item = alignment
+
+        self.createUI()
+
+    def createUI(self):
+        self.setLayout(QVBoxLayout())
+
+        self.button_group = QDialogButtonBox(self)
+        self.button_group.addButton('Ok', QDialogButtonBox.AcceptRole)
+        self.button_group.addButton('Cancel', QDialogButtonBox.RejectRole)
+        self.button_group.accepted.connect(self.accept)
+        self.button_group.rejected.connect(lambda: self.close(reverse=True))
+
+        self.layout().addWidget(self.button_group)
+
+    def accept(self):
+        self.close()
+
+    def close(self, reverse=False):
+        if reverse:
+            pass
+
+        super().close()
