@@ -84,6 +84,10 @@ class DOT39(QMainWindow):
         create_vertical_alignment_btn.clicked.connect(self.alignmentManager.createVerticalAlignment)
         alignment_panel_widgets_1.append(create_vertical_alignment_btn)
 
+        auto_generate_alignment_btn = ToolBarButton('Auto Generate Alignment')
+        auto_generate_alignment_btn.clicked.connect(self.alignmentManager.autoGenerateAlignment)
+        alignment_panel_widgets_2.append(auto_generate_alignment_btn)
+
         edit_alignment_btn = ToolBarButton('Edit Alignment')
         edit_alignment_btn.clicked.connect(self.alignmentManager.editAlignment)
         alignment_panel_widgets_2.append(edit_alignment_btn)
@@ -133,7 +137,8 @@ class DOT39(QMainWindow):
         alignment = AlignmentItem(self.glScene(), self.glScene().shaderProgram())
         alignment.drawStart(0, 0)
         alignment.drawLine(50, 50)
-        alignment.drawClothoid(100, 100)
+        alignment.drawLine(100, 50)
+        alignment.drawLine(200, 100)
 
         self.glScene().addUndoCommand(AddItemCommand(alignment, self.glScene()))
 

@@ -6,6 +6,9 @@ from scipy.special import fresnel
 
 
 class AlignmentItem(BaseItem):
+    CurveTypeClothoid = 0
+    CurveTypeCircular = 1
+
     def __init__(self, scene, program, name=''):
         super().__init__(scene, name)
         self.setColor(hexToRGB('#ff0000'))
@@ -39,60 +42,13 @@ class AlignmentItem(BaseItem):
 
         return None
 
-    def drawCircularCurve(self, to_x, to_y, segments=50):
-        # Get the previous point
-        prev_point = self._horizontal_path.currentPosition()
-        x1, y1 = prev_point.x(), prev_point.y()
-
-        # Compute the midpoint
-        mid_x, mid_y = (x1 + to_x) / 2, (y1 + to_y) / 2
-
-        # Compute the perpendicular bisector's normal vector
-        dx, dy = to_x - x1, to_y - y1
-        normal_x, normal_y = -dy, dx
-
-        # Estimate a simple arc center by offsetting the midpoint
-        center_x, center_y = mid_x + normal_x * 0.5, mid_y + normal_y * 0.5
-        radius = np.hypot(x1 - center_x, y1 - center_y)
-
-        # Compute start and end angles
-        start_angle = np.degrees(np.arctan2(y1 - center_y, x1 - center_x))
-        end_angle = np.degrees(np.arctan2(to_y - center_y, to_x - center_x))
-
-        # Ensure proper angle direction
-        if end_angle < start_angle:
-            end_angle += 360
-
-        angles = np.linspace(np.radians(start_angle), np.radians(end_angle), segments)
-
-        # Draw the curve
-        for theta in angles:
-            x = center_x + radius * np.cos(theta)
-            y = center_y + radius * np.sin(theta)
-            self._horizontal_path.lineTo(x, y)
+    def drawCircularCurve(self):
+        #self._horizontal_path.lineTo()
 
         self.update()
 
-    def drawClothoid(self, to_x, to_y, num_points=100, a=1.0):
-        p1 = self._horizontal_path.currentPosition()
-        x0, y0 = p1.x(), p1.y()
-
-        dx = to_x - x0
-        dy = to_y - y0
-        distance = math.hypot(dx, dy)
-        theta = math.atan2(dy, dx)
-
-        t_values = np.linspace(0, 1, num_points)
-
-        for t in t_values:
-            # Compute Fresnel integrals for clothoid
-            S, C = fresnel(a * t)
-
-            # Transform clothoid points to global coordinates
-            x = x0 + distance * (C * np.cos(theta) + S * np.sin(theta))
-            y = y0 + distance * (C * np.sin(theta) - S * np.cos(theta))
-
-            self._horizontal_path.lineTo(x, y)
+    def drawClothoid(self):
+        #self._horizontal_path.lineTo()
 
         self.update()
 
@@ -110,7 +66,7 @@ class AlignmentItem(BaseItem):
 
     def coordAt(self, i):
         if i < 0 or i >= self._horizontal_path.elementCount():
-            raise IndexError(f"Index {i} out of range for the horizontal path.")
+            return None
 
             # Get the element at index i
         element = self._horizontal_path.elementAt(i)
@@ -176,3 +132,11 @@ class AlignmentItem(BaseItem):
 
     def update(self):
         self.vbo = self.createVbo()
+
+    def autoGenerateCurves(self, speed_mph: int, min_radius: float, max_radius: float, curve_type: int):
+        if curve_type == AlignmentItem.CurveTypeClothoid:
+            pass
+        elif curve_type == AlignmentItem.CurveTypeCircular:
+            pass
+        else:
+            pass

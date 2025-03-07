@@ -1,6 +1,7 @@
 from src._imports import *
 from src.framework.items.terrain_item import TerrainItem
-from src.gui.dialogs import AlignmentCreatorDialog, VerticalAlignmentCreatorDialog, GetAlignmentDialog, GetTerrainDialog
+from src.gui.dialogs import (AlignmentCreatorDialog, VerticalAlignmentCreatorDialog, GetAlignmentDialog,
+                             GetTerrainDialog, EditAlignmentDialog)
 from src.framework.scene.functions import isConvertibleToFloat
 from src.framework.scene.undo_commands import *
 from src.framework.items.alignment_item import AlignmentItem
@@ -29,7 +30,11 @@ class AlignmentManager:
                 alignment = dialog.activeResult()
 
         if alignment:
-            pass
+            dialog = EditAlignmentDialog(self.parent().glScene(), alignment, self.parent())
+            dialog.exec()
+
+    def autoGenerateAlignment(self):
+        pass
 
     def createVerticalAlignment(self):
         item = self.parent().glScene().activeSelection()
