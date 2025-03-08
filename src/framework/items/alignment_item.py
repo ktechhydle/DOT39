@@ -131,11 +131,14 @@ class AlignmentItem(BaseItem):
 
         path.moveTo(start_pos_x, start_pos_y)
 
-        if curve_type == AlignmentItem.CurveTypeClothoid:
-            pass
-        elif curve_type == AlignmentItem.CurveTypeCircular:
-            pass
-        else:
-            pass
+        for i in range(1, len(elements)):
+            x1, y1 = elements[i - 1]
+            x2, y2 = elements[i]
+
+            if curve_type == AlignmentItem.CurveTypeClothoid:
+                pass
+
+            elif curve_type == AlignmentItem.CurveTypeCircular:
+                pass
 
         return path
