@@ -259,12 +259,71 @@ class AnimatedLabel(QLabel):
 
 
 class HomeButton(QToolButton):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.setText('Home')
         self.setIcon(QIcon('resources/icons/logos/dot39_logo.svg'))
         self.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
         self.setCheckable(True)
+
+
+class IntegerInput(QWidget):
+    def __init__(self, title: str,
+                 range: tuple[int, int],
+                 layout: QVBoxLayout or QHBoxLayout,
+                 suffix: str='',
+                 parent=None):
+        super().__init__(parent)
+        self.setLayout(layout)
+        self.layout().setContentsMargins(0, 0, 0, 0)
+
+        self._title = title
+        self._range = range
+        self._suffix = suffix
+
+        self._create()
+
+    def _create(self):
+        label = QLabel(self._title, self)
+        spinbox = QSpinBox(self)
+        spinbox.setRange(*self._range)
+        spinbox.setSuffix(self._suffix)
+
+        self.layout().addWidget(label)
+        self.layout().addWidget(spinbox)
+
+    def _update(self):
+        for i in range(self.layout().count()):
+            item = self.layout().item(i)
+            self.layout().removeItem(item)
+
+            del item
+
+        self._create()
+
+    def setTitle(self, title: str):
+        self._title = title
+
+        self._update()
+
+    def setRange(self, range: tuple[int, int]):
+        self._range = range
+
+        self._update()
+
+    def setSuffix(self, suffix: str):
+        self._suffix = suffix
+
+        self._update()
+
+    def title(self) -> str:
+        return self._title
+
+    def range(self) -> tuple[int, int]:
+        return self._range
+
+    def suffix(self) -> str:
+        return self._suffix
 
 
 class ContextMenu(QMenu):

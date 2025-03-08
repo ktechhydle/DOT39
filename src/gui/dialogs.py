@@ -1,4 +1,5 @@
 from src._imports import *
+from src.gui.widgets import IntegerInput
 from src.framework.items.point_group import PointGroupItem
 from src.framework.items.alignment_item import AlignmentItem
 from src.framework.items.terrain_item import TerrainItem
@@ -557,19 +558,17 @@ class AlignmentAutoGeneratorDialog(QDialog):
     def createUI(self):
         self.setLayout(QVBoxLayout())
 
+        self.speed_input = IntegerInput('Speed', (10, 100), QVBoxLayout(), ' mph', self)
+
         self.button_group = QDialogButtonBox(self)
         self.button_group.addButton('Ok', QDialogButtonBox.AcceptRole)
         self.button_group.addButton('Cancel', QDialogButtonBox.RejectRole)
         self.button_group.accepted.connect(self.accept)
-        self.button_group.rejected.connect(lambda: self.close(reverse=True))
+        self.button_group.rejected.connect(self.close)
 
+        self.layout().addWidget(self.speed_input)
+        self.layout().addStretch()
         self.layout().addWidget(self.button_group)
 
     def accept(self):
         self.close()
-
-    def close(self, reverse=False):
-        if reverse:
-            pass
-
-        super().close()

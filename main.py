@@ -45,11 +45,7 @@ class DOT39(QMainWindow):
         self.createPanels()
 
     def createToolBarActions(self):
-        self.home_btn = QToolButton()
-        self.home_btn.setText('Home')
-        self.home_btn.setIcon(QIcon('resources/icons/logos/dot39_logo.svg'))
-        self.home_btn.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
-        self.home_btn.setCheckable(True)
+        self.home_btn = HomeButton()
         self.home_btn.clicked.connect(self.updateCentralWidget)
 
         self._toolbar_btn_group = QButtonGroup(self)
