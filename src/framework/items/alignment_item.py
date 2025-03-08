@@ -42,26 +42,6 @@ class AlignmentItem(BaseItem):
 
         return None
 
-    def drawCircularCurve(self, center_x, center_y, radius, start_angle, sweep_angle):
-        rect = QRectF(center_x - radius, center_y - radius, 2 * radius, 2 * radius)
-        self._horizontal_path.arcTo(rect, start_angle, sweep_angle)
-
-        self.update()
-
-    def drawClothoid(self, length, a, start_x=0, start_y=0, start_angle=0):
-        t = np.linspace(0, length / a, num=100)
-        S, C = fresnel(t)
-
-        # Scale the curve
-        x = start_x + a * C * np.cos(np.radians(start_angle)) - a * S * np.sin(np.radians(start_angle))
-        y = start_y + a * S * np.cos(np.radians(start_angle)) + a * C * np.sin(np.radians(start_angle))
-
-        self._horizontal_path.moveTo(start_x, start_y)
-        for i in range(len(x)):
-            self._horizontal_path.lineTo(x[i], y[i])
-
-        self.update()
-
     def drawLine(self, to_x, to_y):
         self._horizontal_path.lineTo(to_x, to_y)
         self._draw_calls.append({'Line': (to_x, to_y)})
@@ -143,10 +123,19 @@ class AlignmentItem(BaseItem):
     def update(self):
         self.vbo = self.createVbo()
 
-    def autoGenerateCurves(self, speed_mph: int, min_radius: float, max_radius: float, curve_type: int):
+    def autoGenerateCurves(self, speed_mph: int, min_radius: float, max_radius: float, curve_type: int) -> QPainterPath:
+        path = QPainterPath()
+
+        elements = [self.coordAt(i) for i in range(self.horizontalPath().elementCount())]
+        start_pos_x, start_pos_y = elements[0][0], elements[0][1]
+
+        path.moveTo(start_pos_x, start_pos_y)
+
         if curve_type == AlignmentItem.CurveTypeClothoid:
             pass
         elif curve_type == AlignmentItem.CurveTypeCircular:
             pass
         else:
             pass
+
+        return path
