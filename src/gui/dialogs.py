@@ -546,9 +546,9 @@ class VerticalAlignmentCreatorDialog(QDialog):
 class AlignmentAutoGeneratorDialog(QDialog):
     def __init__(self, scene, alignment: AlignmentItem, parent):
         super().__init__(parent)
-        self.setWindowTitle('Create Alignment')
+        self.setWindowTitle('Auto Generate Alignment')
         self.setWindowModality(Qt.WindowModality.ApplicationModal)
-        self.resize(800, 300)
+        self.resize(250, 400)
 
         self.scene = scene
         self._alignment_item = alignment
