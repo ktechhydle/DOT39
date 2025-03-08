@@ -1,5 +1,5 @@
 from src._imports import *
-from src.gui.widgets import IntegerInput
+from src.gui.widgets import IntegerInput, FloatInput
 from src.framework.items.point_group import PointGroupItem
 from src.framework.items.alignment_item import AlignmentItem
 from src.framework.items.terrain_item import TerrainItem
@@ -552,6 +552,7 @@ class AlignmentAutoGeneratorDialog(QDialog):
 
         self.scene = scene
         self._alignment_item = alignment
+        self._spacing = 15
 
         self.createUI()
 
@@ -559,6 +560,8 @@ class AlignmentAutoGeneratorDialog(QDialog):
         self.setLayout(QVBoxLayout())
 
         self.speed_input = IntegerInput('Speed', (10, 100), QVBoxLayout(), ' mph', self)
+        self.min_radius_input = FloatInput('Minimum Radius', (1.0, 1000.0), QVBoxLayout(), step=0.1)
+        self.max_radius_input = FloatInput('Maximum Radius', (1.0, 1000.0), QVBoxLayout(), step=0.1)
 
         self.button_group = QDialogButtonBox(self)
         self.button_group.addButton('Ok', QDialogButtonBox.AcceptRole)
@@ -567,6 +570,10 @@ class AlignmentAutoGeneratorDialog(QDialog):
         self.button_group.rejected.connect(self.close)
 
         self.layout().addWidget(self.speed_input)
+        self.layout().addSpacing(self._spacing)
+        self.layout().addWidget(self.min_radius_input)
+        self.layout().addSpacing(self._spacing)
+        self.layout().addWidget(self.max_radius_input)
         self.layout().addStretch()
         self.layout().addWidget(self.button_group)
 

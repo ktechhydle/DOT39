@@ -326,6 +326,74 @@ class IntegerInput(QWidget):
         return self._suffix
 
 
+class FloatInput(QWidget):
+    def __init__(self, title: str,
+                 range: tuple[float, float],
+                 layout: QVBoxLayout or QHBoxLayout,
+                 step: float = 0.1,
+                 suffix: str='',
+                 parent=None):
+        super().__init__(parent)
+        self.setLayout(layout)
+        self.layout().setContentsMargins(0, 0, 0, 0)
+
+        self._title = title
+        self._range = range
+        self._step = step
+        self._suffix = suffix
+
+        self._create()
+
+    def _create(self):
+        label = QLabel(self._title, self)
+        spinbox = QDoubleSpinBox(self)
+        spinbox.setRange(*self._range)
+        spinbox.setSingleStep(self._step)
+        spinbox.setSuffix(self._suffix)
+
+        self.layout().addWidget(label)
+        self.layout().addWidget(spinbox)
+
+    def _update(self):
+        for i in range(self.layout().count()):
+            item = self.layout().item(i)
+            self.layout().removeItem(item)
+
+            del item
+
+        self._create()
+
+    def setTitle(self, title: str):
+        self._title = title
+
+        self._update()
+
+    def setRange(self, range: tuple[float, float]):
+        self._range = range
+
+        self._update()
+
+    def setStep(self, step: float):
+        self._step = step
+
+    def setSuffix(self, suffix: str):
+        self._suffix = suffix
+
+        self._update()
+
+    def title(self) -> str:
+        return self._title
+
+    def range(self) -> tuple[float, float]:
+        return self._range
+
+    def step(self) -> float:
+        return self._step
+
+    def suffix(self) -> str:
+        return self._suffix
+
+
 class ContextMenu(QMenu):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
