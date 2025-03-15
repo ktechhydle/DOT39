@@ -565,7 +565,8 @@ class AlignmentAutoGeneratorDialog(QDialog):
                                         ' mph',
                                         parent=self)
         self.curve_input = OptionInput('Curve Type',
-                                       {'Circular': 0, 'Clothoid': 1},
+                                       {'Clothoid': AlignmentItem.CurveTypeClothoid,
+                                        'Circular': AlignmentItem.CurveTypeCircular},
                                        QVBoxLayout(),
                                        parent=self)
 
