@@ -133,8 +133,8 @@ class AlignmentItem(BaseItem):
 
         e = 0.10 - (0.001 * speed_mph)
         f = 0.35 - (0.0033 * speed_mph)
-        min_arc_radius = (speed_mph * speed_mph) / (15 * (e + f))
-        min_clothoid_length = (speed_mph * speed_mph * speed_mph) / (46.5 * (e + f))
+        min_arc_radius = (speed_mph ** 2) / (15 * (e + f))
+        min_clothoid_length = (speed_mph ** 3) / (46.5 * (e + f))
 
         for i in range(len(elements)):
             if curve_type == AlignmentItem.CurveTypeClothoid:
