@@ -123,7 +123,7 @@ class AlignmentItem(BaseItem):
     def update(self):
         self.vbo = self.createVbo()
 
-    def autoGenerateCurves(self, speed_mph: int, min_radius: float, max_radius: float, curve_type: int) -> QPainterPath:
+    def autoGenerateCurves(self, speed_mph: int, curve_type: int) -> QPainterPath:
         path = QPainterPath()
 
         elements = [self.coordAt(i) for i in range(self.horizontalPath().elementCount())]
@@ -131,10 +131,7 @@ class AlignmentItem(BaseItem):
 
         path.moveTo(start_pos_x, start_pos_y)
 
-        for i in range(1, len(elements)):
-            x1, y1 = elements[i - 1]
-            x2, y2 = elements[i]
-
+        for i in range(len(elements)):
             if curve_type == AlignmentItem.CurveTypeClothoid:
                 pass
 
