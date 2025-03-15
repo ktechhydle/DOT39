@@ -394,6 +394,61 @@ class FloatInput(QWidget):
         return self._suffix
 
 
+class OptionInput(QWidget):
+    def __init__(self, title: str,
+                 values: dict[str, any],
+                 layout: QVBoxLayout or QHBoxLayout,
+                 on_change=None,
+                 parent=None):
+        super().__init__(parent)
+        self.setLayout(layout)
+        self.layout().setContentsMargins(0, 0, 0, 0)
+
+        self._title = title
+        self._values = values
+        self._on_change = on_change
+
+        self._create()
+
+    def _create(self):
+        label = QLabel(self._title, self)
+        combobox = QComboBox(self)
+
+        for k, v in self.values().items():
+            combobox.addItem(k, v)
+
+        if self._on_change:
+            combobox.currentIndexChanged.connect(self._on_change)
+
+        self.layout().addWidget(label)
+        self.layout().addWidget(combobox)
+
+    def _update(self):
+        for i in range(self.layout().count()):
+            item = self.layout().item(i)
+            self.layout().removeItem(item)
+
+            del item
+
+        self._create()
+
+    def setTitle(self, title: str):
+        self._title = title
+
+        self._update()
+
+    def setValues(self, values: dict[str, any]):
+        self._values = values
+
+        self._update()
+
+    def title(self) -> str:
+        return self._title
+
+    def values(self) -> dict[str, any]:
+        return self._values
+
+
 class ContextMenu(QMenu):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
