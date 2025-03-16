@@ -137,11 +137,11 @@ class AlignmentItem(BaseItem):
         min_arc_radius = (speed_mph ** 2) / (15 * (e + f))
         min_clothoid_length = (speed_mph ** 3) / (46.5 * (e + f))
 
-        for i in range(len(elements)):
-            bend_point = None
+        for i in range(1, len(elements) - 1):
+            arc_control_point = None
 
             if i in bend_points:
-                bend_point = bend_points[i]
+                arc_control_point = elements[i]
 
             if curve_type == AlignmentItem.CurveTypeClothoid:
                 pass
