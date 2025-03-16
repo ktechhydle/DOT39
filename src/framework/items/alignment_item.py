@@ -138,15 +138,18 @@ class AlignmentItem(BaseItem):
         min_clothoid_length = (speed_mph ** 3) / (46.5 * (e + f))
 
         for i in range(1, len(elements) - 1):
-            arc_control_point = None
+            bend_in_path_point = None
 
             if i in bend_points:
-                arc_control_point = elements[i]
+                bend_in_path_point = elements[i]
 
-            if curve_type == AlignmentItem.CurveTypeClothoid:
-                pass
+            if bend_in_path_point:
+                if curve_type == AlignmentItem.CurveTypeClothoid:
+                    pass
 
-            elif curve_type == AlignmentItem.CurveTypeCircular:
+                elif curve_type == AlignmentItem.CurveTypeCircular:
+                    pass
+            else:
                 pass
 
         return path
