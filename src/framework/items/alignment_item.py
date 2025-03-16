@@ -144,3 +144,30 @@ class AlignmentItem(BaseItem):
                 pass
 
         return path
+
+    @staticmethod
+    def _findDirectionChanges(points, angle_threshold=0.001):
+        if len(points) < 3:
+            return []
+
+        direction_changes = []
+
+        for i in range(1, len(points) - 1):
+            x1, y1 = points[i - 1]
+            x2, y2 = points[i]
+            x3, y3 = points[i + 1]
+
+            # Compute angles between consecutive segments
+            angle1 = np.arctan2(y2 - y1, x2 - x1)
+            angle2 = np.arctan2(y3 - y2, x3 - x2)
+
+            # Compute change in angle in degrees
+            delta_angle = np.degrees(angle2 - angle1)
+
+            # Normalize to the range [-180, 180] for proper detection
+            delta_angle = (delta_angle + 180) % 360 - 180
+
+            if abs(delta_angle) > angle_threshold:
+                direction_changes.append(i)
+
+        return direction_changes
