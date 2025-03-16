@@ -127,6 +127,7 @@ class AlignmentItem(BaseItem):
         path = QPainterPath()
 
         elements = [self.coordAt(i) for i in range(self.horizontalPath().elementCount())]
+        bend_points = self._findDirectionChanges(elements)
         start_pos_x, start_pos_y = elements[0][0], elements[0][1]
 
         path.moveTo(start_pos_x, start_pos_y)
@@ -137,6 +138,11 @@ class AlignmentItem(BaseItem):
         min_clothoid_length = (speed_mph ** 3) / (46.5 * (e + f))
 
         for i in range(len(elements)):
+            bend_point = None
+
+            if i in bend_points:
+                bend_point = bend_points[i]
+
             if curve_type == AlignmentItem.CurveTypeClothoid:
                 pass
 
