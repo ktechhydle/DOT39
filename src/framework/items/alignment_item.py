@@ -21,16 +21,35 @@ class AlignmentHorizontalPath(QPainterPath):
 
         super().moveTo(x, y)
 
-    def lineTo(self, x, y):
-        self._segments.append((AlignmentHorizontalPath.Line, x, y))
+    def lineTo(self, x, y, ignore=False):
+        if not ignore:
+            self._segments.append((AlignmentHorizontalPath.Line, x, y))
 
         super().lineTo(x, y)
 
-    def circularCurveTo(self):
-        self._segments.append((AlignmentHorizontalPath.CircularCurve))
+    def circularCurveTo(self, cx, cy, radius, start_angle, end_angle):
+        self._segments.append((AlignmentHorizontalPath.CircularCurve, cx, cy, radius, start_angle, end_angle))
+
+        rect = QRectF(cx - radius, cy - radius, 2 * radius, 2 * radius)
+        self.arcTo(rect, start_angle, end_angle - start_angle)
 
     def clothoidCurveTo(self, x1, y1, theta1, length, A):
         self._segments.append((AlignmentHorizontalPath.ClothoidCurve, x1, y1, theta1, length, A))
+
+        num_points = 100
+        t = np.linspace(0, length / A, num_points)
+
+        S, C = fresnel(t)
+        X = A * np.sqrt(np.pi) * C
+        Y = A * np.sqrt(np.pi) * S
+
+        cos_theta, sin_theta = np.cos(theta1), np.sin(theta1)
+        points = [(x1 + cos_theta * x - sin_theta * y,
+                   y1 + sin_theta * x + cos_theta * y) for x, y in zip(X, Y)]
+
+        # Draw curve using line segments
+        for px, py in points:
+            self.lineTo(px, py, ignore=True)
 
     def modifyElement(self, index, new_params):
         if 0 <= index < len(self._segments):
