@@ -213,43 +213,37 @@ class AlignmentItem(BaseItem):
 
     def autoGenerateCurves(self, speed_mph: int, curve_type: int) -> AlignmentHorizontalPath:
         path = AlignmentHorizontalPath()
+        points = [(seg[1], seg[2]) for seg in self._horizontal_path._segments if
+                  seg[0] in [AlignmentHorizontalPath.StartPos, AlignmentHorizontalPath.Line]]
 
-        e = 0.10 - (0.001 * speed_mph)
-        f = 0.35 - (0.0033 * speed_mph)
+        e = 0.10 - (0.001 * speed_mph)  # superelevation factor
+        f = 0.35 - (0.0033 * speed_mph)  # side friction factor
         min_arc_radius = (speed_mph ** 2) / (15 * (e + f))
         min_clothoid_length = (speed_mph ** 3) / (46.5 * (e + f))
 
-        for i in range(self._horizontal_path.segmentCount()):
-            if curve_type == AlignmentItem.CurveTypeCircular:
-                pass
-            elif curve_type == AlignmentItem.CurveTypeClothoid:
-                pass
-
-        return path
-
-    '''@staticmethod
-    def _findDirectionChanges(points, angle_threshold=0.001):
-        if len(points) < 3:
-            return []
-
-        direction_changes = []
+        path.moveTo(*points[0])
 
         for i in range(1, len(points) - 1):
             x1, y1 = points[i - 1]
             x2, y2 = points[i]
             x3, y3 = points[i + 1]
 
-            # Compute angles between consecutive segments
             angle1 = np.arctan2(y2 - y1, x2 - x1)
             angle2 = np.arctan2(y3 - y2, x3 - x2)
-
-            # Compute change in angle in degrees
             delta_angle = np.degrees(angle2 - angle1)
-
-            # Normalize to the range [-180, 180] for proper detection
             delta_angle = (delta_angle + 180) % 360 - 180
 
-            if abs(delta_angle) > angle_threshold:
-                direction_changes.append(i)
+            if abs(delta_angle) > 0.001:
+                if curve_type == AlignmentItem.CurveTypeCircular:
+                    # path.circularCurveTo()
+                    pass
 
-        return direction_changes'''
+                elif curve_type == AlignmentItem.CurveTypeClothoid:
+                    # path.clothoidCurveTo()
+                    pass
+
+            else:
+                path.lineTo(x2, y2)
+
+        path.lineTo(*points[-1])
+        return path
