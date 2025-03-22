@@ -27,11 +27,25 @@ class AlignmentHorizontalPath(QPainterPath):
 
         super().lineTo(x, y)
 
-    def circularCurveTo(self, cx, cy, radius, start_angle, end_angle):
-        self._segments.append((AlignmentHorizontalPath.CircularCurve, cx, cy, radius, start_angle, end_angle))
+    def circularCurveTo(self, start: tuple[float, float], end: tuple[float, float], pi: tuple[float, float], radius: float):
+        self._segments.append((AlignmentHorizontalPath.CircularCurve, start, end, pi, radius))
 
-        rect = QRectF(cx - radius, cy - radius, 2 * radius, 2 * radius)
-        self.arcTo(rect, start_angle, end_angle - start_angle)
+        cx, cy = pi
+        sx, sy = start
+        ex, ey = end
+
+        theta1 = np.arctan2(sy - cy, sx - cx)
+        theta2 = np.arctan2(ey - cy, ex - cx)
+
+        if theta1 > theta2:
+            theta1, theta2 = theta2, theta1
+
+        num_points = 100
+        theta_vals = np.linspace(theta1, theta2, num_points)
+        points = [(cx + radius * np.cos(theta), cy + radius * np.sin(theta)) for theta in theta_vals]
+
+        for px, py in points:
+            self.lineTo(px, py, ignore=True)
 
     def clothoidCurveTo(self, x1, y1, theta1, length, A):
         self._segments.append((AlignmentHorizontalPath.ClothoidCurve, x1, y1, theta1, length, A))
