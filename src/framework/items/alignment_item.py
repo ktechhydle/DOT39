@@ -5,6 +5,70 @@ from src.framework.scene.functions import hexToRGB
 from scipy.special import fresnel
 
 
+class AlignmentHorizontalPath(QPainterPath):
+    StartPos = 'start_pos'
+    Line = 'line'
+    CircularCurve = 'circular_curve'
+    ClothoidCurve = 'clothoid_curve'
+
+    def __init__(self):
+        super().__init__()
+
+        self._segments = []
+
+    def moveTo(self, x, y):
+        self._segments.append((AlignmentHorizontalPath.StartPos, x, y))
+
+        super().moveTo(x, y)
+
+    def lineTo(self, x, y):
+        self._segments.append((AlignmentHorizontalPath.Line, x, y))
+
+        super().lineTo(x, y)
+
+    def circularCurveTo(self):
+        self._segments.append((AlignmentHorizontalPath.CircularCurve))
+
+    def clothoidCurveTo(self, x1, y1, theta1, length, A):
+        self._segments.append((AlignmentHorizontalPath.ClothoidCurve, x1, y1, theta1, length, A))
+
+    def modifyElement(self, index, new_params):
+        if 0 <= index < len(self._segments):
+            segment_type, _ = self._segments[index]
+
+            if segment_type == AlignmentHorizontalPath.StartPos:
+                self._segments[index] = (AlignmentHorizontalPath.StartPos, new_params)
+
+            elif segment_type == AlignmentHorizontalPath.Line:
+                self._segments[index] = (AlignmentHorizontalPath.Line, new_params)
+
+            elif segment_type == AlignmentHorizontalPath.ClothoidCurve:
+                self._segments[index] = (AlignmentHorizontalPath.ClothoidCurve, new_params)
+
+            elif segment_type == AlignmentHorizontalPath.CircularCurve:
+                self._segments[index] = (AlignmentHorizontalPath.CircularCurve, new_params)
+
+            self.rebuild()
+
+    def rebuild(self):
+        self.clear()
+
+        for segment in self._segments:
+            if segment[0] == AlignmentHorizontalPath.StartPos:
+                _, (x, y) = segment
+                self.moveTo(x, y)
+
+            elif segment[0] == AlignmentHorizontalPath.Line:
+                _, (x, y) = segment
+                self.lineTo(x, y)
+
+            elif segment[0] == AlignmentHorizontalPath.CircularCurve:
+                pass
+
+            elif segment[0] == AlignmentHorizontalPath.ClothoidCurve:
+                pass
+
+
 class AlignmentItem(BaseItem):
     CurveTypeClothoid = 0
     CurveTypeCircular = 1
@@ -15,7 +79,7 @@ class AlignmentItem(BaseItem):
 
         self.program = program
         self.ctx = scene.ctx
-        self._horizontal_path = QPainterPath()
+        self._horizontal_path = AlignmentHorizontalPath()
         self._vertical_path = QPainterPath()
         self._draw_calls = []
         self.vbo = self.createVbo()
@@ -123,7 +187,7 @@ class AlignmentItem(BaseItem):
     def update(self):
         self.vbo = self.createVbo()
 
-    def autoGenerateCurves(self, speed_mph: int, curve_type: int) -> QPainterPath:
+    '''def autoGenerateCurves(self, speed_mph: int, curve_type: int) -> QPainterPath:
         path = QPainterPath()
 
         elements = [self.coordAt(i) for i in range(self.horizontalPath().elementCount())]
@@ -179,4 +243,4 @@ class AlignmentItem(BaseItem):
             if abs(delta_angle) > angle_threshold:
                 direction_changes.append(i)
 
-        return direction_changes
+        return direction_changes'''
