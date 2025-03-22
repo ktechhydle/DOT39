@@ -1,5 +1,5 @@
 from src._imports import *
-from src.gui.widgets import IntegerInput, FloatInput, OptionInput
+from src.gui.widgets import IntegerInput, FloatInput, StringInput, OptionInput
 from src.framework.items.point_group import PointGroupItem
 from src.framework.items.alignment_item import AlignmentItem
 from src.framework.items.terrain_item import TerrainItem
@@ -585,3 +585,37 @@ class AlignmentAutoGeneratorDialog(QDialog):
 
     def accept(self):
         self.close()
+
+
+class EditValueDialog(QDialog):
+    def __init__(self, editable_item, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle('Edit Value')
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
+        self.resize(250, 400)
+
+        self._editable_item = editable_item
+
+        self.createUI()
+
+    def createUI(self):
+        self.setLayout(QVBoxLayout())
+
+        self.input = None
+
+        if self._editable_item.inputType() == self._editable_item.InputTypeInt:
+            self.input = IntegerInput('Value', (1, 10000), QVBoxLayout())
+            self.input.setDefaultValue(self._editable_item.value())
+        elif self._editable_item.inputType() == self._editable_item.InputTypeFloat:
+            self.input = FloatInput('Value', (1, 10000), QVBoxLayout())
+            self.input.setDefaultValue(self._editable_item.value())
+
+        self.button_group = QDialogButtonBox(self)
+        self.button_group.addButton('Ok', QDialogButtonBox.AcceptRole)
+        self.button_group.addButton('Cancel', QDialogButtonBox.RejectRole)
+        self.button_group.accepted.connect(self.accept)
+        self.button_group.rejected.connect(self.close)
+
+        self.layout().addWidget(self.input)
+        self.layout().addSpacing(20)
+        self.layout().addWidget(self.button_group)

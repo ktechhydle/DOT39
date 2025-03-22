@@ -4,6 +4,7 @@ from src.framework.items.point_group import PointGroupItem
 from src.framework.items.point_item import PointItem
 from src.framework.items.terrain_item import TerrainItem
 from src.framework.items.alignment_item import AlignmentItem
+from src.framework.items.editable_item import EditableItem
 from src.framework.scene.functions import hexToRGB, vertex_shad, fragment_shad
 from src.framework.scene.arcball import ArcBallUtil
 from src.framework.scene.undo_commands import *
@@ -174,6 +175,9 @@ class BaseScene(QGLWidget):
         if event.button() == Qt.MouseButton.MiddleButton:
             self.updateArcBall()
             self.update()
+        elif event.button() == Qt.MouseButton.LeftButton:
+            if self.activeSelection() and isinstance(self.activeSelection(), EditableItem):
+                self.activeSelection().startEditing()
 
     def wheelEvent(self, event: QWheelEvent):
         zoom_delta = -event.angleDelta().y() * 0.001

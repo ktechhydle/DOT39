@@ -7,6 +7,7 @@ from src.framework.managers.point_manager import PointManager
 from src.framework.managers.surface_manager import SurfaceManager
 from src.framework.managers.alignment_manager import AlignmentManager
 from src.framework.items.alignment_item import AlignmentItem
+from src.framework.items.editable_item import EditableItem
 
 
 class DOT39(QMainWindow):
@@ -136,7 +137,12 @@ class DOT39(QMainWindow):
         alignment.drawLine(100, 50)
         alignment.drawLine(200, 100)
 
+        text = EditableItem(self.glScene(), self.glScene().shaderProgram(), value='Hello!')
+        text.setPos([100, 100, 100])
+        text.update()
+
         self.glScene().addUndoCommand(AddItemCommand(alignment, self.glScene()))
+        self.glScene().addUndoCommand(AddItemCommand(text, self.glScene()))
 
     def updateCentralWidget(self):
         if self.home_btn.isChecked():

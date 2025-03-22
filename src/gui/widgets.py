@@ -280,6 +280,7 @@ class IntegerInput(QWidget):
         self._title = title
         self._range = range
         self._suffix = suffix
+        self._default_value = 0
 
         self._create()
 
@@ -288,6 +289,7 @@ class IntegerInput(QWidget):
         spinbox = QSpinBox(self)
         spinbox.setRange(*self._range)
         spinbox.setSuffix(self._suffix)
+        spinbox.setValue(self._default_value)
 
         self.layout().addWidget(label)
         self.layout().addWidget(spinbox)
@@ -316,6 +318,11 @@ class IntegerInput(QWidget):
 
         self._update()
 
+    def setDefaultValue(self, value: int):
+        self._default_value = value
+
+        self._update()
+
     def title(self) -> str:
         return self._title
 
@@ -324,6 +331,9 @@ class IntegerInput(QWidget):
 
     def suffix(self) -> str:
         return self._suffix
+
+    def defaultValue(self) -> int:
+        return self._default_value
 
 
 class FloatInput(QWidget):
@@ -341,6 +351,7 @@ class FloatInput(QWidget):
         self._range = range
         self._step = step
         self._suffix = suffix
+        self._default_value = 0.0
 
         self._create()
 
@@ -350,6 +361,7 @@ class FloatInput(QWidget):
         spinbox.setRange(*self._range)
         spinbox.setSingleStep(self._step)
         spinbox.setSuffix(self._suffix)
+        spinbox.setValue(self._default_value)
 
         self.layout().addWidget(label)
         self.layout().addWidget(spinbox)
@@ -381,6 +393,11 @@ class FloatInput(QWidget):
 
         self._update()
 
+    def setDefaultValue(self, value: float):
+        self._default_value = value
+
+        self._update()
+
     def title(self) -> str:
         return self._title
 
@@ -392,6 +409,67 @@ class FloatInput(QWidget):
 
     def suffix(self) -> str:
         return self._suffix
+
+    def defaultValue(self) -> float:
+        return self._default_value
+
+
+class StringInput(QWidget):
+    def __init__(self, title: str,
+                 layout: QVBoxLayout or QHBoxLayout,
+                 placeholder: str = '',
+                 parent=None):
+        super().__init__(parent)
+        self.setLayout(layout)
+        self.layout().setContentsMargins(0, 0, 0, 0)
+
+        self._title = title
+        self._placeholder = placeholder
+        self._default_value = ''
+
+        self._create()
+
+    def _create(self):
+        label = QLabel(self._title, self)
+        input = QLineEdit(self)
+        input.setPlaceholderText(self._placeholder)
+        input.setText(self._default_value)
+
+        self.layout().addWidget(label)
+        self.layout().addWidget(input)
+
+    def _update(self):
+        for i in range(self.layout().count()):
+            item = self.layout().item(i)
+            self.layout().removeItem(item)
+
+            del item
+
+        self._create()
+
+    def setTitle(self, title: str):
+        self._title = title
+
+        self._update()
+
+    def setPlaceholder(self, text: str):
+        self._placeholder = text
+
+        self._update()
+
+    def setDefaultValue(self, value: str):
+        self._default_value = value
+
+        self._update()
+
+    def title(self) -> str:
+        return self._title
+
+    def placeholder(self) -> str:
+        return self._placeholder
+
+    def defaultValue(self) -> str:
+        return self._default_value
 
 
 class OptionInput(QWidget):
