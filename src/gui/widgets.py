@@ -296,7 +296,7 @@ class IntegerInput(QWidget):
 
     def _update(self):
         for i in range(self.layout().count()):
-            item = self.layout().item(i)
+            item = self.layout().itemAt(i)
             self.layout().removeItem(item)
 
             del item
@@ -335,6 +335,13 @@ class IntegerInput(QWidget):
     def defaultValue(self) -> int:
         return self._default_value
 
+    def value(self) -> int:
+        for i in range(self.layout().count()):
+            item = self.layout().itemAt(i)
+
+            if isinstance(item.widget(), QSpinBox):
+                return item.widget().value()
+
 
 class FloatInput(QWidget):
     def __init__(self, title: str,
@@ -368,7 +375,7 @@ class FloatInput(QWidget):
 
     def _update(self):
         for i in range(self.layout().count()):
-            item = self.layout().item(i)
+            item = self.layout().itemAt(i)
             self.layout().removeItem(item)
 
             del item
@@ -413,6 +420,13 @@ class FloatInput(QWidget):
     def defaultValue(self) -> float:
         return self._default_value
 
+    def value(self) -> float:
+        for i in range(self.layout().count()):
+            item = self.layout().itemAt(i)
+
+            if isinstance(item.widget(), QDoubleSpinBox):
+                return item.widget().value()
+
 
 class StringInput(QWidget):
     def __init__(self, title: str,
@@ -440,7 +454,7 @@ class StringInput(QWidget):
 
     def _update(self):
         for i in range(self.layout().count()):
-            item = self.layout().item(i)
+            item = self.layout().itemAt(i)
             self.layout().removeItem(item)
 
             del item
@@ -470,6 +484,13 @@ class StringInput(QWidget):
 
     def defaultValue(self) -> str:
         return self._default_value
+
+    def value(self) -> str:
+        for i in range(self.layout().count()):
+            item = self.layout().itemAt(i)
+
+            if isinstance(item.widget(), QLineEdit):
+                return item.widget().text()
 
 
 class OptionInput(QWidget):
@@ -503,7 +524,7 @@ class OptionInput(QWidget):
 
     def _update(self):
         for i in range(self.layout().count()):
-            item = self.layout().item(i)
+            item = self.layout().itemAt(i)
             self.layout().removeItem(item)
 
             del item
@@ -525,6 +546,13 @@ class OptionInput(QWidget):
 
     def values(self) -> dict[str, any]:
         return self._values
+
+    def value(self) -> object:
+        for i in range(self.layout().count()):
+            item = self.layout().itemAt(i)
+
+            if isinstance(item.widget(), QComboBox):
+                return item.widget().itemData(item.widget().currentIndex())
 
 
 class ContextMenu(QMenu):
