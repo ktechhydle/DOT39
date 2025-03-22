@@ -94,4 +94,19 @@ class VisibilityChangedCommand(QUndoCommand):
             item.setVisible(old_attribute)
 
 
+class ValueChangedCommand(QUndoCommand):
+    def __init__(self, editable_item, new_attr, old_attr):
+        super().__init__()
+
+        self.editable_item = editable_item
+        self.new_attr = new_attr
+        self.old_attr = old_attr
+
+    def redo(self):
+        self.editable_item.setValue(self.new_attr)
+
+    def undo(self):
+        self.editable_item.setValue(self.old_attr)
+
+
 

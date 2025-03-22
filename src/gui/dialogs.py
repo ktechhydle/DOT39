@@ -603,13 +603,12 @@ class EditValueDialog(QDialog):
 
         if self._editable_item.inputType() == self._editable_item.InputTypeInt:
             self.input = IntegerInput('Value', (1, 10000), QVBoxLayout())
-            self.input.setDefaultValue(self._editable_item.value())
         elif self._editable_item.inputType() == self._editable_item.InputTypeFloat:
             self.input = FloatInput('Value', (1, 10000), QVBoxLayout())
-            self.input.setDefaultValue(self._editable_item.value())
         else:
             self.input = StringInput('Value', QVBoxLayout(), 'Edit here...')
-            self.input.setDefaultValue(str(self._editable_item.value()))
+
+        self.input.setDefaultValue(self._editable_item.value())
 
         self.button_group = QDialogButtonBox(self)
         self.button_group.addButton('Ok', QDialogButtonBox.AcceptRole)
@@ -622,6 +621,10 @@ class EditValueDialog(QDialog):
         self.layout().addWidget(self.button_group)
 
     def accept(self):
-        self._editable_item.setValue(self.input.value())
+        self._editable_item.scene().addUndoCommand(ValueChangedCommand(
+            self._editable_item,
+            self.input.value(),
+            self._editable_item.value()
+        ))
 
         self.close()
