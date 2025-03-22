@@ -285,23 +285,20 @@ class IntegerInput(QWidget):
         self._create()
 
     def _create(self):
-        label = QLabel(self._title, self)
-        spinbox = QSpinBox(self)
-        spinbox.setRange(*self._range)
-        spinbox.setSuffix(self._suffix)
-        spinbox.setValue(self._default_value)
+        self._label = QLabel(self._title, self)
+        self._spinbox = QSpinBox(self)
+        self._spinbox.setRange(*self._range)
+        self._spinbox.setSuffix(self._suffix)
+        self._spinbox.setValue(self._default_value)
 
-        self.layout().addWidget(label)
-        self.layout().addWidget(spinbox)
+        self.layout().addWidget(self._label)
+        self.layout().addWidget(self._spinbox)
 
     def _update(self):
-        for i in range(self.layout().count()):
-            item = self.layout().itemAt(i)
-            self.layout().removeItem(item)
-
-            del item
-
-        self._create()
+        self._label.setText(self._title)
+        self._spinbox.setRange(*self._range)
+        self._spinbox.setSuffix(self._suffix)
+        self._spinbox.setValue(self._default_value)
 
     def setTitle(self, title: str):
         self._title = title
@@ -336,11 +333,7 @@ class IntegerInput(QWidget):
         return self._default_value
 
     def value(self) -> int:
-        for i in range(self.layout().count()):
-            item = self.layout().itemAt(i)
-
-            if isinstance(item.widget(), QSpinBox):
-                return item.widget().value()
+        return self._spinbox.value()
 
 
 class FloatInput(QWidget):
@@ -363,24 +356,22 @@ class FloatInput(QWidget):
         self._create()
 
     def _create(self):
-        label = QLabel(self._title, self)
-        spinbox = QDoubleSpinBox(self)
-        spinbox.setRange(*self._range)
-        spinbox.setSingleStep(self._step)
-        spinbox.setSuffix(self._suffix)
-        spinbox.setValue(self._default_value)
+        self._label = QLabel(self._title, self)
+        self._spinbox = QDoubleSpinBox(self)
+        self._spinbox.setRange(*self._range)
+        self._spinbox.setSingleStep(self._step)
+        self._spinbox.setSuffix(self._suffix)
+        self._spinbox.setValue(self._default_value)
 
-        self.layout().addWidget(label)
-        self.layout().addWidget(spinbox)
+        self.layout().addWidget(self._label)
+        self.layout().addWidget(self._spinbox)
 
     def _update(self):
-        for i in range(self.layout().count()):
-            item = self.layout().itemAt(i)
-            self.layout().removeItem(item)
-
-            del item
-
-        self._create()
+        self._label.setText(self._title)
+        self._spinbox.setRange(*self._range)
+        self._spinbox.setSingleStep(self._step)
+        self._spinbox.setSuffix(self._suffix)
+        self._spinbox.setValue(self._default_value)
 
     def setTitle(self, title: str):
         self._title = title
@@ -444,22 +435,18 @@ class StringInput(QWidget):
         self._create()
 
     def _create(self):
-        label = QLabel(self._title, self)
-        input = QLineEdit(self)
-        input.setPlaceholderText(self._placeholder)
-        input.setText(self._default_value)
+        self._label = QLabel(self._title, self)
+        self._input = QLineEdit(self)
+        self._input.setPlaceholderText(self._placeholder)
+        self._input.setText(self._default_value)
 
-        self.layout().addWidget(label)
-        self.layout().addWidget(input)
+        self.layout().addWidget(self._label)
+        self.layout().addWidget(self._input)
 
     def _update(self):
-        for i in range(self.layout().count()):
-            item = self.layout().itemAt(i)
-            self.layout().removeItem(item)
-
-            del item
-
-        self._create()
+        self._label.setText(self._title)
+        self._input.setPlaceholderText(self._placeholder)
+        self._input.setText(self._default_value)
 
     def setTitle(self, title: str):
         self._title = title
@@ -510,26 +497,20 @@ class OptionInput(QWidget):
         self._create()
 
     def _create(self):
-        label = QLabel(self._title, self)
-        combobox = QComboBox(self)
+        self._label = QLabel(self._title, self)
+        self._combobox = QComboBox(self)
 
         for k, v in self.values().items():
-            combobox.addItem(k, v)
+            self._combobox.addItem(k, v)
 
         if self._on_change:
-            combobox.currentIndexChanged.connect(self._on_change)
+            self._combobox.currentIndexChanged.connect(self._on_change)
 
-        self.layout().addWidget(label)
-        self.layout().addWidget(combobox)
+        self.layout().addWidget(self._label)
+        self.layout().addWidget(self._combobox)
 
     def _update(self):
-        for i in range(self.layout().count()):
-            item = self.layout().itemAt(i)
-            self.layout().removeItem(item)
-
-            del item
-
-        self._create()
+        self._label.setText(self._title)
 
     def setTitle(self, title: str):
         self._title = title
