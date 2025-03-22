@@ -89,6 +89,9 @@ class AlignmentHorizontalPath(QPainterPath):
                 _, x1, y1, theta1, length, A = segment
                 self.clothoidCurveTo(x1, y1, theta1, length, A)
 
+    def segmentCount(self) -> int:
+        return len(self._segments)
+
 
 class AlignmentItem(BaseItem):
     CurveTypeClothoid = 0
@@ -208,38 +211,20 @@ class AlignmentItem(BaseItem):
     def update(self):
         self.vbo = self.createVbo()
 
-    '''def autoGenerateCurves(self, speed_mph: int, curve_type: int) -> QPainterPath:
-        path = QPainterPath()
-
-        elements = [self.coordAt(i) for i in range(self.horizontalPath().elementCount())]
-        bend_points = self._findDirectionChanges(elements)
-        start_pos_x, start_pos_y = elements[0][0], elements[0][1]
-
-        path.moveTo(start_pos_x, start_pos_y)
+    def autoGenerateCurves(self, speed_mph: int, curve_type: int) -> AlignmentHorizontalPath:
+        path = AlignmentHorizontalPath()
 
         e = 0.10 - (0.001 * speed_mph)
         f = 0.35 - (0.0033 * speed_mph)
         min_arc_radius = (speed_mph ** 2) / (15 * (e + f))
         min_clothoid_length = (speed_mph ** 3) / (46.5 * (e + f))
 
-        for i in range(1, len(elements) - 1):
-            bend_in_path_point = None
-
-            if i in bend_points:
-                bend_in_path_point = elements[i]
-
-            if bend_in_path_point:
-                if curve_type == AlignmentItem.CurveTypeClothoid:
-                    pass
-
-                elif curve_type == AlignmentItem.CurveTypeCircular:
-                    pass
-            else:
-                pass
+        for i in range(self._horizontal_path.segmentCount()):
+            pass
 
         return path
 
-    @staticmethod
+    '''@staticmethod
     def _findDirectionChanges(points, angle_threshold=0.001):
         if len(points) < 3:
             return []
