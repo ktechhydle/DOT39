@@ -26,8 +26,6 @@ class EditableItem(BaseItem):
         font_families = QFontDatabase.applicationFontFamilies(font_id)
         font = QFont(font_families[0], 1)
 
-        print(self._value)
-
         path = QPainterPath()
         path.addText(QPointF(0, 0), font, f'{self._value}')
 

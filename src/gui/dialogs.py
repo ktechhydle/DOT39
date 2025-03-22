@@ -592,7 +592,7 @@ class EditValueDialog(QDialog):
         super().__init__(parent)
         self.setWindowTitle('Edit Value')
         self.setWindowModality(Qt.WindowModality.ApplicationModal)
-        self.resize(250, 250)
+        self.resize(250, 150)
 
         self._editable_item = editable_item
 
@@ -602,13 +602,11 @@ class EditValueDialog(QDialog):
         self.setLayout(QVBoxLayout())
 
         if self._editable_item.inputType() == self._editable_item.InputTypeInt:
-            self.input = IntegerInput('Value', (1, 10000), QVBoxLayout())
+            self.input = IntegerInput('Value', (0, 10000), QVBoxLayout())
         elif self._editable_item.inputType() == self._editable_item.InputTypeFloat:
-            self.input = FloatInput('Value', (1, 10000), QVBoxLayout())
+            self.input = FloatInput('Value', (0, 10000), QVBoxLayout())
         else:
             self.input = StringInput('Value', QVBoxLayout(), 'Edit here...')
-
-        self.input.setDefaultValue(self._editable_item.value())
 
         self.button_group = QDialogButtonBox(self)
         self.button_group.addButton('Ok', QDialogButtonBox.AcceptRole)
