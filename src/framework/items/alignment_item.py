@@ -82,10 +82,12 @@ class AlignmentHorizontalPath(QPainterPath):
                 self.lineTo(x, y)
 
             elif segment[0] == AlignmentHorizontalPath.CircularCurve:
-                pass
+                _, cx, cy, r, start, end = segment
+                self.circularCurveTo(cx, cy, r, start, end)
 
             elif segment[0] == AlignmentHorizontalPath.ClothoidCurve:
-                pass
+                _, x1, y1, theta1, length, A = segment
+                self.clothoidCurveTo(x1, y1, theta1, length, A)
 
 
 class AlignmentItem(BaseItem):
