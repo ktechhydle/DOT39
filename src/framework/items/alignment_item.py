@@ -220,7 +220,10 @@ class AlignmentItem(BaseItem):
         min_clothoid_length = (speed_mph ** 3) / (46.5 * (e + f))
 
         for i in range(self._horizontal_path.segmentCount()):
-            pass
+            if curve_type == AlignmentItem.CurveTypeCircular:
+                pass
+            elif curve_type == AlignmentItem.CurveTypeClothoid:
+                pass
 
         return path
 
