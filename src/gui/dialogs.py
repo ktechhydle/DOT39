@@ -621,10 +621,11 @@ class EditValueDialog(QDialog):
         self.layout().addWidget(self.button_group)
 
     def accept(self):
-        self._editable_item.scene().addUndoCommand(ValueChangedCommand(
-            self._editable_item,
-            self.input.value(),
-            self._editable_item.value()
-        ))
+        if self._editable_item.value() != self.input.value():
+            self._editable_item.scene().addUndoCommand(ValueChangedCommand(
+                self._editable_item,
+                self.input.value(),
+                self._editable_item.value()
+            ))
 
         self.close()
