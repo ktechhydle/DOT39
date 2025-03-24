@@ -40,7 +40,7 @@ class PointItem(BaseItem):
         if self.name():
             font_id = QFontDatabase.addApplicationFont('resources/fonts/Simplex.ttf')
             font_families = QFontDatabase.applicationFontFamilies(font_id)
-            font = QFont(font_families[0], 1)
+            font = QFont(font_families[0], 10)
 
             path = QPainterPath()
 
@@ -67,8 +67,8 @@ class PointItem(BaseItem):
             vertices = []
             for polygon in polygons:
                 for point in polygon:
-                    vertices.append(point.x() + (self.x() + 0.5))
-                    vertices.append(-point.y() + (self.y() - 2))
+                    vertices.append((point.x() * 0.1) + (self.x() + 0.5))
+                    vertices.append((-point.y() * 0.1) + (self.y() - 2))
                     vertices.append(100000)  # Letters only visible when facing top down
 
                 # Add a break in the drawing sequence
