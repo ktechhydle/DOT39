@@ -185,9 +185,8 @@ class AlignmentItem(BaseItem):
 
     def generateFillets(self, speed_mph: int) -> AlignmentHorizontalPath:
         """
-        Generates fillets at each point of the original alignment,
-        by first generating a list of points (fillets included) than
-        using lineTo() to construct a new path
+        Generates fillets at each point of the original alignment
+
         :param speed_mph: The speed in Miles Per Hour (mph)
         :return: AlignmentHorizontalPath
         """
