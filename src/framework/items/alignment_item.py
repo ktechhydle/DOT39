@@ -197,7 +197,6 @@ class AlignmentItem(BaseItem):
         e = 0.10 - (0.001 * speed_mph)  # superelevation factor
         f = 0.35 - (0.0033 * speed_mph)  # side friction factor
         min_fillet_radius = (speed_mph ** 2) / (15 * (e + f))
-        new_path.moveTo(*points[0])
 
         for i in range(len(points)):
             # new_path.filletPoint(i, min_fillet_radius)
