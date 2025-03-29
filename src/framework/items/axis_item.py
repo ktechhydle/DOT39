@@ -15,7 +15,7 @@ class AxisItem(BaseItem):
     def createXVbo(self):
         vertices = [
             10000.0, 0.0, 0.0,
-            -10000.0, 0.0, 0.0
+            -10.0, 0.0, 0.0
         ]
 
         return self.ctx.buffer(np.array(vertices, dtype='f4'))
@@ -23,7 +23,7 @@ class AxisItem(BaseItem):
     def createYVbo(self):
         vertices = [
             0.0, 10000.0, 0.0,
-            0.0, -10000.0, 0.0
+            0.0, -10.0, 0.0
         ]
 
         return self.ctx.buffer(np.array(vertices, dtype='f4'))
@@ -31,7 +31,7 @@ class AxisItem(BaseItem):
     def createZVbo(self):
         vertices = [
             0.0, 0.0, 10000.0,
-            0.0, 0.0, -10000.0
+            0.0, 0.0, -10.0
         ]
 
         return self.ctx.buffer(np.array(vertices, dtype='f4'))
