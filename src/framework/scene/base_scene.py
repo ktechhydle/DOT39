@@ -7,7 +7,7 @@ from src.framework.items.alignment_item import AlignmentItem
 from src.framework.items.editable_item import EditableItem
 from src.framework.items.axis_item import AxisItem
 from src.framework.scene.functions import hexToRGB, vertex_shad, fragment_shad
-from src.framework.scene.arcball import ArcBallUtil
+from src.framework.scene.camera import Camera
 from src.framework.scene.undo_commands import *
 from src.framework.managers.context_menu_manager import ContextMenuManager
 from src.framework.managers.tool_manager import ToolManager
@@ -28,8 +28,6 @@ class BaseScene(QGLWidget):
         self.ctx = None
         self.program = None
         self.bg_color = hexToRGB('#000000')
-        self.aspect_ratio = 1.0
-        self.camera_zoom = 2.0
 
         # Private
         self._items = []
@@ -50,11 +48,7 @@ class BaseScene(QGLWidget):
             fragment_shader=fragment_shad
         )
 
-        self.view_matrix = self.program['matrix']
-
-        self.arc_ball = ArcBallUtil(self.width(), self.height())
-        self.center = np.zeros(3)
-        self.scale = 1.0
+        self.camera = Camera(self)
 
         # Create Selection Framebuffer
         self.selection_texture = self.ctx.texture((self.width(), self.height()), 4,
@@ -75,7 +69,7 @@ class BaseScene(QGLWidget):
         width = max(2, w)
         height = max(2, h)
         self.ctx.viewport = (0, 0, width, height)
-        self.arc_ball.setBounds(width, height)
+        self.camera.resize(width, height)
 
         # Resize selection framebuffer
         self._resizeSelectionBuffers(w, h)
@@ -88,29 +82,7 @@ class BaseScene(QGLWidget):
         self.ctx.clear(*self.bg_color)
         self.ctx.enable_only(GL.DEPTH_TEST | GL.BLEND)
 
-        self.aspect_ratio = self.width() / max(1.0, self.height())
-
-        # Orthographic projection
-        ortho_size = self.camera_zoom
-        ortho_left = -self.aspect_ratio * ortho_size
-        ortho_right = self.aspect_ratio * ortho_size
-        ortho_bottom = -ortho_size
-        ortho_top = ortho_size
-        ortho_near = -10000.0
-        ortho_far = 10000.0
-
-        orthographic = Matrix44.orthogonal_projection(
-            ortho_left, ortho_right, ortho_bottom, ortho_top, ortho_near, ortho_far
-        )
-
-        # View transformation
-        lookat = Matrix44.look_at(
-            (0.0, 0.0, self.camera_zoom),
-            (0.0, 0.0, 0.0),
-            (0.0, 1.0, 0.0)
-        )
-        self.arc_ball.Transform[3, :3] = -self.arc_ball.Transform[:3, :3].T @ self.center
-        self.view_matrix.write((orthographic * lookat * self.arc_ball.Transform).astype('f4'))
+        self.camera.update()
 
         # Render items
         for item in self.visibleItems():
@@ -121,7 +93,7 @@ class BaseScene(QGLWidget):
         print(f'Rendering {len(self.visibleItems())} Items')
         print('Current Color: ', self.program['color'].value)
         print('Current Alpha Value: ', self.program['alphaValue'].value)
-        print('Current Zoom Amount: ', self.camera_zoom)
+        print('Current Zoom Amount: ', self.camera.cameraZoom())
         print('Current Matrix: ', self.program['matrix'].value)
 
     def mousePressEvent(self, event: QMouseEvent):
@@ -132,37 +104,19 @@ class BaseScene(QGLWidget):
         elif (event.buttons() & Qt.MouseButton.MiddleButton) and (
                 event.modifiers() & Qt.KeyboardModifier.ShiftModifier):
             self.setCursor(Qt.CursorShape.SizeAllCursor)
-            self.arc_ball.onClickLeftDown(event.x(), event.y())
+            self.camera.onOrbitStart(event.x(), event.y())
 
         elif event.buttons() & Qt.MouseButton.MiddleButton:
             self.setCursor(Qt.CursorShape.ClosedHandCursor)
-            self.prev_x = event.x()
-            self.prev_y = event.y()
+            self.camera.onPanStart(event.x(), event.y())
 
     def mouseMoveEvent(self, event: QMouseEvent):
         if (event.buttons() & Qt.MouseButton.MiddleButton) and (event.modifiers() & Qt.KeyboardModifier.ShiftModifier):
-            # Orbit logic
-            self.arc_ball.onDrag(event.x(), event.y())
+            self.camera.onOrbit(event.x(), event.y())
             self.update()
 
         elif event.buttons() & Qt.MouseButton.MiddleButton:
-            # Panning logic
-            x_movement = event.x() - self.prev_x
-            y_movement = event.y() - self.prev_y
-
-            right = self.arc_ball.Transform[:3, 0]
-            up = self.arc_ball.Transform[:3, 1]
-
-            # Normalize the vectors
-            right = right / np.linalg.norm(right)
-            up = up / np.linalg.norm(up)
-
-            movement = (x_movement * right - y_movement * up) * (self.camera_zoom * self.scale * 0.002)
-            self.center -= movement
-
-            self.prev_x = event.x()
-            self.prev_y = event.y()
-
+            self.camera.onPan(event.x(), event.y())
             self.update()
 
         else:
@@ -170,21 +124,20 @@ class BaseScene(QGLWidget):
 
     def mouseReleaseEvent(self, event: QMouseEvent):
         if (event.buttons() & Qt.MouseButton.MiddleButton) and (event.modifiers() & Qt.KeyboardModifier.ShiftModifier):
-            self.arc_ball.onClickLeftUp()
+            self.camera.onOrbitEnd()
 
         self.unsetCursor()
 
     def mouseDoubleClickEvent(self, event: QMouseEvent):
         if event.button() == Qt.MouseButton.MiddleButton:
-            self.updateArcBall()
+            self.camera.reset()
             self.update()
         elif event.button() == Qt.MouseButton.LeftButton:
             if self.activeSelection() and isinstance(self.activeSelection(), EditableItem):
                 self.activeSelection().startEditing()
 
     def wheelEvent(self, event: QWheelEvent):
-        zoom_delta = -event.angleDelta().y() * 0.001
-        self.camera_zoom = max(0.1, self.camera_zoom + zoom_delta)
+        self.camera.onZoom(event)
 
         self.selectionTool().clearHover()
         self.update()
@@ -227,21 +180,6 @@ class BaseScene(QGLWidget):
                 mesh_points.append(item.pos())
 
         return mesh_points
-
-    def updateArcBall(self):
-        if self.visibleItems():
-            # Create ArcBall
-            self.arc_ball = ArcBallUtil(self.width(), self.height())
-
-            mesh_points = self.itemMeshPoints()
-
-            bounding_box_min = np.min(mesh_points, axis=0)
-            bounding_box_max = np.max(mesh_points, axis=0)
-
-            self.center = 0.5 * (bounding_box_max + bounding_box_min)
-            self.scale = np.linalg.norm(bounding_box_max - self.center)
-            self.arc_ball.Transform[:3, :3] /= self.scale
-            self.arc_ball.Transform[3, :3] = -self.center / self.scale
 
     def addItem(self, item: BaseItem):
         """
@@ -331,20 +269,6 @@ class BaseScene(QGLWidget):
 
         return None
 
-    def mapMouseToViewport(self, x, y):
-        """
-        Converts mouse coordinates to viewport coordinates.
-
-        :param x: Mouse X position
-        :param y: Mouse Y position
-        :return: Tuple (viewport_x, viewport_y)
-        """
-        # Convert to OpenGL viewport coordinates (Y is flipped)
-        viewport_x = (2.0 * x) / self.width() - 1.0
-        viewport_y = 1.0 - (2.0 * y) / self.height()
-
-        return viewport_x, viewport_y
-
     def _renderForSelection(self):
         """
         Renders the scene with object IDs into an offscreen framebuffer
@@ -404,6 +328,9 @@ class BaseScene(QGLWidget):
 
     def shaderProgram(self) -> GL.Program:
         return self.program
+
+    def sceneCamera(self) -> Camera:
+        return self.camera
 
     def toolManager(self) -> ToolManager:
         return self._tool_manager
