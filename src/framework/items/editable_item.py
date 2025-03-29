@@ -54,9 +54,10 @@ class EditableItem(BaseItem):
         return self._input_type
 
     def setValue(self, value):
-        self._value = value
-        #self.valueChanged.emit(self._value)
+        if isinstance(value, float):
+            value = round(value, 2)
 
+        self._value = value
         self.update()
 
     def setInputType(self, type: int):
