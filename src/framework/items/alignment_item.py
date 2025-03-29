@@ -8,8 +8,7 @@ from scipy.special import fresnel
 class AlignmentHorizontalPath(QPainterPath):
     StartPos = 'start_pos'
     Line = 'line'
-    CircularCurve = 'circular_curve'
-    ClothoidCurve = 'clothoid_curve'
+    Fillet = 'fillet'
 
     def __init__(self):
         super().__init__()
@@ -27,43 +26,8 @@ class AlignmentHorizontalPath(QPainterPath):
 
         super().lineTo(x, y)
 
-    def circularCurveTo(self, start: tuple[float, float], end: tuple[float, float], pi: tuple[float, float], radius: float):
-        self._segments.append((AlignmentHorizontalPath.CircularCurve, start, end, pi, radius))
-
-        cx, cy = pi
-        sx, sy = start
-        ex, ey = end
-
-        theta1 = np.arctan2(sy - cy, sx - cx)
-        theta2 = np.arctan2(ey - cy, ex - cx)
-
-        if theta1 > theta2:
-            theta1, theta2 = theta2, theta1
-
-        num_points = 100
-        theta_vals = np.linspace(theta1, theta2, num_points)
-        points = [(cx + radius * np.cos(theta), cy + radius * np.sin(theta)) for theta in theta_vals]
-
-        for px, py in points:
-            self.lineTo(px, py, ignore=True)
-
-    def clothoidCurveTo(self, x1, y1, theta1, length, A):
-        self._segments.append((AlignmentHorizontalPath.ClothoidCurve, x1, y1, theta1, length, A))
-
-        num_points = 100
-        t = np.linspace(0, length / A, num_points)
-
-        S, C = fresnel(t)
-        X = A * np.sqrt(np.pi) * C
-        Y = A * np.sqrt(np.pi) * S
-
-        cos_theta, sin_theta = np.cos(theta1), np.sin(theta1)
-        points = [(x1 + cos_theta * x - sin_theta * y,
-                   y1 + sin_theta * x + cos_theta * y) for x, y in zip(X, Y)]
-
-        # Draw curve using line segments
-        for px, py in points:
-            self.lineTo(px, py, ignore=True)
+    def filletPoint(self, index: int, radius: float):
+        pass
 
     def modifyElement(self, index, new_params):
         if 0 <= index < len(self._segments):
@@ -75,11 +39,8 @@ class AlignmentHorizontalPath(QPainterPath):
             elif segment_type == AlignmentHorizontalPath.Line:
                 self._segments[index] = (AlignmentHorizontalPath.Line, new_params)
 
-            elif segment_type == AlignmentHorizontalPath.ClothoidCurve:
-                self._segments[index] = (AlignmentHorizontalPath.ClothoidCurve, new_params)
-
-            elif segment_type == AlignmentHorizontalPath.CircularCurve:
-                self._segments[index] = (AlignmentHorizontalPath.CircularCurve, new_params)
+            elif segment_type == AlignmentHorizontalPath.Fillet:
+                self._segments[index] = (AlignmentHorizontalPath.Fillet, new_params)
 
             self.rebuild()
 
@@ -95,13 +56,10 @@ class AlignmentHorizontalPath(QPainterPath):
                 _, (x, y) = segment
                 self.lineTo(x, y)
 
-            elif segment[0] == AlignmentHorizontalPath.CircularCurve:
-                _, cx, cy, r, start, end = segment
-                self.circularCurveTo(cx, cy, r, start, end)
-
-            elif segment[0] == AlignmentHorizontalPath.ClothoidCurve:
-                _, x1, y1, theta1, length, A = segment
-                self.clothoidCurveTo(x1, y1, theta1, length, A)
+        for fillet in self._segments:
+            if fillet[0] == AlignmentHorizontalPath.Fillet:
+                _, (index, radius) = fillet
+                self.filletPoint(index, radius)
 
     def segmentCount(self) -> int:
         return len(self._segments)
@@ -225,39 +183,25 @@ class AlignmentItem(BaseItem):
     def update(self):
         self.vbo = self.createVbo()
 
-    def autoGenerateCurves(self, speed_mph: int, curve_type: int) -> AlignmentHorizontalPath:
-        path = AlignmentHorizontalPath()
+    def generateFillets(self, speed_mph: int) -> AlignmentHorizontalPath:
+        """
+        Generates fillets at each point of the original alignment,
+        by first generating a list of points (fillets included) than
+        using lineTo() to construct a new path
+        :param speed_mph: The speed in Miles Per Hour (mph)
+        :return: AlignmentHorizontalPath
+        """
+        new_path = self.horizontalPath()
         points = [(seg[1], seg[2]) for seg in self._horizontal_path._segments if
                   seg[0] in [AlignmentHorizontalPath.StartPos, AlignmentHorizontalPath.Line]]
 
         e = 0.10 - (0.001 * speed_mph)  # superelevation factor
         f = 0.35 - (0.0033 * speed_mph)  # side friction factor
-        min_arc_radius = (speed_mph ** 2) / (15 * (e + f))
-        min_clothoid_length = (speed_mph ** 3) / (46.5 * (e + f))
+        min_fillet_radius = (speed_mph ** 2) / (15 * (e + f))
+        new_path.moveTo(*points[0])
 
-        path.moveTo(*points[0])
+        for i in range(len(points)):
+            # new_path.filletPoint(i, min_fillet_radius)
+            pass
 
-        for i in range(1, len(points) - 1):
-            x1, y1 = points[i - 1]
-            x2, y2 = points[i]
-            x3, y3 = points[i + 1]
-
-            angle1 = np.arctan2(y2 - y1, x2 - x1)
-            angle2 = np.arctan2(y3 - y2, x3 - x2)
-            delta_angle = np.degrees(angle2 - angle1)
-            delta_angle = (delta_angle + 180) % 360 - 180
-
-            if abs(delta_angle) > 0.001:
-                if curve_type == AlignmentItem.CurveTypeCircular:
-                    # path.circularCurveTo()
-                    pass
-
-                elif curve_type == AlignmentItem.CurveTypeClothoid:
-                    # path.clothoidCurveTo()
-                    pass
-
-            else:
-                path.lineTo(x2, y2)
-
-        path.lineTo(*points[-1])
-        return path
+        return new_path
