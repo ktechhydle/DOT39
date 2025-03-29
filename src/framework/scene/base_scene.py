@@ -217,6 +217,9 @@ class BaseScene(QGLWidget):
                     for point in polygon:
                         mesh_points.append([point.x(), point.y(), 0])
 
+            elif isinstance(item, EditableItem):
+                continue
+
             else:
                 mesh_points.append(item.pos())
 
