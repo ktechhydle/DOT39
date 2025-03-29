@@ -23,18 +23,16 @@ class PointItem(BaseItem):
         self._point_num = value
 
     def createVbo(self):
-        # Create a VBO that defines the vertices for the `+` shape
-        vertices = np.array([
+        vertices = [
             # Horizontal line
             -1.0 + self.x(), 0.0 + self.y(), 0.0 + self.z(),
             1.0 + self.x(), 0.0 + self.y(), 0.0 + self.z(),
             # Vertical line
             0.0 + self.x(), -1.0 + self.y(), 0.0 + self.z(),
             0.0 + self.x(), 1.0 + self.y(), 0.0 + self.z(),
-        ], dtype='f4')
+        ]
 
-        vbo = self.ctx.buffer(vertices)
-        return vbo
+        return self.ctx.buffer(np.array(vertices, dtype='f4'))
 
     def createTextVbo(self):
         if self.name():
@@ -81,14 +79,12 @@ class PointItem(BaseItem):
         return None
 
     def createIbo(self):
-        # Create a IBO that defines the indices for the `+` shape
-        indices = np.array([
+        indices = [
             0, 1,  # Horizontal line
             2, 3  # Vertical line
-        ], dtype='i4')
+        ]
 
-        ibo = self.ctx.buffer(indices)
-        return ibo
+        return self.ctx.buffer(np.array(indices, dtype='i4'))
 
     def render(self, color=None):
         super().render()
@@ -97,7 +93,6 @@ class PointItem(BaseItem):
             self.program['color'].value = color_value[:3]
             self.program['alphaValue'].value = color_value[3]
 
-        # Set color for main object
         if color:
             set_color(color)
         else:
@@ -109,10 +104,8 @@ class PointItem(BaseItem):
             else:
                 self.program['color'].value = current_color
 
-        # Render main object
         self.ctx.simple_vertex_array(self.program, self.vbo, 'in_vert', index_buffer=self.ibo).render(GL.LINES)
 
-        # Render text if available
         if self.text_vbo:
             if color:
                 set_color(color)
@@ -121,7 +114,12 @@ class PointItem(BaseItem):
                     hexToRGB('#0058b2') if self.isHovered() else hexToRGB('#c800ff')
                 )
 
+            og = self.ctx.line_width
+            self.ctx.line_width = 1.5
+
             self.ctx.simple_vertex_array(self.program, self.text_vbo, 'in_vert').render(GL.LINE_LOOP)
+
+            self.ctx.line_width = og
 
     def update(self):
         self.vbo = self.createVbo()

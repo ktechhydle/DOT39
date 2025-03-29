@@ -71,22 +71,14 @@ class TerrainItem(BaseItem):
 
         # Convert points to a numpy array
         points = np.array(self.points(), dtype='f4')
-
-        # Use only the x, y coordinates for triangulation
         points_2d = points[:, :2]
 
-        # Perform Delaunay triangulation
         tri = Delaunay(points_2d)
-
-        # Extract triangle vertices
         triangles = points[tri.simplices]
-
-        # Flatten the array for the VBO
         vertices = triangles.reshape(-1, 3).astype('f4')
 
         # Create the VBO
-        vbo = self.ctx.buffer(vertices.tobytes())
-        return vbo
+        return self.ctx.buffer(vertices.tobytes())
 
     def render(self, color=None):
         super().render()
@@ -96,7 +88,6 @@ class TerrainItem(BaseItem):
             self.program['alphaValue'].value = color[3]
 
         else:
-            # Render points
             current_color = self.color()
             if self.isSelected():
                 self.program['color'].value = hexToRGB('#007fff')
@@ -107,8 +98,7 @@ class TerrainItem(BaseItem):
             else:
                 self.program['color'].value = current_color
 
-        outline_vao = self.ctx.simple_vertex_array(self.program, self.vbo, 'in_vert')
-        outline_vao.render(GL.TRIANGLES)
+        self.ctx.simple_vertex_array(self.program, self.vbo, 'in_vert').render(GL.TRIANGLES)
 
     def update(self):
         self._points_np = np.array(self._points, dtype='f4')

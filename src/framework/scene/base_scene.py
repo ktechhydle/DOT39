@@ -5,6 +5,7 @@ from src.framework.items.point_item import PointItem
 from src.framework.items.terrain_item import TerrainItem
 from src.framework.items.alignment_item import AlignmentItem
 from src.framework.items.editable_item import EditableItem
+from src.framework.items.axis_item import AxisItem
 from src.framework.scene.functions import hexToRGB, vertex_shad, fragment_shad
 from src.framework.scene.arcball import ArcBallUtil
 from src.framework.scene.undo_commands import *
@@ -61,6 +62,8 @@ class BaseScene(QGLWidget):
         self.depth_texture = self.ctx.depth_texture((self.width(), self.height()))
         self.selection_fbo = self.ctx.framebuffer(color_attachments=[self.selection_texture],
                                                   depth_attachment=self.depth_texture)
+
+        self.addItem(AxisItem(self, self.program))
 
         # Console Info
         print('---- DOT39 Compiled Successfully ----\n---- OpenGL Attributes Initialized ----')
@@ -217,7 +220,7 @@ class BaseScene(QGLWidget):
                     for point in polygon:
                         mesh_points.append([point.x(), point.y(), 0])
 
-            elif isinstance(item, EditableItem):
+            elif isinstance(item, (EditableItem, AxisItem)):
                 continue
 
             else:

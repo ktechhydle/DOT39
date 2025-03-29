@@ -74,7 +74,6 @@ class EditableItem(BaseItem):
             self.program['color'].value = color_value[:3]
             self.program['alphaValue'].value = color_value[3]
 
-        # Set color for main object
         if color:
             set_color(color)
         else:
@@ -86,8 +85,12 @@ class EditableItem(BaseItem):
             else:
                 self.program['color'].value = current_color
 
-        # Render main object
+        og = self.ctx.line_width
+        self.ctx.line_width = 1.5
+
         self.ctx.simple_vertex_array(self.program, self.vbo, 'in_vert').render(GL.LINE_LOOP)
+
+        self.ctx.line_width = og
 
     def update(self):
         self.vbo = self.createVbo()

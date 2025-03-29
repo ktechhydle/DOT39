@@ -136,6 +136,7 @@ class DOT39(QMainWindow):
         alignment.drawLine(50, 50)
         alignment.drawLine(100, 50)
         alignment.drawLine(200, 100)
+        alignment.setHorizontalPath(alignment.generateFillets(20))
 
         text = EditableItem(self.glScene(), self.glScene().shaderProgram(), value='Hello!',
                             input_type=EditableItem.InputTypeString)
