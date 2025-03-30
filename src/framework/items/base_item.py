@@ -22,7 +22,8 @@ class BaseItem(object):
         self._color = color
 
     def setSelected(self, s: bool):
-        self._selected = s
+        if self._is_selectable:
+            self._selected = s
 
     def setHovered(self, hovered: bool):
         self._hovered = hovered
@@ -67,7 +68,7 @@ class BaseItem(object):
         return self._scene
 
     def render(self, color=None):
-        if not self.isVisible():
+        if not self._visible:
             return
 
     def update(self):

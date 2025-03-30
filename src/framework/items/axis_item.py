@@ -10,6 +10,8 @@ class AxisItem(BaseItem):
 
     def __init__(self, scene, program: GL.Program):
         super().__init__(scene, '')
+        self.setSelectable(False)
+
         self.program = program
         self.ctx = scene.ctx
         self._x_vbo = self.createXVbo()

@@ -186,8 +186,9 @@ if __name__ == '__main__':
     win = DOT39()
     win.show()
     win.showMaximized()
-    win.addTestObj()
+    #win.addTestObj()
     win.updateCentralWidget()
+    win.glScene().sceneCamera().reset()
 
     # Crash handler
     def handle_exception(exctype, value, tb):

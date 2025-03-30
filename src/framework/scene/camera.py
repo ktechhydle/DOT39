@@ -1,3 +1,5 @@
+import numpy as np
+
 from src._imports import *
 from src.framework.scene.arcball import ArcBallUtil
 
@@ -11,11 +13,15 @@ class Camera(object):
         self._center = np.zeros(3)
         self._scale = 1.0
         self._aspect_ratio = self.scene.width() / max(1.0, self.scene.height())
-        self._camera_zoom = 2.0
+        self._camera_zoom = 1.0
         self._prev_x = 0
         self._prev_y = 0
 
     def update(self):
+        """
+        Updates the Camera matrix
+        :return: None
+        """
         self._aspect_ratio = self.scene.width() / max(1.0, self.scene.height())
 
         ortho_size = self._camera_zoom
@@ -43,10 +49,18 @@ class Camera(object):
         self._arc_ball.setBounds(w, h)
 
     def reset(self):
+        """
+        Resets the Camera's view and bounding area
+        :return: None
+        """
         if self.scene.visibleItems():
             self._arc_ball = ArcBallUtil(self.scene.width(), self.scene.height())
 
-            mesh_points = self.scene.itemMeshPoints()
+            if self.scene.itemMeshPoints():
+                mesh_points = self.scene.itemMeshPoints()
+            else:
+                # nothing on the scene, so we just use the axis item's bounding box
+                mesh_points = [np.zeros(3), [100, 100, 100]]
 
             bounding_box_min = np.min(mesh_points, axis=0)
             bounding_box_max = np.max(mesh_points, axis=0)
@@ -55,6 +69,8 @@ class Camera(object):
             self._scale = np.linalg.norm(bounding_box_max - self._center)
             self._arc_ball.Transform[:3, :3] /= self._scale
             self._arc_ball.Transform[3, :3] = -self._center / self._scale
+
+            self._camera_zoom = 1.0
 
     def setAspectRatio(self, aspect_ratio: float):
         self._aspect_ratio = aspect_ratio
