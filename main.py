@@ -178,10 +178,10 @@ class DOT39(QMainWindow):
 
 
 if __name__ == '__main__':
-    from mp_software_stylesheets.styles import AppCSS
+    from mp_software_stylesheets.styles import DOT39CSS
 
     app = QApplication(sys.argv + ['-platform', 'windows:darkmode=1'])
-    app.setStyleSheet(AppCSS)
+    app.setStyleSheet(DOT39CSS)
 
     win = DOT39()
     win.show()
