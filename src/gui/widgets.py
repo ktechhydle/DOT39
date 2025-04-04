@@ -267,6 +267,33 @@ class HomeButton(QToolButton):
         self.setCheckable(True)
 
 
+class ColorButton(QPushButton):
+    colorChanged = pyqtSignal(str)
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setObjectName('#colorButton')
+        self.clicked.connect(self.getColor)
+
+        self._color = '#000000'
+        self.setButtonColor(self._color)
+
+    def getColor(self):
+        dialog = QColorDialog(QColor(self._color), self.parent())
+
+        if dialog.exec() == QDialog.DialogCode.Accepted:
+            self.setButtonColor(dialog.currentColor().name())
+            self.colorChanged.emit(dialog.currentColor().name())
+
+    def color(self):
+        return self._color
+
+    def setButtonColor(self, color: str):
+        self._color = color
+        self.setStyleSheet(f'background-color: {color};')
+        self.update()
+
+
 class IntegerInput(QWidget):
     def __init__(self, title: str,
                  range: tuple[int, int],

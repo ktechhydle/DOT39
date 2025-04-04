@@ -1,5 +1,5 @@
 from src.gui.widgets import *
-from src.gui.panels import ScenePanel, HomePanel
+from src.gui.panels import ScenePanel, HomePanel, LayersPanel
 from src.framework.scene.base_scene import BaseScene
 from src.framework.scene.undo_commands import AddItemCommand
 from src.framework.managers.unit_manager import UnitManager
@@ -124,8 +124,10 @@ class DOT39(QMainWindow):
 
         self.home_panel = HomePanel()
         self.scene_panel = ScenePanel(self.scene, self)
+        self.layers_panel = LayersPanel(self.scene, self)
 
         self.toolbox.addItem(self.scene_panel, 'Scene')
+        self.toolbox.addItem(self.layers_panel, 'Layers')
         self.toolbox.addSpacer()
 
     def addTestObj(self):
@@ -186,7 +188,7 @@ if __name__ == '__main__':
     win = DOT39()
     win.show()
     win.showMaximized()
-    #win.addTestObj()
+    win.addTestObj()
     win.updateCentralWidget()
     win.glScene().sceneCamera().reset()
 

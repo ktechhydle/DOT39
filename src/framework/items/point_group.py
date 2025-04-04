@@ -16,7 +16,7 @@ class PointGroupItem(BaseItem):
     def points(self) -> list[PointItem]:
         return self._points
 
-    def setColor(self, color: str):
+    def setColor(self, color: tuple[float, float, float]):
         for point in self.points():
             point.setColor(color)
 
