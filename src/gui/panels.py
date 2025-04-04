@@ -88,7 +88,6 @@ class LayersPanel(BasePanel):
         self.list_widget = QListWidget(self)
         self.list_widget.setFixedHeight(325)
         self.list_widget.setSelectionMode(QListWidget.SelectionMode.NoSelection)
-        self.list_widget.itemChanged.connect(self.updateItems)
 
         self.layout().addWidget(reset_btn)
         self.layout().addWidget(self.list_widget)
@@ -106,6 +105,7 @@ class LayersPanel(BasePanel):
             item = QListWidgetItem()
             item.setCheckState(Qt.CheckState.Checked)
             item.item_type = item_type
+            item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
 
             container = QWidget()
             layout = QHBoxLayout(container)
@@ -124,6 +124,7 @@ class LayersPanel(BasePanel):
             self.list_widget.setItemWidget(item, container)
 
         self.updateItems()
+        self.list_widget.itemChanged.connect(self.updateItems)
 
     def updateItems(self):
         for i in range(self.list_widget.count()):
@@ -159,6 +160,7 @@ class LayersPanel(BasePanel):
             item = QListWidgetItem()
             item.setCheckState(Qt.CheckState.Checked)
             item.item_type = item_type
+            item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
 
             container = QWidget()
             layout = QHBoxLayout(container)
