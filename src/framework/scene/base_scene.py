@@ -135,6 +135,10 @@ class BaseScene(QGLWidget):
         elif event.button() == Qt.MouseButton.LeftButton:
             if self.activeSelection() and isinstance(self.activeSelection(), EditableItem):
                 self.activeSelection().startEditing()
+            elif self.activeSelection() and isinstance(self.activeSelection(), PointGroupItem):
+                self.parent().pointManager.editPoints()
+            elif self.activeSelection() and isinstance(self.activeSelection(), AlignmentItem):
+                self.parent().alignmentManager.editAlignment()
 
     def wheelEvent(self, event: QWheelEvent):
         self.camera.onZoom(event)
