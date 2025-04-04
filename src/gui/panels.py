@@ -74,7 +74,7 @@ class LayersPanel(BasePanel):
     def __init__(self, scene, parent=None):
         super().__init__(parent)
         self.setLayout(QVBoxLayout())
-        self.setMinimumHeight(300)
+        self.setMinimumHeight(350)
 
         self.scene = scene
 
@@ -85,7 +85,8 @@ class LayersPanel(BasePanel):
         reset_btn = QPushButton('Reset')
         reset_btn.clicked.connect(self.resetLayers)
 
-        self.list_widget = QListWidget()
+        self.list_widget = QListWidget(self)
+        self.list_widget.setFixedHeight(325)
         self.list_widget.setSelectionMode(QListWidget.SelectionMode.NoSelection)
         self.list_widget.itemChanged.connect(self.updateItems)
 
@@ -94,42 +95,33 @@ class LayersPanel(BasePanel):
         self.layout().addStretch()
 
     def createLayerList(self):
-        point_item = QListWidgetItem('Point Group')
-        point_item.setCheckState(Qt.CheckState.Checked)
-        point_item.item_type = 0
-        point_color_btn = ColorButton(self)
-        point_color_btn.setButtonColor('#ff0000')
-        point_color_btn.colorChanged.connect(self.updateItems)
+        items = [
+            ('Point Group', '#ff0000', 0),
+            ('Terrain', '#00ff00', 1),
+            ('Alignment', '#ff0000', 2),
+            ('Editable Value', '#cc6000', 3)
+        ]
 
-        terrain_item = QListWidgetItem('Terrain')
-        terrain_item.setCheckState(Qt.CheckState.Checked)
-        terrain_item.item_type = 1
-        terrain_color_btn = ColorButton(self)
-        terrain_color_btn.setButtonColor('#00ff00')
-        terrain_color_btn.colorChanged.connect(self.updateItems)
+        for label, color, item_type in items:
+            item = QListWidgetItem()
+            item.setCheckState(Qt.CheckState.Checked)
+            item.item_type = item_type
 
-        alignment_item = QListWidgetItem('Alignment')
-        alignment_item.setCheckState(Qt.CheckState.Checked)
-        alignment_item.item_type = 2
-        alignment_color_btn = ColorButton(self)
-        alignment_color_btn.setButtonColor('#ff0000')
-        alignment_color_btn.colorChanged.connect(self.updateItems)
+            container = QWidget()
+            layout = QHBoxLayout(container)
+            layout.setContentsMargins(0, 0, 0, 0)
 
-        editable_item = QListWidgetItem('Editable Value')
-        editable_item.setCheckState(Qt.CheckState.Checked)
-        editable_item.item_type = 3
-        editable_color_btn = ColorButton(self)
-        editable_color_btn.setButtonColor('#cc6000')
-        editable_color_btn.colorChanged.connect(self.updateItems)
+            text_label = QLabel(label)
+            color_button = ColorButton()
+            color_button.setButtonColor(color)
+            color_button.colorChanged.connect(self.updateItems)
+            container.color = color_button.color
 
-        self.list_widget.addItem(point_item)
-        self.list_widget.addItem(terrain_item)
-        self.list_widget.addItem(alignment_item)
-        self.list_widget.addItem(editable_item)
-        self.list_widget.setItemWidget(point_item, point_color_btn)
-        self.list_widget.setItemWidget(terrain_item, terrain_color_btn)
-        self.list_widget.setItemWidget(alignment_item, alignment_color_btn)
-        self.list_widget.setItemWidget(editable_item, editable_color_btn)
+            layout.addWidget(text_label)
+            layout.addWidget(color_button)
+
+            self.list_widget.addItem(item)
+            self.list_widget.setItemWidget(item, container)
 
         self.updateItems()
 
@@ -156,41 +148,32 @@ class LayersPanel(BasePanel):
     def resetLayers(self):
         self.list_widget.clear()
 
-        point_item = QListWidgetItem('Point Group')
-        point_item.setCheckState(Qt.CheckState.Checked)
-        point_item.item_type = 0
-        point_color_btn = ColorButton(self)
-        point_color_btn.setButtonColor('#ff0000')
-        point_color_btn.colorChanged.connect(self.updateItems)
+        items = [
+            ('Point Group', '#ff0000', 0),
+            ('Terrain', '#00ff00', 1),
+            ('Alignment', '#ff0000', 2),
+            ('Editable Value', '#cc6000', 3)
+        ]
 
-        terrain_item = QListWidgetItem('Terrain')
-        terrain_item.setCheckState(Qt.CheckState.Checked)
-        terrain_item.item_type = 1
-        terrain_color_btn = ColorButton(self)
-        terrain_color_btn.setButtonColor('#00ff00')
-        terrain_color_btn.colorChanged.connect(self.updateItems)
+        for label, color, item_type in items:
+            item = QListWidgetItem()
+            item.setCheckState(Qt.CheckState.Checked)
+            item.item_type = item_type
 
-        alignment_item = QListWidgetItem('Alignment')
-        alignment_item.setCheckState(Qt.CheckState.Checked)
-        alignment_item.item_type = 2
-        alignment_color_btn = ColorButton(self)
-        alignment_color_btn.setButtonColor('#ff0000')
-        alignment_color_btn.colorChanged.connect(self.updateItems)
+            container = QWidget()
+            layout = QHBoxLayout(container)
+            layout.setContentsMargins(0, 0, 0, 0)
 
-        editable_item = QListWidgetItem('Editable Value')
-        editable_item.setCheckState(Qt.CheckState.Checked)
-        editable_item.item_type = 3
-        editable_color_btn = ColorButton(self)
-        editable_color_btn.setButtonColor('#cc6000')
-        editable_color_btn.colorChanged.connect(self.updateItems)
+            text_label = QLabel(label)
+            color_button = ColorButton()
+            color_button.setButtonColor(color)
+            color_button.colorChanged.connect(self.updateItems)
+            container.color = color_button.color
 
-        self.list_widget.addItem(point_item)
-        self.list_widget.addItem(terrain_item)
-        self.list_widget.addItem(alignment_item)
-        self.list_widget.addItem(editable_item)
-        self.list_widget.setItemWidget(point_item, point_color_btn)
-        self.list_widget.setItemWidget(terrain_item, terrain_color_btn)
-        self.list_widget.setItemWidget(alignment_item, alignment_color_btn)
-        self.list_widget.setItemWidget(editable_item, editable_color_btn)
+            layout.addWidget(text_label)
+            layout.addWidget(color_button)
+
+            self.list_widget.addItem(item)
+            self.list_widget.setItemWidget(item, container)
 
         self.updateItems()
