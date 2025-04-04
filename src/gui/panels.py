@@ -50,6 +50,7 @@ class ScenePanel(BasePanel):
     def createUI(self):
         wireframe_btn = QPushButton('Wireframe')
         wireframe_btn.setCheckable(True)
+        wireframe_btn.setChecked(True)
         wireframe_btn.clicked.connect(self.changeViewportType)
         solid_btn = QPushButton('Solid')
         solid_btn.setCheckable(True)
