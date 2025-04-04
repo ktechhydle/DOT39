@@ -103,9 +103,7 @@ class LayersPanel(BasePanel):
 
         for label, color, item_type in items:
             item = QListWidgetItem()
-            item.setCheckState(Qt.CheckState.Checked)
             item.item_type = item_type
-            item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
 
             container = QWidget()
             layout = QHBoxLayout(container)
@@ -115,36 +113,41 @@ class LayersPanel(BasePanel):
             color_button = ColorButton()
             color_button.setButtonColor(color)
             color_button.colorChanged.connect(self.updateItems)
+            check_button = QCheckBox('Visible', self)
+            check_button.setChecked(True)
+            check_button.clicked.connect(self.updateItems)
             container.color = color_button.color
+            container.checked = check_button.isChecked
 
             layout.addWidget(text_label)
+            layout.addWidget(check_button)
             layout.addWidget(color_button)
 
             self.list_widget.addItem(item)
             self.list_widget.setItemWidget(item, container)
 
         self.updateItems()
-        self.list_widget.itemChanged.connect(self.updateItems)
 
     def updateItems(self):
+        item_type_map = {
+            0: PointGroupItem,
+            1: TerrainItem,
+            2: AlignmentItem,
+            3: EditableItem,
+        }
+
         for i in range(self.list_widget.count()):
             list_item = self.list_widget.item(i)
-            color_button = self.list_widget.itemWidget(list_item)
+            container = self.list_widget.itemWidget(list_item)
 
-            if hasattr(list_item, 'item_type'):
+            if hasattr(list_item, 'item_type') and list_item.item_type in item_type_map:
+                target_item_type = item_type_map[list_item.item_type]
                 for item in self.scene.items():
-                    if list_item.item_type == 0 and isinstance(item, PointGroupItem):
-                        item.setVisible(True if list_item.checkState() else False)
-                        item.setColor(hexToRGB(color_button.color()))
-                    elif list_item.item_type == 1 and isinstance(item, TerrainItem):
-                        item.setVisible(True if list_item.checkState() else False)
-                        item.setColor(hexToRGB(color_button.color()))
-                    elif list_item.item_type == 2 and isinstance(item, AlignmentItem):
-                        item.setVisible(True if list_item.checkState() else False)
-                        item.setColor(hexToRGB(color_button.color()))
-                    elif list_item.item_type == 3 and isinstance(item, EditableItem):
-                        item.setVisible(True if list_item.checkState() else False)
-                        item.setColor(hexToRGB(color_button.color()))
+                    if isinstance(item, target_item_type):
+                        item.setVisible(container.checked())
+                        item.setColor(hexToRGB(container.color()))
+
+        self.scene.update()
 
     def resetLayers(self):
         self.list_widget.clear()
@@ -158,9 +161,7 @@ class LayersPanel(BasePanel):
 
         for label, color, item_type in items:
             item = QListWidgetItem()
-            item.setCheckState(Qt.CheckState.Checked)
             item.item_type = item_type
-            item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
 
             container = QWidget()
             layout = QHBoxLayout(container)
@@ -170,9 +171,14 @@ class LayersPanel(BasePanel):
             color_button = ColorButton()
             color_button.setButtonColor(color)
             color_button.colorChanged.connect(self.updateItems)
+            check_button = QCheckBox('Visible', self)
+            check_button.setChecked(True)
+            check_button.clicked.connect(self.updateItems)
             container.color = color_button.color
+            container.isChecked = check_button.isChecked
 
             layout.addWidget(text_label)
+            layout.addWidget(check_button)
             layout.addWidget(color_button)
 
             self.list_widget.addItem(item)
