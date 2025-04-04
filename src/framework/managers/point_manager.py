@@ -124,7 +124,6 @@ class PointManager:
                 description = values[4] if len(values) > 4 else ''
 
                 item = PointItem(self.parent().glScene(),
-                                 self.parent().glScene().shaderProgram(),
                                  point_number,
                                  [easting, northing, elevation],
                                  name=f'{description}')

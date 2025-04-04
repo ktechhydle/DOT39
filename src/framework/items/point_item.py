@@ -4,14 +4,14 @@ from src.framework.scene.functions import hexToRGB
 
 
 class PointItem(BaseItem):
-    def __init__(self, scene, program: GL.Program, number, pos: list[float] = [0.0, 0.0, 0.0], name=''):
+    def __init__(self, scene, number, pos: list[float] = [0.0, 0.0, 0.0], name=''):
         super().__init__(scene, name)
         self.setPos(pos)
         self.setColor(hexToRGB('#ff0000'))
         self._point_num = number
 
-        self.program = program
         self.ctx = scene.ctx
+        self.program = scene.program
         self.vbo = self.createVbo()
         self.text_vbo = self.createTextVbo()
         self.ibo = self.createIbo()
@@ -56,7 +56,7 @@ class PointItem(BaseItem):
             for line in lines:
                 path.addText(current_position, font, line)
                 # Adjust the current_position for the next line (move it down)
-                current_position.setY(current_position.y() + font.pointSize())
+                current_position.setY(current_position.y() + font.pointSize() + 5)
 
             # Convert the path to polygons
             polygons = path.toSubpathPolygons()
