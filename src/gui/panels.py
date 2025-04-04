@@ -175,7 +175,7 @@ class LayersPanel(BasePanel):
             check_button.setChecked(True)
             check_button.clicked.connect(self.updateItems)
             container.color = color_button.color
-            container.isChecked = check_button.isChecked
+            container.checked = check_button.isChecked
 
             layout.addWidget(text_label)
             layout.addWidget(check_button)
