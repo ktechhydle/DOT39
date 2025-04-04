@@ -1,6 +1,7 @@
 from src._imports import *
 from src.gui.widgets import ContextMenu
 from src.framework.items.point_group import PointGroupItem
+from src.framework.items.terrain_item import TerrainItem
 from src.framework.items.alignment_item import AlignmentItem
 from src.framework.items.editable_item import EditableItem
 
@@ -30,6 +31,12 @@ class ContextMenuManager(object):
 
                 menu.addAction(edit_points_action)
                 menu.addAction(to_surface_action)
+
+            elif isinstance(selected_item, TerrainItem):
+                to_points_action = QAction('Convert Surface to Points', menu)
+                to_points_action.triggered.connect(self.parent.surfaceManager.convertSurfaceToGroup)
+
+                menu.addAction(to_points_action)
 
             elif isinstance(selected_item, AlignmentItem):
                 edit_alignment_action = QAction('Edit Alignment', menu)
