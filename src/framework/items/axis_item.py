@@ -1,6 +1,7 @@
 from src._imports import *
 from src.framework.items.base_item import *
 from src.framework.scene.functions import hexToRGB
+from itertools import chain
 
 
 class AxisItem(BaseItem):
@@ -8,12 +9,12 @@ class AxisItem(BaseItem):
     YAxis = 1
     ZAxis = 2
 
-    def __init__(self, scene, program: GL.Program):
+    def __init__(self, scene):
         super().__init__(scene, '')
         self.setSelectable(False)
 
-        self.program = program
         self.ctx = scene.ctx
+        self.program = scene.program
         self._x_vbo = self.createXVbo()
         self._y_vbo = self.createYVbo()
         self._z_vbo = self.createZVbo()
@@ -46,8 +47,6 @@ class AxisItem(BaseItem):
         return self.ctx.buffer(np.array(vertices, dtype='f4'))
 
     def createTextVbo(self, text: str, axis: int):
-        font_id = QFontDatabase.addApplicationFont('resources/fonts/Simplex.ttf')
-        font_families = QFontDatabase.applicationFontFamilies(font_id)
         font = QFont('Arial', 8)
 
         path = QPainterPath()
@@ -61,19 +60,13 @@ class AxisItem(BaseItem):
         for polygon in polygons:
             for point in polygon:
                 if axis == AxisItem.XAxis:
-                    vertices.append(point.x() - 7)
-                    vertices.append(-point.y() + 1)
-                    vertices.append(0)
+                    vertices.extend([point.x() - 7, -point.y() + 1, 0])
 
                 elif axis == AxisItem.YAxis:
-                    vertices.append(point.x() + 1)
-                    vertices.append(-point.y() - 7)
-                    vertices.append(0)
+                    vertices.extend([point.x() + 1, -point.y() - 7, 0])
 
                 elif axis == AxisItem.ZAxis:
-                    vertices.append(-point.x() - 1)
-                    vertices.append(0)
-                    vertices.append(point.y() - 1)
+                    vertices.extend([-point.x() - 1, 0, point.y() - 1])
 
             # Add a break in the drawing sequence
             vertices.append(float('nan'))

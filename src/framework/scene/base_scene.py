@@ -57,7 +57,7 @@ class BaseScene(QGLWidget):
         self.selection_fbo = self.ctx.framebuffer(color_attachments=[self.selection_texture],
                                                   depth_attachment=self.depth_texture)
 
-        self.addItem(AxisItem(self, self.program))
+        self.addItem(AxisItem(self))
 
         # Console Info
         print('---- DOT39 Compiled Successfully ----\n---- OpenGL Attributes Initialized ----')
