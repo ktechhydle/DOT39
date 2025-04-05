@@ -284,7 +284,6 @@ class BaseScene(QGLWidget):
         # Use a simple shader for selection rendering
         for i, item in enumerate(self.items(), start=1):  # IDs start at 1
             item.render(color=(i / 255.0, 0, 0, 1))
-            print((i / 255.0, 0, 0, 1))
 
     def _resizeSelectionBuffers(self, w, h):
         """
