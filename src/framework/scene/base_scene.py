@@ -155,7 +155,6 @@ class BaseScene(QGLWidget):
     def itemMeshPoints(self):
         """
         Returns a list of all item positions and points
-        :return: list[float]
         """
 
         # Calculate the bounding box of all items
@@ -188,8 +187,6 @@ class BaseScene(QGLWidget):
     def addItem(self, item: BaseItem):
         """
         Adds the item to the render que
-        :param item: BaseItem
-        :return: None
         """
 
         if item not in self._items:
@@ -202,8 +199,6 @@ class BaseScene(QGLWidget):
     def removeItem(self, item: BaseItem):
         """
         Removes items from the render que
-        :param item: BaseItem
-        :return: None
         """
         self._items.remove(item)
 
@@ -214,11 +209,13 @@ class BaseScene(QGLWidget):
     def items(self) -> list[BaseItem]:
         """
         Returns a list of items currently in the render que
-        :return: list[BaseItem]
         """
         return self._items
 
     def visibleItems(self) -> list[BaseItem]:
+        """
+        Returns a list of all the visible items on the scene
+        """
         l = []
 
         for item in self.items():
@@ -228,14 +225,15 @@ class BaseScene(QGLWidget):
         return l
 
     def selectedItems(self):
+        """
+        Returns a list of all the selected items on the scene
+        """
         return [item for item in self.visibleItems() if item.isSelected()]
 
     def activeSelection(self) -> BaseItem or None:
         """
         Returns the selected item (if there is only one item selected
         on the scene)
-
-        :return: BaseItem
         """
         if self.selectedItems() and len(self.selectedItems()) < 2:
             return self.selectedItems()[0]
@@ -245,9 +243,6 @@ class BaseScene(QGLWidget):
     def itemAt(self, x, y) -> BaseItem or None:
         """
         Retrieves the item at the specified x, y screen coordinates
-        :param x: float
-        :param y: float
-        :return: BaseItem
         """
         y = self.height() - y - 1  # Invert Y for OpenGL coordinates
         print('---- Locating Scene Items ----')
@@ -276,7 +271,6 @@ class BaseScene(QGLWidget):
     def _renderForSelection(self):
         """
         Renders the scene with object IDs into an offscreen framebuffer
-        :return: None
         """
         self.selection_fbo.use()
         self.ctx.clear(0, 0, 0, 0)
@@ -288,7 +282,6 @@ class BaseScene(QGLWidget):
     def _resizeSelectionBuffers(self, w, h):
         """
         Resizes the selection framebuffer
-        :return: None
         """
         self.selection_texture = self.ctx.texture((w, h), 4, dtype='i4')
         self.depth_texture = self.ctx.depth_texture((w, h))
@@ -296,17 +289,23 @@ class BaseScene(QGLWidget):
                                                   depth_attachment=self.depth_texture)
 
     def undo(self):
+        """
+        Triggers an undo on the undo stack
+        """
         self.undo_stack.undo()
         self.update()
 
     def redo(self):
+        """
+        Triggers a redo on the undo stack
+        """
         self.undo_stack.redo()
         self.update()
 
-    def undoStack(self) -> QUndoStack:
-        return self.undo_stack
-
     def addUndoCommand(self, command: QUndoCommand):
+        """
+        Adds an undo command to the undo stack
+        """
         self.undo_stack.push(command)
 
         print(f'Undo Command: {command}')
@@ -314,29 +313,59 @@ class BaseScene(QGLWidget):
         self.update()
 
     def setBackgroundColor(self, color: str):
+        """
+        Sets the background color of the scene to the specified hex value
+        """
         self.bg_color = hexToRGB(color)
 
         self.update()
 
     def isWireframe(self):
+        """
+        Returns if the scene is wireframe enabled
+        """
         return self._wireframe
 
     def setWireframe(self, enabled: bool):
+        """
+        Sets the scene to wireframe mode
+        """
         self._wireframe = enabled
 
         self.update()
 
     def context(self) -> GL.Context:
+        """
+        Returns the OpenGL context for the scene
+        """
         return self.ctx
 
     def shaderProgram(self) -> GL.Program:
+        """
+        Returns the OpenGL shader program for the scene
+        """
         return self.program
 
     def sceneCamera(self) -> Camera:
+        """
+        Returns the camera class for the scene
+        """
         return self.camera
 
+    def undoStack(self) -> QUndoStack:
+        """
+        Returns the scene undo stack
+        """
+        return self.undo_stack
+
     def toolManager(self) -> ToolManager:
+        """
+        Returns the tool managing class for the scene
+        """
         return self._tool_manager
 
     def selectionTool(self) -> SelectionTool:
+        """
+        Returns the selection tool class for the scene
+        """
         return self._selection_tool
