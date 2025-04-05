@@ -1,5 +1,5 @@
 from src._imports import *
-from src.gui.widgets import ToolBarContainer, AnimatedLabel, ColorButton
+from src.gui.widgets import ToolBarContainer, AnimatedLabel, ColorButton, ColorInput
 from src.framework.items.point_group import PointGroupItem
 from src.framework.items.terrain_item import TerrainItem
 from src.framework.items.alignment_item import AlignmentItem
@@ -59,8 +59,14 @@ class ScenePanel(BasePanel):
         self.view_type_btn_group.addButton(wireframe_btn)
         self.view_type_btn_group.addButton(solid_btn)
         view_type_container = ToolBarContainer('View Mode', [wireframe_btn, solid_btn])
+        view_type_container.layout().setContentsMargins(0, 0, 0, 10)
+
+        scene_background_color_btn = ColorInput('Background Color:',
+                                                QHBoxLayout(),
+                                                on_change=self.scene.setBackgroundColor)
 
         self.layout().addWidget(view_type_container)
+        self.layout().addWidget(scene_background_color_btn)
         self.layout().addStretch()
 
     def changeViewportType(self):

@@ -299,6 +299,7 @@ class IntegerInput(QWidget):
                  range: tuple[int, int],
                  layout: QVBoxLayout or QHBoxLayout,
                  suffix: str='',
+                 on_change=None,
                  parent=None):
         super().__init__(parent)
         self.setLayout(layout)
@@ -308,6 +309,7 @@ class IntegerInput(QWidget):
         self._range = range
         self._suffix = suffix
         self._default_value = 0
+        self._on_change = on_change
 
         self._create()
 
@@ -317,6 +319,9 @@ class IntegerInput(QWidget):
         self._spinbox.setRange(*self._range)
         self._spinbox.setSuffix(self._suffix)
         self._spinbox.setValue(self._default_value)
+
+        if self._on_change:
+            self._spinbox.valueChanged.connect(self._on_change)
 
         self.layout().addWidget(self._label)
         self.layout().addWidget(self._spinbox)
@@ -369,6 +374,7 @@ class FloatInput(QWidget):
                  layout: QVBoxLayout or QHBoxLayout,
                  step: float = 0.1,
                  suffix: str='',
+                 on_change=None,
                  parent=None):
         super().__init__(parent)
         self.setLayout(layout)
@@ -379,6 +385,7 @@ class FloatInput(QWidget):
         self._step = step
         self._suffix = suffix
         self._default_value = 0.0
+        self._on_change = on_change
 
         self._create()
 
@@ -389,6 +396,9 @@ class FloatInput(QWidget):
         self._spinbox.setSingleStep(self._step)
         self._spinbox.setSuffix(self._suffix)
         self._spinbox.setValue(self._default_value)
+
+        if self._on_change:
+            self._spinbox.valueChanged.connect(self._on_change)
 
         self.layout().addWidget(self._label)
         self.layout().addWidget(self._spinbox)
@@ -439,17 +449,14 @@ class FloatInput(QWidget):
         return self._default_value
 
     def value(self) -> float:
-        for i in range(self.layout().count()):
-            item = self.layout().itemAt(i)
-
-            if isinstance(item.widget(), QDoubleSpinBox):
-                return item.widget().value()
+        return self._spinbox.value()
 
 
 class StringInput(QWidget):
     def __init__(self, title: str,
                  layout: QVBoxLayout or QHBoxLayout,
                  placeholder: str = '',
+                 on_change=None,
                  parent=None):
         super().__init__(parent)
         self.setLayout(layout)
@@ -458,6 +465,7 @@ class StringInput(QWidget):
         self._title = title
         self._placeholder = placeholder
         self._default_value = ''
+        self._on_change = on_change
 
         self._create()
 
@@ -466,6 +474,9 @@ class StringInput(QWidget):
         self._input = QLineEdit(self)
         self._input.setPlaceholderText(self._placeholder)
         self._input.setText(self._default_value)
+
+        if self._on_change:
+            self._input.textChanged.connect(self._on_change)
 
         self.layout().addWidget(self._label)
         self.layout().addWidget(self._input)
@@ -500,11 +511,7 @@ class StringInput(QWidget):
         return self._default_value
 
     def value(self) -> str:
-        for i in range(self.layout().count()):
-            item = self.layout().itemAt(i)
-
-            if isinstance(item.widget(), QLineEdit):
-                return item.widget().text()
+        return self._input.text()
 
 
 class OptionInput(QWidget):
@@ -556,11 +563,46 @@ class OptionInput(QWidget):
         return self._values
 
     def value(self) -> object:
-        for i in range(self.layout().count()):
-            item = self.layout().itemAt(i)
+        return self._combobox.itemData(self._combobox.currentIndex())
 
-            if isinstance(item.widget(), QComboBox):
-                return item.widget().itemData(item.widget().currentIndex())
+
+class ColorInput(QWidget):
+    def __init__(self, title: str,
+                 layout: QVBoxLayout or QHBoxLayout,
+                 on_change=None,
+                 parent=None):
+        super().__init__(parent)
+        self.setLayout(layout)
+        self.layout().setContentsMargins(0, 0, 0, 0)
+
+        self._title = title
+        self._on_change = on_change
+
+        self._create()
+
+    def _create(self):
+        self._label = QLabel(self._title, self)
+        self._color_btn = ColorButton(self)
+
+        if self._on_change:
+            self._color_btn.colorChanged.connect(self._on_change)
+
+        self.layout().addWidget(self._label)
+        self.layout().addWidget(self._color_btn)
+
+    def _update(self):
+        self._label.setText(self._title)
+
+    def setTitle(self, title: str):
+        self._title = title
+
+        self._update()
+
+    def title(self) -> str:
+        return self._title
+
+    def value(self) -> str:
+        return self._color_btn.color()
 
 
 class ContextMenu(QMenu):
