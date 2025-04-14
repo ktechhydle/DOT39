@@ -12,7 +12,12 @@ class SelectionTool(BaseTool):
 
         if item:
             if event.modifiers() & Qt.KeyboardModifier.ShiftModifier:
-                item.setSelected(True)
+                if item.isSelected():
+                    item.setSelected(False)
+
+                else:
+                    item.setSelected(True)
+
                 self.scene().update()
                 return
 
