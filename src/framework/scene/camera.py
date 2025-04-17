@@ -20,7 +20,6 @@ class Camera(object):
     def update(self):
         """
         Updates the Camera matrix
-        :return: None
         """
         self._aspect_ratio = self.scene.width() / max(1.0, self.scene.height())
 
@@ -51,7 +50,6 @@ class Camera(object):
     def reset(self):
         """
         Resets the Camera's view and bounding area
-        :return: None
         """
         if self.scene.visibleItems():
             self._arc_ball = ArcBallUtil(self.scene.width(), self.scene.height())
